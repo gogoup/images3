@@ -43,6 +43,7 @@ public class TemplateEntity extends DirtyMark implements Template {
     @Override
     public void setArchived(boolean isArchived) {
         getObjectSegment().setArchived(isArchived);
+        markAsDirty();
     }
 
     @Override
@@ -50,9 +51,9 @@ public class TemplateEntity extends DirtyMark implements Template {
         return getObjectSegment().isRemovable();
     }
     
-    @Override
     public void setNotRemovable() {
         getObjectSegment().setRemovable(false);
+        markAsDirty();
     }
 
     @Override

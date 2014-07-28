@@ -10,6 +10,8 @@ public interface Image {
     
     public ImagePlant getImagePlant();
     
+    public String getId();
+    
     public File getContent();
     
     public Date getDateTime();

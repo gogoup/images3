@@ -3,10 +3,11 @@ package com.images3.core.infrastructure.data.spi;
 import java.util.List;
 
 import com.images3.common.PaginatedResult;
+import com.images3.common.PaginatedResultDelegate;
 import com.images3.core.infrastructure.data.ImagePlantOS;
 import com.images3.core.infrastructure.data.TemplateOS;
 
-public interface TemplateAccess {
+public interface TemplateAccess extends PaginatedResultDelegate<List<TemplateOS>> {
 
     public String generateTemplateId(ImagePlantOS imagePlant);
     
@@ -22,6 +23,7 @@ public interface TemplateAccess {
     
     public TemplateOS selectTemplateById(String imagePlantId, String id);
     
-    public PaginatedResult<List<TemplateOS>> selectTemplatesByImagePlantId(String imagePlant, Boolean isArchived);
+    public PaginatedResult<List<TemplateOS>> selectTemplatesByImagePlantId(
+            String imagePlantId, Boolean isArchived);
     
 }

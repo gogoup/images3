@@ -16,8 +16,6 @@ public interface Template {
     
     public boolean isRemovable();
     
-    public void setNotRemovable();
-    
     public ResizingConfig getResizingConfig();
     
 }

@@ -6,6 +6,6 @@ public interface Version {
     
     public Template getTemplate();
     
-    public Image getActualImage();
+    public Image getVesioningImage();
     
 }

@@ -15,82 +15,47 @@
  */
 package com.images3.common;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
- 
 public abstract class PaginatedResult<T> {
-        
-        private Object delegate;
-        private String methodName;
-        private Object[] arguments;
-        private Method method;
-        
-        public PaginatedResult(Object delegate, String methodName, Object[] arguments) {
-                this.delegate = delegate;
-                this.methodName = methodName;
-                this.arguments = arguments;
-                loadMethod();
+
+    private PaginatedResultDelegate<T> delegate;
+    private String methodName;
+    private Object[] arguments;
+    private Object currentPageCursor;
+
+    public PaginatedResult(PaginatedResultDelegate<T> delegate, String methodName, Object[] arguments) {
+        this.methodName = methodName;
+        this.arguments = arguments;
+        this.delegate = delegate;
+    }
+    
+    public T getAllResults() {
+        return getResult(null);
+    }
+    
+    public T getResult(Object pageCursor) {
+        T result = delegate.fetchResult(methodName, arguments, pageCursor);
+        setCurrentPageCursor(pageCursor);
+        return result;
+    }
+    
+    private void setCurrentPageCursor(Object pageCursor) {
+        currentPageCursor = pageCursor;
+    }
+    
+    public Object getCurrentPageCursor() {
+        return currentPageCursor;
+    }
+    
+    public Object getNextPageCursor() {
+        checkForNullDelegate();
+        return delegate.getNextPageCursor(methodName, arguments, getCurrentPageCursor());
+    }
+    
+    private void checkForNullDelegate() {
+        if (null == delegate) {
+            throw new NullPointerException(
+                    "Need set delegate (" + PaginatedResultDelegate.class.getName() + ") first.");
         }
-        
-        private void loadMethod() {
-                try {
-                        Class<?>[] parameterClasses = getParameterClasses();
-                        method = delegate.getClass().getDeclaredMethod(methodName, parameterClasses);
-                        method.setAccessible(true);
-                } catch (NoSuchMethodException | SecurityException e) {
-                        e.printStackTrace();
-                }
-                checkForReturnType();
-        }
-        
-        private Class<?>[] getParameterClasses() {
-                Class<?>[] parameterClasses = new Class<?>[this.arguments.length + 1];
-                for (int i=0; i<this.arguments.length; i++) {
-                        parameterClasses[i] = this.arguments[i].getClass();
-                }
-                parameterClasses[parameterClasses.length - 1] = Object.class;
-                return parameterClasses;
-        }
-        
-        private void checkForReturnType() {
-                Type returnElementType = this.method.getGenericReturnType();
-                Type requiredType = getTypeArgument();
-                if (!requiredType.equals(returnElementType)) {
-                        throw new IllegalArgumentException("Need to return List<T>");
-                }
-        }
-        
-        private Type getTypeArgument() {
-                Type superClass = this.getClass().getGenericSuperclass();
-                Type type = ((ParameterizedType) superClass).getActualTypeArguments()[0];
-                return type;
-        }
- 
-        public T getAllResults() {
-                return getResult(null);
-        }
-        
-        @SuppressWarnings("unchecked")
-        public T getResult(Object pageCursor) {
-                T result = null;
-                try {
-                        result = (T) method.invoke(delegate, addPageCursorToArguments(null));
-                } catch (IllegalAccessException | IllegalArgumentException
-                                | InvocationTargetException e) {
-                        e.printStackTrace();
-                }
-                return result;
-        }
-        
-        private Object[] addPageCursorToArguments(Object pageCursor) {
-                Object[] clone = new Object[arguments.length + 1];
-                for (int i=0; i<arguments.length; i++) {
-                        clone[i] = arguments[i];
-                }
-                clone[clone.length - 1] = pageCursor;
-                return clone;
-        }
+    }
         
 }

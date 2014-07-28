@@ -3,9 +3,10 @@ package com.images3.core.infrastructure.data.spi;
 import java.util.List;
 
 import com.images3.common.PaginatedResult;
+import com.images3.common.PaginatedResultDelegate;
 import com.images3.core.infrastructure.data.ImagePlantOS;
 
-public interface ImagePlantAccess {
+public interface ImagePlantAccess extends PaginatedResultDelegate<List<ImagePlantOS>> {
 
     public String genertateImagePlantId();
     
@@ -19,6 +20,6 @@ public interface ImagePlantAccess {
     
     public ImagePlantOS selectImagePlantById(String id);
     
-    public PaginatedResult<List<ImagePlantOS>> selectAllImagePlants();
+    public PaginatedResult<List<ImagePlantOS>> selectAllImagePlants(String userAccountId);
     
 }

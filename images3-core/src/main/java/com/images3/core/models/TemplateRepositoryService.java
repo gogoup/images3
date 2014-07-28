@@ -2,12 +2,14 @@ package com.images3.core.models;
 
 import java.util.List;
 
+import com.images3.common.NoSuchEntityFound;
 import com.images3.common.PaginatedResult;
+import com.images3.common.PaginatedResultDelegate;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.data.TemplateOS;
 import com.images3.core.infrastructure.data.spi.TemplateAccess;
 
-public class TemplateRepositoryService {
+public class TemplateRepositoryService implements PaginatedResultDelegate<List<Template>> {
     
     private TemplateAccess templateAccess;
     private TemplateFactoryService templateFactory;
@@ -18,7 +20,7 @@ public class TemplateRepositoryService {
         this.templateFactory = templateFactory;
     }
 
-    public TemplateEntity storeTemplate(TemplateEntity template) {
+    public Template storeTemplate(TemplateEntity template) {
         checkIfVoid(template);
         TemplateOS objectSegment = template.getObjectSegment();
         if (template.isNew()) {
@@ -26,7 +28,7 @@ public class TemplateRepositoryService {
         } else if (template.isDirty()) {
             templateAccess.updateTemplate(objectSegment);
         }
-        template.markAsVoid();
+        template.cleanMarks();
         return templateFactory.reconstituteTemplate(
                 (ImagePlantRoot) template.getImagePlant(), objectSegment);
     }
@@ -40,38 +42,72 @@ public class TemplateRepositoryService {
     
     public Template findTemplateById(ImagePlantRoot imagePlant, String id) {
         TemplateOS objectSegment = templateAccess.selectTemplateById(imagePlant.getId(), id);
-        return templateFactory.reconstituteTemplate(
+        TemplateEntity entity = templateFactory.reconstituteTemplate(
                 imagePlant, objectSegment);
+        if (null == entity) {
+            throw new NoSuchEntityFound("Template", id);
+        }
+        return entity;
     }
     
     public PaginatedResult<List<Template>> findAllTemplatesByImagePlant(ImagePlantRoot imagePlant) {
+        PaginatedResult<List<TemplateOS>> osResult =
+                templateAccess.selectTemplatesByImagePlantId(imagePlant.getId(), null);
         return new PaginatedResult<List<Template>>(
-                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, null}){};
+                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, osResult}){};
     }
     
     public PaginatedResult<List<Template>> findActiveTemplatesByImagePlant(ImagePlantRoot imagePlant) {
+        PaginatedResult<List<TemplateOS>> osResult =
+                templateAccess.selectTemplatesByImagePlantId(imagePlant.getId(), false);
         return new PaginatedResult<List<Template>>(
-                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, false}){};
+                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, osResult}){};
     }
     
     public PaginatedResult<List<Template>> findArchivedTemplatesByImagePlant(ImagePlantRoot imagePlant) {
+        PaginatedResult<List<TemplateOS>> osResult =
+                templateAccess.selectTemplatesByImagePlantId(imagePlant.getId(), true);
         return new PaginatedResult<List<Template>>(
-                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, true}){};
+                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, osResult}){};
     }
     
-    protected List<Template> getAllTemplatesByImagePlant(ImagePlantRoot imagePlant, Boolean isArchived, 
-            Object pageCursor) {
-        PaginatedResult<List<TemplateOS>> osResult =
-                templateAccess.selectTemplatesByImagePlantId(imagePlant.getId(), isArchived);
-        List<TemplateOS> objectSegments = osResult.getResult(pageCursor);
+    private List<Template> getAllTemplatesByImagePlant(ImagePlantRoot imagePlant, 
+            PaginatedResult<List<TemplateOS>> osResult,  Object pageCursor) {
+        List<TemplateOS> objectSegments = null;
+        if (null == pageCursor) {
+            objectSegments = osResult.getAllResults();
+        } else {
+            objectSegments = osResult.getResult(pageCursor);
+        }
         return templateFactory.reconstituteTemplates(imagePlant, objectSegments);
     }
-    
     
     private void checkIfVoid(TemplateEntity template) {
         if (template.isVoid()) {
             throw new IllegalStateException(template.toString());
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Template> fetchResult(String methodName, Object[] arguments,
+            Object pageCursor) {
+        if ("getAllTemplatesByImagePlant".equals(methodName)) {
+            ImagePlantRoot imagePlant = (ImagePlantRoot) arguments[0]; 
+            PaginatedResult<List<TemplateOS>> osResult = (PaginatedResult<List<TemplateOS>>) arguments[1];
+            return getAllTemplatesByImagePlant(imagePlant, osResult, pageCursor);
+        }
+        throw new UnsupportedOperationException(methodName);
+    }
+
+    @Override
+    public Object getNextPageCursor(String methodName, Object[] arguments,
+            Object pageCursor) {
+        if ("getAllTemplatesByImagePlant".equals(methodName)) {
+            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
+            return osResult.getNextPageCursor();
+        }
+        throw new UnsupportedOperationException(methodName);
     }
     
 }

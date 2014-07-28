@@ -8,9 +8,13 @@ import com.images3.common.PaginatedResult;
 
 public interface ImagePlant {
 
+    public UserAccount getUserAccount();
+    
     public String getId();
     
     public String getName();
+    
+    public void setName(String name);
     
     public Date getCreationTime();
     
@@ -22,9 +26,9 @@ public interface ImagePlant {
     
     public PaginatedResult<List<Template>> listAllTemplates();
     
-    public PaginatedResult<List<Template>> getActiveTemplates();
+    public PaginatedResult<List<Template>> listActiveTemplates();
     
-    public PaginatedResult<List<Template>> getArchivedTemplates();
+    public PaginatedResult<List<Template>> listArchivedTemplates();
     
     public void removeTemplate(Template template);
     
@@ -36,7 +40,7 @@ public interface ImagePlant {
     
     public void removeImage(Image image);
     
-    public void removeImageAndVersions(Image image);
+    public void removeImageAndVerions(Image image);
     
     public PaginatedResult<List<Image>> listAllImages();
     

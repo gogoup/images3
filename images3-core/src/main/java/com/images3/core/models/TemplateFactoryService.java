@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.images3.common.ResizingConfig;
+import com.images3.core.DuplicateTemplateNameException;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.data.TemplateOS;
 import com.images3.core.infrastructure.data.spi.TemplateAccess;
@@ -17,13 +18,13 @@ public class TemplateFactoryService {
     }
 
     public TemplateEntity generateTemplate(ImagePlantRoot imagePlant, String name, 
-            ResizingConfig filterConfig) {
+            ResizingConfig resizingConfig) {
         if (templateAccess.isDuplicatedTemplateName(imagePlant.getId(), name)) {
-            throw new IllegalArgumentException("Duplicated name exists, " + name);
+            throw new DuplicateTemplateNameException(name);
         }
         String id = templateAccess.generateTemplateId(imagePlant.getObjectSegment());
         TemplateOS objectSegment = new TemplateOS(
-                imagePlant.getId(), id, name, false, true, filterConfig);
+                imagePlant.getId(), id, name, false, true, resizingConfig);
         TemplateEntity template = reconstituteTemplate(imagePlant, objectSegment);
         template.markAsNew();
         return template;
@@ -40,6 +41,9 @@ public class TemplateFactoryService {
     public List<Template> reconstituteTemplates(ImagePlantRoot imagePlant, List<TemplateOS> objectSegments) {
         List<Template> templates = new ArrayList<Template>(objectSegments.size());
         for (TemplateOS os: objectSegments) {
+            if (null == os) {
+                throw new NullPointerException();
+            }
             templates.add(reconstituteTemplate(imagePlant, os));
         }
         return templates;
