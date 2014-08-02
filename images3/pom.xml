@@ -5,12 +5,5 @@
     <artifactId>images3-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>images3-common</artifactId>
-  <dependencies>
-    <dependency>
-        <groupId>org.gogoup</groupId>
-        <artifactId>dddutils-pagination</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-  </dependencies>
+  <artifactId>images3</artifactId>
 </project>

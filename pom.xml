@@ -9,6 +9,11 @@
   	<module>images3-common</module>
   	<module>images3-app</module>
   	<module>images3-app-server</module>
+  	<module>images3-spi-imageprocessor</module>
+  	<module>images3-imageprocessor</module>
+  	<module>images3-mongodb</module>
+  	<module>images3-imagecontent-s3</module>
+  	<module>images3-spi-imgcontent</module>
   </modules>
   <dependencies>
     <dependency>
@@ -24,4 +29,7 @@
         <scope>test</scope>
     </dependency>
   </dependencies>
+  <name>ImageS3</name>
+  <url>www.images3.com</url>
+  <description>Simple storage service for images.</description>
 </project>

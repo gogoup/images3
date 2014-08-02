@@ -2,7 +2,7 @@ package com.images3.core;
 
 import java.util.List;
 
-import com.images3.common.PaginatedResult;
+import com.images3.utility.PaginatedResult;
 
 public interface ImagePlantRepository {
 
@@ -12,7 +12,6 @@ public interface ImagePlantRepository {
     
     public ImagePlant findImagePlantById(String id);
     
-    public PaginatedResult<List<ImagePlant>> findImagePlantsByAccount(
-            UserAccount userAccount);
+    public PaginatedResult<List<ImagePlant>> findAllImagePlants();
     
 }

@@ -1,6 +1,6 @@
 package com.images3.core;
 
-import com.images3.common.ResizingConfig;
+import com.images3.ResizingConfig;
 
 public interface Template {
     

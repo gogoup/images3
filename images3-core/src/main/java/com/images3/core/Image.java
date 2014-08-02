@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import com.images3.common.PaginatedResult;
+import com.images3.utility.PaginatedResult;
 
 public interface Image {
     
@@ -15,6 +15,8 @@ public interface Image {
     public File getContent();
     
     public Date getDateTime();
+    
+    public Version createVersion(Template template);
     
     public Version fetchVersion(Template template);
     

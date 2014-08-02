@@ -1,14 +1,14 @@
 package com.images3.core;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import com.images3.common.ResizingConfig;
-import com.images3.common.PaginatedResult;
+import com.images3.AmazonS3Bucket;
+import com.images3.ResizingConfig;
+import com.images3.utility.PaginatedResult;
 
 public interface ImagePlant {
-
-    public UserAccount getUserAccount();
     
     public String getId();
     
@@ -17,6 +17,10 @@ public interface ImagePlant {
     public void setName(String name);
     
     public Date getCreationTime();
+    
+    public AmazonS3Bucket getAmazonS3Bucket();
+    
+    public void setAmazonS3Bucket(AmazonS3Bucket amazonS3Bucket);
     
     public Template createTemplate(String name, ResizingConfig filterConfig);
     
@@ -32,9 +36,7 @@ public interface ImagePlant {
     
     public void removeTemplate(Template template);
     
-    public Image createImage(String base64Image);
-    
-    public Image createImage(Image image, Template template);
+    public Image createImage(File imageFile);
     
     public Image fetchImageById(String id);
     
