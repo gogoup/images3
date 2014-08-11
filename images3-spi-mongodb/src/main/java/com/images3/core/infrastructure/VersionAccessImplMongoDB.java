@@ -7,7 +7,7 @@ import com.images3.ImageIdentity;
 import com.images3.VersionIdentity;
 import com.images3.core.infrastructure.spi.VersionAccess;
 import com.images3.utility.PageCursor;
-import com.images3.utility.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResult;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;

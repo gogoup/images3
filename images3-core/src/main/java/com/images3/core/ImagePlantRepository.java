@@ -2,7 +2,7 @@ package com.images3.core;
 
 import java.util.List;
 
-import com.images3.utility.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResult;
 
 public interface ImagePlantRepository {
 

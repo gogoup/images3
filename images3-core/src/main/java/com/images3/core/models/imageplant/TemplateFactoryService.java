@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.images3.DuplicateTemplateNameException;
 import com.images3.ResizingConfig;
+import com.images3.TemplateIdentity;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.TemplateOS;
 import com.images3.core.infrastructure.spi.TemplateAccess;
@@ -24,7 +25,7 @@ public class TemplateFactoryService {
         }
         String id = templateAccess.generateTemplateId(imagePlant.getObjectSegment());
         TemplateOS objectSegment = new TemplateOS(
-                imagePlant.getId(), id, name, false, true, resizingConfig);
+                new TemplateIdentity(imagePlant.getId(), id), name, false, true, resizingConfig);
         TemplateEntity template = reconstituteTemplate(imagePlant, objectSegment);
         template.markAsNew();
         return template;

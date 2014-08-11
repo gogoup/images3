@@ -8,6 +8,8 @@ public interface Template {
 
     public String getId();
     
+    public void setName(String name);
+    
     public String getName();
     
     public boolean isArchived();

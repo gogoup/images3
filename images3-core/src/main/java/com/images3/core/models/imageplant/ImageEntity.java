@@ -13,7 +13,7 @@ import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.utility.DirtyMark;
-import com.images3.utility.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResult;
 
 public class ImageEntity extends DirtyMark implements Image {
     

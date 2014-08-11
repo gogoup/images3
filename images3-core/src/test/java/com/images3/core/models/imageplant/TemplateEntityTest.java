@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 
 import com.images3.ResizingConfig;
 import com.images3.ResizingUnit;
+import com.images3.TemplateIdentity;
 import com.images3.core.infrastructure.TemplateOS;
 import com.images3.core.models.imageplant.ImagePlantRoot;
 import com.images3.core.models.imageplant.TemplateEntity;
@@ -43,8 +44,7 @@ public class TemplateEntityTest {
     
     private void setupTemplateOS() {
         objectSegment = Mockito.mock(TemplateOS.class);
-        Mockito.when(objectSegment.getImagePlantId()).thenReturn(IMAGE_PLANT_ID);
-        Mockito.when(objectSegment.getId()).thenReturn(ID);
+        Mockito.when(objectSegment.getId()).thenReturn(new TemplateIdentity(IMAGE_PLANT_ID, ID));
         Mockito.when(objectSegment.getName()).thenReturn(NAME);
         Mockito.when(objectSegment.isArchived()).thenReturn(ISARCHIVED);
         Mockito.when(objectSegment.isRemovable()).thenReturn(ISREMOVABLE);

@@ -1,9 +1,6 @@
-package com.images3.core.infrastructure;
+package com.images3;
 
-import com.images3.ResizingConfig;
-import com.images3.TemplateIdentity;
-
-public class TemplateOS {
+public class TemplateResponse {
 
     private TemplateIdentity id;
     private String name;
@@ -11,38 +8,36 @@ public class TemplateOS {
     private boolean isRemovable;
     private ResizingConfig resizingConfig;
     
-    public TemplateOS(TemplateIdentity id, String name, boolean isArchived,
-            boolean isRemovable, ResizingConfig resizingConfig) {
+    public TemplateResponse(TemplateIdentity id, String name,
+            boolean isArchived, boolean isRemovable,
+            ResizingConfig resizingConfig) {
         this.id = id;
         this.name = name;
         this.isArchived = isArchived;
         this.isRemovable = isRemovable;
         this.resizingConfig = resizingConfig;
     }
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-    public boolean isArchived() {
-        return isArchived;
-    }
-    public void setArchived(boolean isArchived) {
-        this.isArchived = isArchived;
-    }
-    public boolean isRemovable() {
-        return isRemovable;
-    }
-    public void setRemovable(boolean isRemovable) {
-        this.isRemovable = isRemovable;
-    }
+
     public TemplateIdentity getId() {
         return id;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public boolean isRemovable() {
+        return isRemovable;
+    }
+
     public ResizingConfig getResizingConfig() {
         return resizingConfig;
     }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -55,6 +50,7 @@ public class TemplateOS {
                 + ((resizingConfig == null) ? 0 : resizingConfig.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -63,7 +59,7 @@ public class TemplateOS {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        TemplateOS other = (TemplateOS) obj;
+        TemplateResponse other = (TemplateResponse) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

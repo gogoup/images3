@@ -9,6 +9,7 @@ import com.images3.ImageIdentity;
 import com.images3.ImageMetadata;
 import com.images3.ResizingConfig;
 import com.images3.ResizingUnit;
+import com.images3.TemplateIdentity;
 import com.images3.VersionIdentity;
 import com.mongodb.BasicDBObject;
 
@@ -46,8 +47,8 @@ public class MongoDBObjectMapper {
     
     public BasicDBObject mapToBasicDBObject(TemplateOS source) {
         return new BasicDBObject()
-            .append("imagePlantId", source.getImagePlantId())
-            .append("id", source.getId())
+            .append("imagePlantId", source.getId().getImagePlantId())
+            .append("id", source.getId().getTemplateId())
             .append("name", source.getName())
             .append("isArchived", source.isArchived())
             .append("isRemovable", source.isRemovable())
@@ -56,8 +57,9 @@ public class MongoDBObjectMapper {
     
     public TemplateOS mapToTemplateOS(BasicDBObject source) {
         return new TemplateOS(
-                source.getString("imagePlantId"),
-                source.getString("id"),
+                new TemplateIdentity(
+                        source.getString("imagePlantId"),
+                        source.getString("id")),
                 source.getString("name"),
                 source.getBoolean("isArchived"),
                 source.getBoolean("isRemovable"),

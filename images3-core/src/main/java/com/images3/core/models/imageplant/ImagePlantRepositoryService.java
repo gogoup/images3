@@ -7,8 +7,8 @@ import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantRepository;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
-import com.images3.utility.PaginatedResult;
-import com.images3.utility.PaginatedResultDelegate;
+import org.gogoup.dddutils.pagination.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 public class ImagePlantRepositoryService implements ImagePlantRepository, PaginatedResultDelegate<List<ImagePlant>> {
     

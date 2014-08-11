@@ -2,10 +2,12 @@ package com.images3.core.infrastructure.spi;
 
 import java.util.List;
 
+import com.images3.TemplateIdentity;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.TemplateOS;
-import com.images3.utility.PaginatedResult;
-import com.images3.utility.PaginatedResultDelegate;
+
+import org.gogoup.dddutils.pagination.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 public interface TemplateAccess extends PaginatedResultDelegate<List<TemplateOS>> {
 
@@ -21,7 +23,7 @@ public interface TemplateAccess extends PaginatedResultDelegate<List<TemplateOS>
     
     public void deleteTemplatesByImagePlantId(String imagePlantId);
     
-    public TemplateOS selectTemplateById(String imagePlantId, String id);
+    public TemplateOS selectTemplateById(TemplateIdentity id);
     
     public PaginatedResult<List<TemplateOS>> selectTemplatesByImagePlantId(
             String imagePlantId, Boolean isArchived);

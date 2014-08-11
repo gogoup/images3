@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.images3.AmazonS3Bucket;
 import com.images3.ResizingConfig;
-import com.images3.utility.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResult;
 
 public interface ImagePlant {
     

@@ -8,8 +8,8 @@ import com.images3.VersionIdentity;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.VersionOS;
 import com.images3.core.infrastructure.spi.VersionAccess;
-import com.images3.utility.PaginatedResult;
-import com.images3.utility.PaginatedResultDelegate;
+import org.gogoup.dddutils.pagination.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 public class VersionRepositoryService implements PaginatedResultDelegate<List<Version>> {
     

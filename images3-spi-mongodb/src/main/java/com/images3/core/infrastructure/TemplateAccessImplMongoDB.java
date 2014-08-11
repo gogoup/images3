@@ -3,9 +3,12 @@ package com.images3.core.infrastructure;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.images3.TemplateIdentity;
 import com.images3.core.infrastructure.spi.TemplateAccess;
 import com.images3.utility.PageCursor;
-import com.images3.utility.PaginatedResult;
+
+import org.gogoup.dddutils.pagination.PaginatedResult;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -40,7 +43,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
     public void updateTemplate(TemplateOS template) {
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()
-                                    .append("imagePlantId", template.getImagePlantId())
+                                    .append("imagePlantId", template.getId().getImagePlantId())
                                     .append("id", template.getId());
         WriteResult result = coll.update(criteria, getObjectMapper().mapToBasicDBObject(template));
         checkForAffectedDocuments(result, 1);
@@ -49,7 +52,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
     public void deleteTemplate(TemplateOS template) {
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()
-                                    .append("imagePlantId", template.getImagePlantId())
+                                    .append("imagePlantId", template.getId().getImagePlantId())
                                     .append("id", template.getId());
         WriteResult result = coll.remove(criteria);
         checkForAffectedDocuments(result, 1);
@@ -62,10 +65,10 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
         coll.remove(criteria);
     }
 
-    public TemplateOS selectTemplateById(String imagePlantId, String id) {
+    public TemplateOS selectTemplateById(TemplateIdentity id) {
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()
-                                    .append("imagePlantId", imagePlantId)
+                                    .append("imagePlantId", id)
                                     .append("id", id);
         DBCursor cursor = coll.find(criteria);
         if (!cursor.hasNext()) {

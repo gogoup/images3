@@ -6,7 +6,7 @@ import java.util.List;
 import com.images3.ImageIdentity;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.utility.PageCursor;
-import com.images3.utility.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResult;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;

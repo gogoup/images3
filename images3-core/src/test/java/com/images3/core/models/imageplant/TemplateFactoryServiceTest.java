@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import com.images3.DuplicateTemplateNameException;
 import com.images3.ResizingConfig;
 import com.images3.ResizingUnit;
+import com.images3.TemplateIdentity;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.TemplateOS;
@@ -66,8 +67,7 @@ public class TemplateFactoryServiceTest {
     
     private void setupTemplateOS() {
         objectSegment = Mockito.mock(TemplateOS.class);
-        Mockito.when(objectSegment.getImagePlantId()).thenReturn(IMAGE_PLANT_ID);
-        Mockito.when(objectSegment.getId()).thenReturn(TEMPLATE_ID);
+        Mockito.when(objectSegment.getId()).thenReturn(new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_ID));
         Mockito.when(objectSegment.getName()).thenReturn(TEMPLATE_NAME);
         Mockito.when(objectSegment.isArchived()).thenReturn(TEMPLATE_ISARCHIVED);
         Mockito.when(objectSegment.isRemovable()).thenReturn(TEMPLATE_ISREMOVABLE);

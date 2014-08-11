@@ -5,8 +5,8 @@ import java.util.List;
 import com.images3.ImageIdentity;
 import com.images3.VersionIdentity;
 import com.images3.core.infrastructure.VersionOS;
-import com.images3.utility.PaginatedResult;
-import com.images3.utility.PaginatedResultDelegate;
+import org.gogoup.dddutils.pagination.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 public interface VersionAccess extends PaginatedResultDelegate<List<VersionOS>> {
 

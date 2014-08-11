@@ -3,11 +3,13 @@ package com.images3.core.models.imageplant;
 import java.util.List;
 
 import com.images3.NoSuchEntityFoundException;
+import com.images3.TemplateIdentity;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.TemplateOS;
 import com.images3.core.infrastructure.spi.TemplateAccess;
-import com.images3.utility.PaginatedResult;
-import com.images3.utility.PaginatedResultDelegate;
+
+import org.gogoup.dddutils.pagination.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 public class TemplateRepositoryService implements PaginatedResultDelegate<List<Template>> {
     
@@ -41,7 +43,8 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
     }
     
     public Template findTemplateById(ImagePlantRoot imagePlant, String id) {
-        TemplateOS objectSegment = templateAccess.selectTemplateById(imagePlant.getId(), id);
+        TemplateOS objectSegment = templateAccess.selectTemplateById(
+                new TemplateIdentity(imagePlant.getId(), id));
         TemplateEntity entity = templateFactory.reconstituteTemplate(
                 imagePlant, objectSegment);
         if (null == entity) {

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import com.images3.utility.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResult;
 
 public interface Image {
     
