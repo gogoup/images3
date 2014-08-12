@@ -9,12 +9,14 @@ import java.util.Map;
 
 import com.images3.AmazonS3Bucket;
 import com.images3.ResizingConfig;
+import com.images3.UnremovableTemplateException;
 import com.images3.core.Image;
 import com.images3.core.ImagePlant;
 import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.utility.DirtyMark;
+
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
 public class ImagePlantRoot extends DirtyMark implements ImagePlant {
@@ -111,6 +113,9 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     @Override
     public void removeTemplate(Template template) {
         TemplateEntity entity = (TemplateEntity) template;
+        if (!entity.isRemovable()) {
+            throw new UnremovableTemplateException(entity.getObjectSegment().getId());
+        }
         entity.markAsVoid();
         addDirtyTemplate(entity);
     }
@@ -137,14 +142,16 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
 
     @Override
     public Image createImage(File imageFile) {
-        ImageEntity entity = imageFactory.generateImage(this, imageFile);
+        ImageEntity entity = imageFactory.generateImage(
+                this, imageFile, imageRepository, versionRepository, templateRepository);
         addDirtyImage(entity);
         return entity;
     }
 
     ImageEntity createImage(Image image, Template template) {
         TemplateEntity templateEntity = (TemplateEntity) template;
-        ImageEntity entity = imageFactory.generateImage(this, (ImageEntity) image, templateEntity);
+        ImageEntity entity = imageFactory.generateImage(
+                this, (ImageEntity) image, templateEntity, imageRepository, versionRepository, templateRepository);
         addDirtyImage(entity);
         if (!templateEntity.isRemovable()) {
             templateEntity.setNotRemovable();

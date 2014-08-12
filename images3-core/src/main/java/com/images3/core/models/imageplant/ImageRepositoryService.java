@@ -9,6 +9,7 @@ import com.images3.core.Image;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageContentAccess;
+
 import org.gogoup.dddutils.pagination.PaginatedResult;
 import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
@@ -18,13 +19,16 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     private ImageContentAccess imageContentAccess;
     private ImageFactoryService imageFactory;
     private VersionRepositoryService versionRepository;
+    private TemplateRepositoryService templateRepository;
     
     public ImageRepositoryService(ImageAccess imageAccess, ImageContentAccess imageContentAccess,
-            ImageFactoryService imageFactory, VersionRepositoryService versionRepository) {
+            ImageFactoryService imageFactory, VersionRepositoryService versionRepository, 
+            TemplateRepositoryService templateRepository) {
         this.imageAccess = imageAccess;
         this.imageContentAccess = imageContentAccess;
         this.imageFactory = imageFactory;
         this.versionRepository = versionRepository;
+        this.templateRepository = templateRepository;
     }
 
     public ImageEntity storeImage(ImageEntity image) {
@@ -39,7 +43,7 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         processVersions(image);
         image.cleanMarks();
         return imageFactory.reconstituteImage(
-                imagePlant, objectSegment, image.getContent(), this, versionRepository);
+                imagePlant, objectSegment, image.getContent(), this, versionRepository, templateRepository);
     }
     
     private void processVersions(ImageEntity image) {
@@ -76,7 +80,8 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     
     public Image findImageById(ImagePlantRoot imagePlant, String id) {
         ImageOS objectSegment = imageAccess.selectImageById(new ImageIdentity(imagePlant.getId(), id));
-        return imageFactory.reconstituteImage(imagePlant, objectSegment, null, this, versionRepository);
+        return imageFactory.reconstituteImage(
+                imagePlant, objectSegment, null, this, versionRepository, templateRepository);
     }
     
     public PaginatedResult<List<Image>> findAllImages(ImagePlantRoot imagePlant) {
@@ -91,7 +96,9 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         List<ImageOS> objectSegments = osResult.getResult(pageCursor);
         List<Image> images = new ArrayList<Image>(objectSegments.size());
         for (ImageOS os: objectSegments) {
-            images.add(imageFactory.reconstituteImage(imagePlant, os, null, this, versionRepository));
+            images.add(
+                    imageFactory.reconstituteImage(
+                            imagePlant, os, null, this, versionRepository, templateRepository));
         }
         return images;
     }
@@ -103,13 +110,13 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     }
 
     @Override
-    public Object getNextPageCursor(String methodName, Object[] arguments,
+    public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor) {
-        if ("getAllImages".equals(methodName)) {
+        if ("getAllImages".equals(tag)) {
             PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
             return osResult.getNextPageCursor();
         }
-        throw new UnsupportedOperationException(methodName);
+        throw new UnsupportedOperationException(tag);
     }
 
     @SuppressWarnings("unchecked")

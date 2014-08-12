@@ -84,13 +84,13 @@ public class VersionRepositoryService implements PaginatedResultDelegate<List<Ve
     }
     
     @Override
-    public Object getNextPageCursor(String methodName, Object[] arguments,
+    public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor) {
-        if ("getVersionsByImage".equals(methodName)) {
+        if ("getVersionsByImage".equals(tag)) {
             PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
             return osResult.getNextPageCursor();
         }
-        throw new UnsupportedOperationException(methodName);
+        throw new UnsupportedOperationException(tag);
     }
 
     @SuppressWarnings("unchecked")

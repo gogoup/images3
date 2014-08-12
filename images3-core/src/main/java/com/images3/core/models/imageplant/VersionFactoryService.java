@@ -10,14 +10,15 @@ public class VersionFactoryService {
     
     public VersionFactoryService() {}
 
-    public VersionEntity generateVersion(ImageEntity image, 
-            Template template, Image versioningImage) {
+    public VersionEntity generateVersion(ImageEntity image, Template template, 
+            Image versioningImage, TemplateRepositoryService templateRepository, 
+            ImageRepositoryService imageRepository) {
         VersionIdentity id =new VersionIdentity(
                 new ImageIdentity(
                         image.getImagePlant().getId(), image.getId()), template.getId());
         VersionOS objectSegment = new VersionOS(id, versioningImage.getId());
         VersionEntity entity = reconstituteVersion(image, objectSegment, 
-                template, versioningImage, null, null);
+                template, versioningImage, templateRepository, imageRepository);
         entity.markAsNew();
         return entity;
     }

@@ -115,13 +115,13 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
     }
 
     @Override
-    public Object getNextPageCursor(String methodName, Object[] arguments,
+    public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor) {
-        if ("getImagePlantsByAccount".equals(methodName)) {
+        if ("getImagePlantsByAccount".equals(tag)) {
             PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];
             return osResult.getNextPageCursor();
         }
-        throw new UnsupportedOperationException(methodName);
+        throw new UnsupportedOperationException(tag);
     }
 
 }
