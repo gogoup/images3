@@ -20,12 +20,12 @@ import com.images3.core.models.imageplant.TemplateEntity;
 public class TemplateEntityTest {
     
     private static final String IMAGE_PLANT_ID = "IMAGE_PLANT_ID";
-    private static final  String ID = "TEMPLATE_ID";
-    private static final  String NAME = "TEMPLATE_NAME";
-    private static final  boolean ISARCHIVED = false;
-    private static final  boolean ISREMOVABLE = true;
-    private static final  ResizingConfig RESIZE_CONFIG = new ResizingConfig(ResizingUnit.PIXEL, 100, 100, true);
+    private static final String ID = "TEMPLATE_ID";
+    private static final String NAME = "TEMPLATE_NAME";
+    private static final boolean ISARCHIVED = false;
+    private static final boolean ISREMOVABLE = true;
     
+    private ResizingConfig resizingConfig;
     private ImagePlantRoot imagePlant;
     private TemplateOS objectSegment;
 
@@ -34,25 +34,18 @@ public class TemplateEntityTest {
     
     @Before
     public void setup() {
+        resizingConfig = SetupHelper.setupResizingConfig(ResizingUnit.PIXEL, 100, 100, true);
         setupImagePlant();
-        setupTemplateOS();
+        objectSegment = SetupHelper.setupTemplateOS(
+                new TemplateIdentity(IMAGE_PLANT_ID, ID), NAME, ISARCHIVED, ISREMOVABLE, resizingConfig);
     }
     
     private void setupImagePlant() {
         imagePlant = Mockito.mock(ImagePlantRoot.class);
     }
     
-    private void setupTemplateOS() {
-        objectSegment = Mockito.mock(TemplateOS.class);
-        Mockito.when(objectSegment.getId()).thenReturn(new TemplateIdentity(IMAGE_PLANT_ID, ID));
-        Mockito.when(objectSegment.getName()).thenReturn(NAME);
-        Mockito.when(objectSegment.isArchived()).thenReturn(ISARCHIVED);
-        Mockito.when(objectSegment.isRemovable()).thenReturn(ISREMOVABLE);
-        Mockito.when(objectSegment.getResizingConfig()).thenReturn(RESIZE_CONFIG);
-    }
-    
     @Test
-    public void testTemplateEntity() {
+    public void testTemplateEntityValues() {
         TemplateEntity template = new TemplateEntity(imagePlant, objectSegment);
         assertTrue(template.getObjectSegment().equals(objectSegment));
         assertEquals(template.getImagePlant(), imagePlant);
@@ -60,7 +53,7 @@ public class TemplateEntityTest {
         assertEquals(template.getName(), NAME);
         assertEquals(template.isArchived(), ISARCHIVED);
         assertEquals(template.isRemovable(), ISREMOVABLE);
-        assertEquals(template.getResizingConfig(), RESIZE_CONFIG);
+        assertEquals(template.getResizingConfig(), resizingConfig);
     }
     
 }

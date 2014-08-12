@@ -106,18 +106,26 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
 
     @Override
     public void updateTemplate(Template template) {
+        checkForInvalidTemplate(template);
         TemplateEntity entity = (TemplateEntity) template;
         addDirtyTemplate(entity);
     }
 
     @Override
     public void removeTemplate(Template template) {
+        checkForInvalidTemplate(template);
         TemplateEntity entity = (TemplateEntity) template;
         if (!entity.isRemovable()) {
             throw new UnremovableTemplateException(entity.getObjectSegment().getId());
         }
         entity.markAsVoid();
         addDirtyTemplate(entity);
+    }
+    
+    private void checkForInvalidTemplate(Template template) {
+        if (this != template.getImagePlant()) {
+            throw new IllegalArgumentException(template.getId());
+        }
     }
 
     @Override
@@ -147,8 +155,8 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
         addDirtyImage(entity);
         return entity;
     }
-
-    ImageEntity createImage(Image image, Template template) {
+    
+    public ImageEntity createImage(Image image, Template template) {
         TemplateEntity templateEntity = (TemplateEntity) template;
         ImageEntity entity = imageFactory.generateImage(
                 this, (ImageEntity) image, templateEntity, imageRepository, versionRepository, templateRepository);
