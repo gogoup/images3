@@ -13,13 +13,14 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
 
 public class TemplateAccessImplMongoDB extends MongoDBAccess implements TemplateAccess {
 
-    public TemplateAccessImplMongoDB(MongoClientAdmin clientAdmin,
+    public TemplateAccessImplMongoDB(MongoClient mongoClient, String dbname,
             MongoDBObjectMapper objectMapper) {
-        super(clientAdmin, objectMapper);
+        super(mongoClient, dbname, objectMapper);
     }
 
     public String generateTemplateId(ImagePlantOS imagePlant) {

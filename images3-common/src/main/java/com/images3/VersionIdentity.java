@@ -5,6 +5,8 @@ public class VersionIdentity {
     private ImageIdentity imageId;
     private String templateId;
     
+    public VersionIdentity() {}
+    
     public VersionIdentity(ImageIdentity imageId, String templateId) {
         this.imageId = imageId;
         this.templateId = templateId;

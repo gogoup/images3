@@ -11,6 +11,8 @@ public class ImageResponse {
     private Date dateTime;
     private List<String> templateIds;
     
+    public ImageResponse() {}
+    
     public ImageResponse(ImageIdentity id, File content, Date dateTime,
             List<String> templateIds) {
         this.id = id;

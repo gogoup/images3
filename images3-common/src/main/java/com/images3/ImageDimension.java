@@ -5,6 +5,8 @@ public class ImageDimension {
     private int width;
     private int height;
     
+    public ImageDimension() {}
+    
     public ImageDimension(int width, int height) {
         this.width = width;
         this.height = height;

@@ -7,17 +7,20 @@ import com.images3.ImageIdentity;
 import com.images3.VersionIdentity;
 import com.images3.core.infrastructure.spi.VersionAccess;
 import com.images3.utility.PageCursor;
+
 import org.gogoup.dddutils.pagination.PaginatedResult;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
 
 public class VersionAccessImplMongoDB extends MongoDBAccess implements VersionAccess {
 
-    public VersionAccessImplMongoDB(MongoClientAdmin clientAdmin,
+    public VersionAccessImplMongoDB(MongoClient mongoClient, String dbname,
             MongoDBObjectMapper objectMapper) {
-        super(clientAdmin, objectMapper);
+        super(mongoClient, dbname, objectMapper);
     }
 
     public void insertVersion(VersionOS version) {

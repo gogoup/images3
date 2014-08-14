@@ -2,20 +2,24 @@ package com.images3.core.infrastructure;
 
 import com.images3.utility.PageCursor;
 import com.mongodb.DB;
+import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
 
 public abstract class MongoDBAccess {
 
-    private MongoClientAdmin clientAdmin;
+    private MongoClient mongoClient;
+    private String dbname;
     private MongoDBObjectMapper objectMapper;
     
-    public MongoDBAccess(MongoClientAdmin clientAdmin, MongoDBObjectMapper objectMapper) {
-        this.clientAdmin = clientAdmin;
+    public MongoDBAccess(MongoClient mongoClient, String dbname,
+            MongoDBObjectMapper objectMapper) {
+        this.mongoClient = mongoClient;
+        this.dbname = dbname;
         this.objectMapper = objectMapper;
     }
     
     protected DB getDatabase() {
-        return clientAdmin.getDatabase();
+        return mongoClient.getDB(dbname);
     }
     
     protected MongoDBObjectMapper getObjectMapper() {
@@ -25,7 +29,8 @@ public abstract class MongoDBAccess {
     protected void checkForAffectedDocuments(WriteResult result, int expectedAffectedNumber) {
         if (result.getN() != expectedAffectedNumber) {
             throw new RuntimeException(
-                    "Unexpected affected number of documents," + result.getN() + " != " +expectedAffectedNumber);
+                    "Unexpected affected number of documents,"
+                    + "" + result.getN() + " != " +expectedAffectedNumber);
         }
     }
     

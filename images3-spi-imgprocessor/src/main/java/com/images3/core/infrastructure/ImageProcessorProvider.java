@@ -1,5 +1,7 @@
 package com.images3.core.infrastructure;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -10,14 +12,14 @@ public class ImageProcessorProvider {
     
     private Properties config;
     
-    public ImageProcessorProvider() {
-        loadConfigProperties();
+    public ImageProcessorProvider(String pathToConfig) {
+        loadConfigProperties(pathToConfig);
     }
     
-    private void loadConfigProperties() {
+    private void loadConfigProperties(String pathToConfig) {
         config = new Properties();
-        InputStream in = getClass().getResourceAsStream("/config.properties");
         try {
+            InputStream in = new FileInputStream(new File(pathToConfig));
             config.load(in);
         } catch (IOException e) {
             throw new RuntimeException(e);

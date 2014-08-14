@@ -4,6 +4,8 @@ public class VersionRequest {
 
     private VersionIdentity id;
 
+    public VersionRequest() {}
+    
     public VersionRequest(VersionIdentity id) {
         this.id = id;
     }

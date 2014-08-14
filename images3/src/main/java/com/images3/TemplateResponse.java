@@ -8,6 +8,8 @@ public class TemplateResponse {
     private boolean isRemovable;
     private ResizingConfig resizingConfig;
     
+    public TemplateResponse() {}
+    
     public TemplateResponse(TemplateIdentity id, String name,
             boolean isArchived, boolean isRemovable,
             ResizingConfig resizingConfig) {

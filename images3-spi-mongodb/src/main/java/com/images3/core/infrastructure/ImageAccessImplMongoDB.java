@@ -6,18 +6,21 @@ import java.util.List;
 import com.images3.ImageIdentity;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.utility.PageCursor;
+
 import org.gogoup.dddutils.pagination.PaginatedResult;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
 
 public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess {
 
-    public ImageAccessImplMongoDB(MongoClientAdmin clientAdmin,
+    public ImageAccessImplMongoDB(MongoClient mongoClient, String dbname,
             MongoDBObjectMapper objectMapper) {
-        super(clientAdmin, objectMapper);
+        super(mongoClient, dbname, objectMapper);
     }
 
     public String generateImageId(ImagePlantOS imagePlant) {

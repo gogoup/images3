@@ -8,9 +8,12 @@ import com.images3.core.infrastructure.spi.ImagePlantAccess;
 
 public class ImagePlantAccessImplMongoDBTest {
     
-    private static final ObjectSegmentAccessProvider provider = new ObjectSegmentAccessProvider();
+    private static ObjectSegmentAccessProvider provider;
 
     public static void main(String[] args) {
+        String pathToConfig = ImagePlantAccessImplMongoDBTest.class.getResource("/config.properties").getPath();
+        provider = new ObjectSegmentAccessProvider(pathToConfig);
+
         ImagePlantAccess imagePlantAccess = provider.getImagePlantAccess();
         String id  = imagePlantAccess.genertateImagePlantId();
         System.out.println("ID: " + id);

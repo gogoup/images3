@@ -49,7 +49,7 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     private void processVersions(ImageEntity image) {
         List<VersionEntity> versions = image.getDirtyVersions();
         for (VersionEntity version: versions) {
-            versionRepository.storeVersion(version);
+            versionRepository.storeVersion(version, this);
         }
     }
     

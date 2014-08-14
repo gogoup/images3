@@ -18,7 +18,6 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
     public ImagePlantFactoryService(ImagePlantAccess imagePlantAccess,
             TemplateFactoryService templateFactory,
             ImageFactoryService imageFactory) {
-        super();
         this.imagePlantAccess = imagePlantAccess;
         this.templateFactory = templateFactory;
         this.imageFactory = imageFactory;

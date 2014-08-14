@@ -5,18 +5,21 @@ import java.util.List;
 
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
 import com.images3.utility.PageCursor;
+
 import org.gogoup.dddutils.pagination.PaginatedResult;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
 
 public class ImagePlantAccessImplMongoDB extends MongoDBAccess implements ImagePlantAccess {
     
-    public ImagePlantAccessImplMongoDB(MongoClientAdmin clientAdmin,
+    public ImagePlantAccessImplMongoDB(MongoClient mongoClient, String dbname,
             MongoDBObjectMapper objectMapper) {
-        super(clientAdmin, objectMapper);
+        super(mongoClient, dbname, objectMapper);
     }
 
     public boolean isDuplicatedImagePlantName(String name) {

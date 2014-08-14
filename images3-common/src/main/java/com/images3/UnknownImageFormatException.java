@@ -10,6 +10,7 @@ public class UnknownImageFormatException extends RuntimeException {
     private String imageId;
 
     public UnknownImageFormatException(String imageId) {
+        super(imageId);
         this.imageId = imageId;
     }
 

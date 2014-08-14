@@ -14,13 +14,13 @@ public class ImageFactoryService {
     
     private ImageAccess imageAccess;
     private ImageProcessor imageProcessor;
-    private VersionFactoryService versionfactoryService;
+    private VersionFactoryService versionfactory;
     
     public ImageFactoryService(ImageAccess imageAccess, ImageProcessor imageProcessor,
-            VersionFactoryService factoryService) {
+            VersionFactoryService versionfactory) {
         this.imageAccess = imageAccess;
         this.imageProcessor = imageProcessor;
-        this.versionfactoryService = factoryService;
+        this.versionfactory = versionfactory;
     }
 
     public ImageEntity generateImage(ImagePlantRoot imagePlant, File imageFile, 
@@ -65,7 +65,7 @@ public class ImageFactoryService {
         }
         return new ImageEntity(
                 imagePlant, objectSegment, imageContent, imageRepository, 
-                versionfactoryService, versionRepository, templateRepository);
+                versionfactory, versionRepository, templateRepository);
     }
     
 }

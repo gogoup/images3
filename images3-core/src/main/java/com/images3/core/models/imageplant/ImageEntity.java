@@ -84,12 +84,13 @@ public class ImageEntity extends DirtyMark implements Image {
 
     @Override
     public Version fetchVersion(Template template) {
-        return versionRepository.findVersionById(this, (TemplateEntity) template);
+        return versionRepository.findVersionById(
+                this, (TemplateEntity) template, imageRepository);
     }
 
     @Override
     public PaginatedResult<List<Version>> fetchAllVersions() {
-        return versionRepository.findVersionsByImage(this);
+        return versionRepository.findVersionsByImage(this, imageRepository);
     }
 
 }

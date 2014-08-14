@@ -6,6 +6,8 @@ public class AmazonS3Bucket {
     private String secretKey;
     private String name;
     
+    public AmazonS3Bucket() {}
+    
     public AmazonS3Bucket(String accessKey, String secretKey, String name) {
         this.accessKey = accessKey;
         this.secretKey = secretKey;

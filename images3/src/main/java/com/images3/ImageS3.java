@@ -21,7 +21,7 @@ public interface ImageS3 {
     public TemplateResponse updateTemplate(TemplateIdentity id, TemplateRequest request);
     
     public void deleteTemplate(TemplateIdentity id);
-    
+   
     public TemplateResponse getTemplate(TemplateIdentity id);
     
     public PaginatedResult<List<TemplateResponse>> getActiveTempaltes(String imagePlantId);

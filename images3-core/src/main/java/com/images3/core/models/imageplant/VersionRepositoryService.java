@@ -16,18 +16,17 @@ public class VersionRepositoryService implements PaginatedResultDelegate<List<Ve
     private VersionAccess versionAccess;
     private VersionFactoryService versionFactory;
     private TemplateRepositoryService templateRepository;
-    private ImageRepositoryService imageRepository;
     
     public VersionRepositoryService(VersionAccess versionAccess, 
-            VersionFactoryService versionFactory, TemplateRepositoryService templateRepository,
-            ImageRepositoryService imageRepository) {
+            VersionFactoryService versionFactory, 
+            TemplateRepositoryService templateRepository) {
         this.versionAccess = versionAccess;
         this.versionFactory = versionFactory;
         this.templateRepository = templateRepository;
-        this.imageRepository = imageRepository;
     }
 
-    public VersionEntity storeVersion(VersionEntity version) {
+    public VersionEntity storeVersion(VersionEntity version, 
+            ImageRepositoryService imageRepository) {
         checkIfVoid(version);
         VersionOS objectSegment = version.getObjectSegment();
         VersionEntity entity = null;
@@ -49,7 +48,8 @@ public class VersionRepositoryService implements PaginatedResultDelegate<List<Ve
                 new ImageIdentity(image.getImagePlant().getId(), image.getId()));
     }
     
-    public Version findVersionById(ImageEntity image, TemplateEntity template) {
+    public Version findVersionById(ImageEntity image, TemplateEntity template,
+            ImageRepositoryService imageRepository) {
         VersionIdentity id =new VersionIdentity(
                 new ImageIdentity(
                         image.getImagePlant().getId(), image.getId()), template.getId());
@@ -58,16 +58,18 @@ public class VersionRepositoryService implements PaginatedResultDelegate<List<Ve
                 templateRepository, imageRepository);
     }
     
-    public PaginatedResult<List<Version>> findVersionsByImage(ImageEntity image) {
+    public PaginatedResult<List<Version>> findVersionsByImage(ImageEntity image, 
+            ImageRepositoryService imageRepository) {
         PaginatedResult<List<VersionOS>> osResult =
                 versionAccess.selectVersionsByImageId(
                         new ImageIdentity(image.getImagePlant().getId(), image.getId()));
         return new PaginatedResult<List<Version>>(
-                this, "getVersionsByImage", new Object[]{image, osResult}) {};
+                this, "getVersionsByImage", new Object[]{image, osResult, imageRepository}) {};
     }
     
     private List<Version> getVersionsByImage(ImageEntity image, 
-            PaginatedResult<List<VersionOS>> osResult, Object pageCursor) {
+            PaginatedResult<List<VersionOS>> osResult, 
+            ImageRepositoryService imageRepository, Object pageCursor) {
         List<VersionOS> objectSegments = osResult.getResult(pageCursor);
         List<Version> versions = new ArrayList<Version>(objectSegments.size());
         for (VersionOS os: objectSegments) {
@@ -100,7 +102,8 @@ public class VersionRepositoryService implements PaginatedResultDelegate<List<Ve
         if ("getVersionsByImage".equals(methodName)) {
             ImageEntity image = (ImageEntity) arguments[0];
             PaginatedResult<List<VersionOS>> osResult = (PaginatedResult<List<VersionOS>>) arguments[1];
-            return getVersionsByImage(image, osResult, pageCursor);
+            ImageRepositoryService imageRepository = (ImageRepositoryService) arguments[2];
+            return getVersionsByImage(image, osResult, imageRepository, pageCursor);
         }
         throw new UnsupportedOperationException(methodName);
     }

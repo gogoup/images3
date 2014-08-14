@@ -5,6 +5,8 @@ public class ImagePlantRequest {
     private String name;
     private AmazonS3Bucket bucket;
     
+    public ImagePlantRequest() {}
+    
     public ImagePlantRequest(String name, AmazonS3Bucket bucket) {
         this.name = name;
         this.bucket = bucket;

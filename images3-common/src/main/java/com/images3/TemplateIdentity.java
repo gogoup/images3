@@ -5,6 +5,8 @@ public class TemplateIdentity {
     private String imagePlantId;
     private String templateId;
     
+    public TemplateIdentity() {}
+    
     public TemplateIdentity(String imagePlantId, String templateId) {
         this.imagePlantId = imagePlantId;
         this.templateId = templateId;

@@ -5,6 +5,8 @@ public class VersionResponse {
     private VersionIdentity id;
     private ImageResponse versioningImage;
     
+    public VersionResponse() {}
+    
     public VersionResponse(VersionIdentity id, ImageResponse versioningImage) {
         this.id = id;
         this.versioningImage = versioningImage;

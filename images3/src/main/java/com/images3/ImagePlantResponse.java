@@ -9,6 +9,8 @@ public class ImagePlantResponse {
     private AmazonS3Bucket bucket;
     private Date creationTime;
     
+    public ImagePlantResponse() {}
+    
     public ImagePlantResponse(String id, String name, AmazonS3Bucket bucket,
             Date creationTime) {
         this.id = id;

@@ -7,6 +7,8 @@ public class ResizingConfig {
     private int height;
     private boolean isKeepProportions;
     
+    public ResizingConfig() {}
+    
     public ResizingConfig(ResizingUnit unit, int width, int height,
             boolean isKeepProportions) {
         this.unit = unit;

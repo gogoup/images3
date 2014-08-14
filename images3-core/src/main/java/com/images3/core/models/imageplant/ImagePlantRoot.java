@@ -189,7 +189,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     public void removeImageAndVerions(Image image) {
         ImageEntity entity = (ImageEntity) image;
         PaginatedResult<List<Version>> result = 
-                versionRepository.findVersionsByImage((ImageEntity) image);
+                versionRepository.findVersionsByImage((ImageEntity) image, imageRepository);
         Object pageCursor = result.getNextPageCursor();
         while (null != pageCursor) {
             List<Version> versions = result.getResult(pageCursor);

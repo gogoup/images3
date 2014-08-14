@@ -8,10 +8,12 @@ import com.images3.core.infrastructure.spi.ImageContentAccess;
 
 public class ImageContentAccessImplS3Test {
 
-    private static ImageContentAccess access = new ImageContentAccessProvider().getImageContentAccess();
+    private static ImageContentAccess access;
     
     public static void main(String[] args) {
-        delete();
+        String pathToConfig = ImageContentAccessImplS3Test.class.getResource("/config.properties").getPath();
+        access = new ImageContentAccessProvider(pathToConfig).getImageContentAccess();
+        add();
         download();
     }
     

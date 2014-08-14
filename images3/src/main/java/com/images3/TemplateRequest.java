@@ -7,6 +7,8 @@ public class TemplateRequest {
     private boolean isArchived;
     private ResizingConfig resizingConfig;
     
+    public TemplateRequest() {}
+    
     public TemplateRequest(String imagePlantId, String name,
             ResizingConfig resizingConfig) {
         this(imagePlantId, name, false, resizingConfig);

@@ -1,5 +1,7 @@
 package com.images3.core.infrastructure;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -10,16 +12,16 @@ public class ImageContentAccessProvider {
     
     private Properties config;
     private AmazonS3ClientPool amazonS3ClientPool;
-    
-    public ImageContentAccessProvider() {
-        loadConfigProperties();
+        
+    public ImageContentAccessProvider(String pathToConfig) {
+        loadConfigProperties(pathToConfig);
         amazonS3ClientPool = new AmazonS3ClientPool();
     }
     
-    private void loadConfigProperties() {
+    private void loadConfigProperties(String pathToConfig) {
         config = new Properties();
-        InputStream in = getClass().getResourceAsStream("/config.properties");
         try {
+            InputStream in = new FileInputStream(new File(pathToConfig));
             config.load(in);
         } catch (IOException e) {
             throw new RuntimeException(e);

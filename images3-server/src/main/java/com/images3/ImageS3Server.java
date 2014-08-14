@@ -11,6 +11,20 @@ import com.images3.core.ImagePlantFactory;
 import com.images3.core.ImagePlantRepository;
 import com.images3.core.Template;
 import com.images3.core.Version;
+import com.images3.core.infrastructure.spi.ImageAccess;
+import com.images3.core.infrastructure.spi.ImageContentAccess;
+import com.images3.core.infrastructure.spi.ImagePlantAccess;
+import com.images3.core.infrastructure.spi.ImageProcessor;
+import com.images3.core.infrastructure.spi.TemplateAccess;
+import com.images3.core.infrastructure.spi.VersionAccess;
+import com.images3.core.models.imageplant.ImageFactoryService;
+import com.images3.core.models.imageplant.ImagePlantFactoryService;
+import com.images3.core.models.imageplant.ImagePlantRepositoryService;
+import com.images3.core.models.imageplant.ImageRepositoryService;
+import com.images3.core.models.imageplant.TemplateFactoryService;
+import com.images3.core.models.imageplant.TemplateRepositoryService;
+import com.images3.core.models.imageplant.VersionFactoryService;
+import com.images3.core.models.imageplant.VersionRepositoryService;
 
 public class ImageS3Server implements ImageS3 {
     
@@ -21,7 +35,7 @@ public class ImageS3Server implements ImageS3 {
     private TemplatePaginatedResultDelegate templateDelegate;
     private ImagePaginatedResultDelegate imageDelegate;
     
-    public ImageS3Server(ImagePlantFactory imagePlantFactory, 
+    private ImageS3Server(ImagePlantFactory imagePlantFactory, 
             ImagePlantRepository imagePlantRepository, AppObjectMapper objectMapper,
             ImagePlantPaginatedResultDelegate imagePlantDelegate,
             TemplatePaginatedResultDelegate templateDelegate,
@@ -206,4 +220,145 @@ public class ImageS3Server implements ImageS3 {
                 imageDelegate, "getVersioningImages", new Object[]{result, templateIds}) {};
     }
 
+    public static class Builder {
+        
+        private ImagePlantAccess imagePlantAccess;
+        private ImageAccess imageAccess;
+        private ImageContentAccess imageContentAccess;
+        private ImageProcessor imageProcessor;
+        private TemplateAccess templateAccess;
+        private VersionAccess versionAccess;
+        
+        public Builder() {
+            
+        }
+        
+        public Builder setImagePlantAccess(ImagePlantAccess imagePlantAccess) {
+            this.imagePlantAccess = imagePlantAccess;
+            return this;
+        }
+
+        public Builder setImageAccess(ImageAccess imageAccess) {
+            this.imageAccess = imageAccess;
+            return this;
+        }
+
+        public Builder setImageContentAccess(ImageContentAccess imageContentAccess) {
+            this.imageContentAccess = imageContentAccess;
+            return this;
+        }
+
+        public Builder setImageProcessor(ImageProcessor imageProcessor) {
+            this.imageProcessor = imageProcessor;
+            return this;
+        }
+
+        public Builder setTempalteAccess(TemplateAccess templateAccess) {
+            this.templateAccess = templateAccess;
+            return this;
+        }
+
+        public Builder setVersionAccess(VersionAccess versionAccess) {
+            this.versionAccess = versionAccess;
+            return this;
+        }
+        
+        protected ImagePlantAccess getImagePlantAccess() {
+            if (null == imagePlantAccess) {
+                throw new NullPointerException("ImagePlantAccess");
+            }
+            return imagePlantAccess;
+        }
+
+        protected ImageAccess getImageAccess() {
+            if (null == imageAccess) {
+                throw new NullPointerException("ImageAccess");
+            }
+            return imageAccess;
+        }
+
+        protected ImageContentAccess getImageContentAccess() {
+            if (null == imageContentAccess) {
+                throw new NullPointerException("ImageContentAccess");
+            }
+            return imageContentAccess;
+        }
+
+        protected ImageProcessor getImageProcessor() {
+            if (null == imageProcessor) {
+                throw new NullPointerException("ImageProcessor");
+            }
+            return imageProcessor;
+        }
+
+        protected TemplateAccess getTemplateAccess() {
+            if (null == templateAccess) {
+                throw new NullPointerException("TemplateAccess");
+            }
+            return templateAccess;
+        }
+
+        protected VersionAccess getVersionAccess() {
+            if (null == versionAccess) {
+                throw new NullPointerException("VersionAccess");
+            }
+            return versionAccess;
+        }
+        
+        private void checkForNecessaryParameters() {
+            getImagePlantAccess();
+            getImageAccess();
+            getImageContentAccess();
+            getImageProcessor();
+            getTemplateAccess();
+            getVersionAccess();
+        }
+
+        public ImageS3 build() {
+            checkForNecessaryParameters();
+            TemplateFactoryService templateFactory = new TemplateFactoryService(templateAccess);
+            VersionFactoryService versionFactory = new VersionFactoryService();
+            ImageFactoryService imageFactory = new ImageFactoryService(
+                    imageAccess, 
+                    imageProcessor,
+                    versionFactory);
+            ImagePlantFactoryService imagePlantFactory = new ImagePlantFactoryService(
+                    imagePlantAccess,
+                    templateFactory,
+                    imageFactory);
+            TemplateRepositoryService templateRepository = new TemplateRepositoryService(
+                    templateAccess,
+                    templateFactory);
+            VersionRepositoryService versionRepository = new VersionRepositoryService(
+                    versionAccess, 
+                    versionFactory, 
+                    templateRepository);
+            ImageRepositoryService imageRepository = new ImageRepositoryService(
+                    imageAccess, 
+                    imageContentAccess,
+                    imageFactory, 
+                    versionRepository, 
+                    templateRepository);
+            ImagePlantRepositoryService imagePlantRepository = new ImagePlantRepositoryService(
+                    imagePlantAccess,
+                    imagePlantFactory,
+                    imageRepository,
+                    templateRepository,
+                    versionRepository);
+            AppObjectMapper objectMapper = new AppObjectMapper();
+            ImagePlantPaginatedResultDelegate imagePlantDelegate =
+                    new ImagePlantPaginatedResultDelegate(objectMapper);
+            TemplatePaginatedResultDelegate templateDelegate = 
+                    new TemplatePaginatedResultDelegate(objectMapper);
+            ImagePaginatedResultDelegate versionDelegate =
+                    new ImagePaginatedResultDelegate(objectMapper);
+            return new ImageS3Server(
+                    imagePlantFactory, 
+                    imagePlantRepository, 
+                    objectMapper,
+                    imagePlantDelegate,
+                    templateDelegate,
+                    versionDelegate);
+        }
+    }
 }

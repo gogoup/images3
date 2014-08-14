@@ -7,6 +7,8 @@ public class ImageRequest {
     private String imagePlantId;
     private File content;
     
+    public ImageRequest() {}
+    
     public ImageRequest(String imagePlantId, File content) {
         this.imagePlantId = imagePlantId;
         this.content = content;

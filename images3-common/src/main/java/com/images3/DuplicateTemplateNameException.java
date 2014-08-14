@@ -10,6 +10,7 @@ public class DuplicateTemplateNameException extends RuntimeException {
     private String name;
     
     public DuplicateTemplateNameException(String name) {
+        super(name);
         this.name = name;
     }
 

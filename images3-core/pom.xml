@@ -7,10 +7,10 @@
   </parent>
   <artifactId>images3-core</artifactId>
   <dependencies>
-        <dependency>
-            <groupId>com.images3</groupId>
-            <artifactId>images3-common</artifactId>
-            <version>0.1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+       <dependency>
+           <groupId>com.images3</groupId>
+           <artifactId>images3-common</artifactId>
+           <version>0.1.0-SNAPSHOT</version>
+       </dependency>
+   </dependencies>
 </project>
