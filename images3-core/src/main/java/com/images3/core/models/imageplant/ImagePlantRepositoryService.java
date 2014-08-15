@@ -3,10 +3,12 @@ package com.images3.core.models.imageplant;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.images3.NoSuchEntityFoundException;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantRepository;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
+
 import org.gogoup.dddutils.pagination.PaginatedResult;
 import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
@@ -75,8 +77,12 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
     @Override
     public ImagePlant findImagePlantById(String id) {
         ImagePlantOS objectSegment = imagePlantAccess.selectImagePlantById(id);
-        return imagePlantFactory.reconstituteImagePlant(
+        ImagePlant entity = imagePlantFactory.reconstituteImagePlant(
                 objectSegment, imageRepository, templateRepository, versionRepository);
+        if (null == entity) {
+            throw new NoSuchEntityFoundException("ImagePlant", id);
+        }
+        return entity;
     }
 
     @Override

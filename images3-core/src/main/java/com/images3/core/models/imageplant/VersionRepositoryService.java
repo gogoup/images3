@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.images3.ImageIdentity;
+import com.images3.NoSuchEntityFoundException;
 import com.images3.VersionIdentity;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.VersionOS;
 import com.images3.core.infrastructure.spi.VersionAccess;
+
 import org.gogoup.dddutils.pagination.PaginatedResult;
 import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
@@ -54,8 +56,12 @@ public class VersionRepositoryService implements PaginatedResultDelegate<List<Ve
                 new ImageIdentity(
                         image.getImagePlant().getId(), image.getId()), template.getId());
         VersionOS objectSegment = versionAccess.selectVersionById(id);
-        return versionFactory.reconstituteVersion(image, objectSegment, template, null, 
+        Version entity = versionFactory.reconstituteVersion(image, objectSegment, template, null, 
                 templateRepository, imageRepository);
+        if (null == entity) {
+            throw new NoSuchEntityFoundException("Version", id.getTemplateId());
+        }
+        return entity;
     }
     
     public PaginatedResult<List<Version>> findVersionsByImage(ImageEntity image, 

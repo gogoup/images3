@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.images3.ImageIdentity;
+import com.images3.NoSuchEntityFoundException;
 import com.images3.core.Image;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
@@ -80,8 +81,12 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     
     public Image findImageById(ImagePlantRoot imagePlant, String id) {
         ImageOS objectSegment = imageAccess.selectImageById(new ImageIdentity(imagePlant.getId(), id));
-        return imageFactory.reconstituteImage(
+        Image entity = imageFactory.reconstituteImage(
                 imagePlant, objectSegment, null, this, versionRepository, templateRepository);
+        if (null == entity) {
+            throw new NoSuchEntityFoundException("Image", id);
+        }
+        return entity;
     }
     
     public PaginatedResult<List<Image>> findAllImages(ImagePlantRoot imagePlant) {

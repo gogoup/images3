@@ -28,7 +28,7 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
         String id = imagePlantAccess.genertateImagePlantId();
         Date creationTime = new Date(System.currentTimeMillis());
         ImagePlantOS objectSegment = new ImagePlantOS(
-                id, name, creationTime, amazonS3Bucket);
+                id, "", creationTime, amazonS3Bucket);
         ImagePlantRoot root = reconstituteImagePlant(
                 objectSegment, null, null, null);
         root.markAsNew();
