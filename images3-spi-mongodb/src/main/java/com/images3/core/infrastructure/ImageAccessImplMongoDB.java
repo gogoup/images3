@@ -80,5 +80,14 @@ public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess
         }
         return images;
     }
+    
+    public Object getNextPageCursor(String tag, Object[] arguments,
+            Object pageCursor, List<ImageOS> result) {
+        if (null != result 
+                && result.size() == 0) {
+            return null;
+        }
+        return getNextPageCursor((PageCursor) pageCursor);
+    }
 
 }

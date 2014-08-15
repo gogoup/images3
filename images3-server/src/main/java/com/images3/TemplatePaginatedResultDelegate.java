@@ -44,7 +44,7 @@ public class TemplatePaginatedResultDelegate implements
 
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor) {
+            Object pageCursor, List<TemplateResponse> result) {
         if (!"getActiveTempaltes".equals(tag)
                 && !"getArchivedTemplates".equals(tag)) {
             throw new UnsupportedOperationException(tag);

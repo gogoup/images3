@@ -58,7 +58,7 @@ public class ImagePaginatedResultDelegate implements
 
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor) {
+            Object pageCursor, List<ImageResponse> result) {
         if (!"getImages".equals(tag)
                 && !"getVersioningImages".equals(tag)) {
             throw new UnsupportedOperationException(tag);

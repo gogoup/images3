@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.images3.AmazonS3Bucket;
+import com.images3.DuplicatedImagePlantNameException;
 import com.images3.ResizingConfig;
 import com.images3.UnremovableTemplateException;
 import com.images3.core.Image;
@@ -15,6 +16,7 @@ import com.images3.core.ImagePlant;
 import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImagePlantOS;
+import com.images3.core.infrastructure.spi.ImagePlantAccess;
 import com.images3.utility.DirtyMark;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
@@ -22,6 +24,7 @@ import org.gogoup.dddutils.pagination.PaginatedResult;
 public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     
     private ImagePlantOS objectSegment;
+    private ImagePlantAccess imagePlantAccess;
     private ImageFactoryService imageFactory;
     private ImageRepositoryService imageRepository;
     private TemplateFactoryService templateFactory;
@@ -32,10 +35,12 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     
     public ImagePlantRoot() {}
     
-    public ImagePlantRoot(ImagePlantOS objectSegment, ImageFactoryService imageFactory,
-            ImageRepositoryService imageRepository, TemplateFactoryService templateFactory,
-            TemplateRepositoryService templateRepository, VersionRepositoryService versionRepository) {
+    public ImagePlantRoot(ImagePlantOS objectSegment, ImagePlantAccess imagePlantAccess, 
+            ImageFactoryService imageFactory, ImageRepositoryService imageRepository,
+            TemplateFactoryService templateFactory, TemplateRepositoryService templateRepository,
+            VersionRepositoryService versionRepository) {
         this.objectSegment = objectSegment;
+        this.imagePlantAccess = imagePlantAccess;
         this.imageFactory = imageFactory;
         this.imageRepository = imageRepository;
         this.templateFactory = templateFactory;
@@ -76,7 +81,13 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     }
 
     @Override
-    public void setName(String name) {
+    public void updateName(String name) {
+        if (getObjectSegment().getName().equals(name)) {
+            return;
+        }
+        if (imagePlantAccess.isDuplicatedImagePlantName(name)) {
+            throw new DuplicatedImagePlantNameException(name);
+        }
         getObjectSegment().setName(name);
         markAsDirty();
     }
@@ -93,6 +104,9 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
 
     @Override
     public void setAmazonS3Bucket(AmazonS3Bucket amazonS3Bucket) {
+        if (getObjectSegment().getAmazonS3Bucket().equals(amazonS3Bucket)) {
+            return;
+        }
         getObjectSegment().setAmazonS3Bucket(amazonS3Bucket);
         markAsDirty();
     }

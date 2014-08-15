@@ -14,7 +14,7 @@ public interface ImagePlant {
     
     public String getName();
     
-    public void setName(String name);
+    public void updateName(String name);
     
     public Date getCreationTime();
     

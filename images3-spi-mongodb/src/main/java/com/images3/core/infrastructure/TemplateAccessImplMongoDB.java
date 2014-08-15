@@ -108,5 +108,14 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
         }
         return templates;
     }
+    
+    public Object getNextPageCursor(String tag, Object[] arguments,
+            Object pageCursor, List<TemplateOS> result) {
+        if (null != result 
+                && result.size() == 0) {
+            return null;
+        }
+        return getNextPageCursor((PageCursor) pageCursor);
+    }
 
 }

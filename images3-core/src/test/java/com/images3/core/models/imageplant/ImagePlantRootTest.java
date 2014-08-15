@@ -15,6 +15,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import com.images3.AmazonS3Bucket;
+import com.images3.DuplicatedImagePlantNameException;
 import com.images3.ImageDimension;
 import com.images3.ImageFormat;
 import com.images3.ImageIdentity;
@@ -28,6 +29,7 @@ import com.images3.core.Template;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.TemplateOS;
+import com.images3.core.infrastructure.spi.ImagePlantAccess;
 
 public class ImagePlantRootTest {
     
@@ -49,6 +51,7 @@ public class ImagePlantRootTest {
     private ResizingConfig resizingConfig;
     private AmazonS3Bucket amazonS3Bucket;
     private ImagePlantOS objectSegment;
+    private ImagePlantAccess imagePlantAccess;
     private ImageFactoryService imageFactory;
     private ImageRepositoryService imageRepository;
     private TemplateFactoryService templateFactory;
@@ -66,7 +69,7 @@ public class ImagePlantRootTest {
                 BUCKET_ACCESS_KEY, BUCKET_SECRET_KEY, BUCKET_NAME);
         objectSegment = SetupHelper.setupImagePlantOS(
                 IMAGE_PLANT_ID, IMAGE_PLANT_NAME, IMAGE_PLANT_CREATION_TIME, amazonS3Bucket);
-        
+        setupImagePlantAccess();
         setupImageFactoryService();
         setupImageRepositoryService();
         setupTemplateFactoryService();
@@ -79,9 +82,12 @@ public class ImagePlantRootTest {
         
     }
     
+    private void setupImagePlantAccess() {
+        imagePlantAccess = Mockito.mock(ImagePlantAccess.class);
+    }
+    
     private void setupImageFactoryService() {
         imageFactory = Mockito.mock(ImageFactoryService.class);
-        
     }
     
     private void setupImageRepositoryService() {
@@ -101,8 +107,9 @@ public class ImagePlantRootTest {
     }
     
     private ImagePlantRoot createImagePlant() {
-        ImagePlantRoot imagePlant = new ImagePlantRoot(objectSegment, imageFactory,
-                imageRepository, templateFactory, templateRepository, versionRepository);
+        ImagePlantRoot imagePlant = new ImagePlantRoot(objectSegment, imagePlantAccess, 
+                imageFactory, imageRepository, templateFactory, templateRepository, 
+                versionRepository);
         return imagePlant;
     }
     
@@ -116,6 +123,41 @@ public class ImagePlantRootTest {
         assertEquals(imagePlant.getName(), IMAGE_PLANT_NAME);
         assertEquals(imagePlant.getCreationTime(), IMAGE_PLANT_CREATION_TIME);
         assertEquals(imagePlant.getAmazonS3Bucket(), amazonS3Bucket);
+        assertTrue(!imagePlant.isNew());
+        assertTrue(!imagePlant.isDirty());
+        assertTrue(!imagePlant.isVoid());
+    }
+    
+    @Test
+    public void testUpdateName() {
+        Mockito.when(imagePlantAccess.isDuplicatedImagePlantName("ImagePlantName2")).thenReturn(false);
+        ImagePlantRoot imagePlant = createImagePlant();
+        imagePlant.updateName("ImagePlantName2");
+        
+        Mockito.verify(imagePlantAccess, Mockito.atMost(1)).isDuplicatedImagePlantName("ImagePlantName2");
+        Mockito.verify(objectSegment, Mockito.atMost(1)).setName("ImagePlantName2");
+        assertTrue(!imagePlant.isNew());
+        assertTrue(imagePlant.isDirty());
+        assertTrue(!imagePlant.isVoid());
+    }
+    
+    @Test
+    public void testUpdateName_DuplicateName() {
+        expectedException.expect(DuplicatedImagePlantNameException.class);
+        Mockito.when(imagePlantAccess.isDuplicatedImagePlantName("ImagePlantName2")).thenReturn(true);
+        ImagePlantRoot imagePlant = createImagePlant();
+        imagePlant.updateName("ImagePlantName2");
+        
+        Mockito.verify(imagePlantAccess, Mockito.atMost(1)).isDuplicatedImagePlantName("ImagePlantName2");
+    }
+    
+    @Test
+    public void testUpdateName_NoChange() {
+        ImagePlantRoot imagePlant = createImagePlant();
+        imagePlant.updateName(IMAGE_PLANT_NAME);
+        
+        Mockito.verify(imagePlantAccess, Mockito.never()).isDuplicatedImagePlantName(Mockito.anyString());
+        Mockito.verify(objectSegment, Mockito.never()).setName(Mockito.anyString());
     }
     
     @Test

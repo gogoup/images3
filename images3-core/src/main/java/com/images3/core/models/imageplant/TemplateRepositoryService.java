@@ -105,7 +105,7 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
 
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor) {
+            Object pageCursor, List<Template> result) {
         if ("getAllTemplatesByImagePlant".equals(tag)) {
             PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
             return osResult.getNextPageCursor();

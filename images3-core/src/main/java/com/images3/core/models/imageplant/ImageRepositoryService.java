@@ -109,16 +109,6 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         }
     }
 
-    @Override
-    public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor) {
-        if ("getAllImages".equals(tag)) {
-            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
-            return osResult.getNextPageCursor();
-        }
-        throw new UnsupportedOperationException(tag);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public List<Image> fetchResult(String methodName, Object[] arguments,
@@ -126,11 +116,21 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         if ("getAllImages".equals(methodName)) {
             ImagePlantRoot imagePlant = (ImagePlantRoot) arguments[0];
             PaginatedResult<List<ImageOS>> osResult = (PaginatedResult<List<ImageOS>>) arguments[1];
-            getAllImages(imagePlant, osResult, pageCursor);
+            return getAllImages(imagePlant, osResult, pageCursor);
         }
         throw new UnsupportedOperationException(methodName);
     }
-    
+
+    @Override
+    public Object getNextPageCursor(String tag, Object[] arguments,
+            Object pageCursor, List<Image> result) {
+        if ("getAllImages".equals(tag)) {
+            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
+            return osResult.getNextPageCursor();
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
     public File findImageContent(ImageEntity image) {
         ImagePlantRoot imagePlant = (ImagePlantRoot) image.getImagePlant();
         return imageContentAccess.selectImageContent(

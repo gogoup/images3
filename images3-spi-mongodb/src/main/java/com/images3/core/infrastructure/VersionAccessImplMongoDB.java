@@ -76,5 +76,14 @@ public class VersionAccessImplMongoDB extends MongoDBAccess implements VersionAc
         }
         return versions;
     }
+    
+    public Object getNextPageCursor(String tag, Object[] arguments,
+            Object pageCursor, List<VersionOS> result) {
+        if (null != result 
+                && result.size() == 0) {
+            return null;
+        }
+        return getNextPageCursor((PageCursor) pageCursor);
+    }
 
 }

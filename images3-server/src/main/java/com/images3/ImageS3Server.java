@@ -59,7 +59,7 @@ public class ImageS3Server implements ImageS3 {
     @Override
     public ImagePlantResponse updateImagePlant(String id, ImagePlantRequest request) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id);
-        imagePlant.setName(request.getName());
+        imagePlant.updateName(request.getName());
         imagePlant.setAmazonS3Bucket(request.getBucket());
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(imagePlant);

@@ -34,9 +34,7 @@ public abstract class MongoDBAccess {
         }
     }
     
-    public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor) {
-        PageCursor cursor = (PageCursor) pageCursor;
+    public PageCursor getNextPageCursor(PageCursor cursor) {
         if (null == cursor) {
             return new PageCursor().startAtPage(1).withSize(10);
         } else {

@@ -85,5 +85,14 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess implements ImageP
         }
         return imagePlants;
     }
+    
+    public Object getNextPageCursor(String tag, Object[] arguments,
+            Object pageCursor, List<ImagePlantOS> result) {
+        if (null != result 
+                && result.size() == 0) {
+            return null;
+        }
+        return getNextPageCursor((PageCursor) pageCursor);
+    }
 
 }

@@ -40,7 +40,7 @@ public class ImagePlantPaginatedResultDelegate implements PaginatedResultDelegat
 
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor) {
+            Object pageCursor, List<ImagePlantResponse> result) {
         if (!"getAllImagePlants".equals(tag)) {
             throw new UnsupportedOperationException(tag);
         }

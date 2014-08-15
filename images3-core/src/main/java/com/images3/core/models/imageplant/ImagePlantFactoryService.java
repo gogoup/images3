@@ -3,7 +3,6 @@ package com.images3.core.models.imageplant;
 import java.util.Date;
 
 import com.images3.AmazonS3Bucket;
-import com.images3.DuplicatedImagePlantNameException;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantFactory;
 import com.images3.core.infrastructure.ImagePlantOS;
@@ -26,9 +25,6 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
     @Override
     public ImagePlant generateImagePlant(String name, 
             AmazonS3Bucket amazonS3Bucket) {
-        if (imagePlantAccess.isDuplicatedImagePlantName(name)) {
-            throw new DuplicatedImagePlantNameException(name);
-        }
         String id = imagePlantAccess.genertateImagePlantId();
         Date creationTime = new Date(System.currentTimeMillis());
         ImagePlantOS objectSegment = new ImagePlantOS(
@@ -36,6 +32,7 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
         ImagePlantRoot root = reconstituteImagePlant(
                 objectSegment, null, null, null);
         root.markAsNew();
+        root.updateName(name);
         return root;
     }
     
@@ -45,8 +42,8 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
         if (null == objectSegment) {
             return null;
         }
-        return new ImagePlantRoot(objectSegment, imageFactory, imageRepository, templateFactory,
-                templateRepository, versionRepository);
+        return new ImagePlantRoot(objectSegment,imagePlantAccess, imageFactory, 
+                imageRepository, templateFactory, templateRepository, versionRepository);
     }
 
 }
