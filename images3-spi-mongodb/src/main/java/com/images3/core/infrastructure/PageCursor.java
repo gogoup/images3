@@ -1,4 +1,4 @@
-package com.images3.utility;
+package com.images3.core.infrastructure;
 
 public class PageCursor {
     

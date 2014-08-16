@@ -14,6 +14,20 @@ import com.images3.VersionIdentity;
 import com.mongodb.BasicDBObject;
 
 public class MongoDBObjectMapper {
+    
+    public BasicDBObject mapToBasicDBObject(String id, PageCursor source) {
+        return new BasicDBObject()
+            .append("id", id)
+            .append("start", source.getStart())
+            .append("size", source.getSize())
+            .append("creationTime", System.currentTimeMillis());
+    }
+    
+    public PageCursor mapToPageCursor(BasicDBObject source) {
+        return new PageCursor(
+                source.getInt("start"),
+                source.getInt("size"));
+    }
 
     public BasicDBObject mapToBasicDBObject(ImagePlantOS source) {
         return new BasicDBObject()

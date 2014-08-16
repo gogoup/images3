@@ -42,19 +42,23 @@ public class ObjectSegmentAccessProvider {
     }
 
     public ImagePlantAccess getImagePlantAccess() {
-        return new ImagePlantAccessImplMongoDB(mongoClient, DBNAME,  objectMapper);
+        int pageSize = Integer.valueOf(config.getProperty("imageplant.page.size"));
+        return new ImagePlantAccessImplMongoDB(mongoClient, DBNAME,  objectMapper, pageSize);
     }
     
     public ImageAccess getImageAccess() {
-        return new ImageAccessImplMongoDB(mongoClient, DBNAME, objectMapper);
+        int pageSize = Integer.valueOf(config.getProperty("image.page.size"));
+        return new ImageAccessImplMongoDB(mongoClient, DBNAME, objectMapper, pageSize);
     }
     
     public TemplateAccess getTemplateAccess() {
-        return new TemplateAccessImplMongoDB(mongoClient, DBNAME, objectMapper);
+        int pageSize = Integer.valueOf(config.getProperty("template.page.size"));
+        return new TemplateAccessImplMongoDB(mongoClient, DBNAME, objectMapper, pageSize);
     }
     
     public VersionAccess getVersionAccess() {
-        return new VersionAccessImplMongoDB(mongoClient, DBNAME, objectMapper);
+        int pageSize = Integer.valueOf(config.getProperty("version.page.size"));
+        return new VersionAccessImplMongoDB(mongoClient, DBNAME, objectMapper, pageSize);
     }
     
     private void initMongoClient() {
@@ -73,6 +77,9 @@ public class ObjectSegmentAccessProvider {
     private void initCollections() {
         DB images3DB = mongoClient.getDB(DBNAME);
         Set<String> collNames = images3DB.getCollectionNames();
+        if (!collNames.contains("PageCursor")) {
+            initPageCursor(images3DB);
+        }
         if (!collNames.contains("ImagePlant")) {
             initImagePlant(images3DB);
         }
@@ -85,6 +92,12 @@ public class ObjectSegmentAccessProvider {
         if (!collNames.contains("Version")) {
             initVersion(images3DB);
         }
+    }
+    
+    private void initPageCursor(DB db) {
+        DBCollection coll = db.getCollection("PageCursor");
+        coll.createIndex(new BasicDBObject("id", "hashed"), new BasicDBObject().append("dropDups", false));
+        coll.createIndex(new BasicDBObject("creationTime", 1));
     }
     
     private void initImagePlant(DB db) {

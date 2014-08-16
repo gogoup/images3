@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.images3.ImageIdentity;
 import com.images3.core.infrastructure.spi.ImageAccess;
-import com.images3.utility.PageCursor;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
@@ -19,8 +18,8 @@ import com.mongodb.WriteResult;
 public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess {
 
     public ImageAccessImplMongoDB(MongoClient mongoClient, String dbname,
-            MongoDBObjectMapper objectMapper) {
-        super(mongoClient, dbname, objectMapper);
+            MongoDBObjectMapper objectMapper, int pageSize) {
+        super(mongoClient, dbname, objectMapper, pageSize);
     }
 
     public String generateImageId(ImagePlantOS imagePlant) {
@@ -87,7 +86,7 @@ public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess
                 && result.size() == 0) {
             return null;
         }
-        return getNextPageCursor((PageCursor) pageCursor);
+        return getNextPageCursor((String) pageCursor)[0];
     }
 
 }

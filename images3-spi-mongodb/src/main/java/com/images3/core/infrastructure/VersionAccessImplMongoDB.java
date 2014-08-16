@@ -6,7 +6,6 @@ import java.util.List;
 import com.images3.ImageIdentity;
 import com.images3.VersionIdentity;
 import com.images3.core.infrastructure.spi.VersionAccess;
-import com.images3.utility.PageCursor;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
@@ -19,8 +18,8 @@ import com.mongodb.MongoClient;
 public class VersionAccessImplMongoDB extends MongoDBAccess implements VersionAccess {
 
     public VersionAccessImplMongoDB(MongoClient mongoClient, String dbname,
-            MongoDBObjectMapper objectMapper) {
-        super(mongoClient, dbname, objectMapper);
+            MongoDBObjectMapper objectMapper, int pageSize) {
+        super(mongoClient, dbname, objectMapper, pageSize);
     }
 
     public void insertVersion(VersionOS version) {
@@ -83,7 +82,7 @@ public class VersionAccessImplMongoDB extends MongoDBAccess implements VersionAc
                 && result.size() == 0) {
             return null;
         }
-        return getNextPageCursor((PageCursor) pageCursor);
+        return getNextPageCursor((String) pageCursor)[0];
     }
 
 }

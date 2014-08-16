@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.images3.TemplateIdentity;
 import com.images3.core.infrastructure.spi.TemplateAccess;
-import com.images3.utility.PageCursor;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
@@ -19,8 +18,8 @@ import com.mongodb.WriteResult;
 public class TemplateAccessImplMongoDB extends MongoDBAccess implements TemplateAccess {
 
     public TemplateAccessImplMongoDB(MongoClient mongoClient, String dbname,
-            MongoDBObjectMapper objectMapper) {
-        super(mongoClient, dbname, objectMapper);
+            MongoDBObjectMapper objectMapper, int pageSize) {
+        super(mongoClient, dbname, objectMapper, pageSize);
     }
 
     public String generateTemplateId(ImagePlantOS imagePlant) {
@@ -115,7 +114,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
                 && result.size() == 0) {
             return null;
         }
-        return getNextPageCursor((PageCursor) pageCursor);
+        return getNextPageCursor((String) pageCursor)[0];
     }
 
 }

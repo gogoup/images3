@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
-import com.images3.utility.PageCursor;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
@@ -18,8 +17,8 @@ import com.mongodb.WriteResult;
 public class ImagePlantAccessImplMongoDB extends MongoDBAccess implements ImagePlantAccess {
     
     public ImagePlantAccessImplMongoDB(MongoClient mongoClient, String dbname,
-            MongoDBObjectMapper objectMapper) {
-        super(mongoClient, dbname, objectMapper);
+            MongoDBObjectMapper objectMapper, int pageSize) {
+        super(mongoClient, dbname, objectMapper, pageSize);
     }
 
     public boolean isDuplicatedImagePlantName(String name) {
@@ -69,13 +68,14 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess implements ImageP
     public List<ImagePlantOS> fetchResult(String methodName,
             Object[] arguments, Object pageCursor) {
         if ("getAllImagePlants".equals(methodName)) {
-            return getAllImagePlants((PageCursor) pageCursor);
+            Object[] pageResult = getNextPageCursor((String) pageCursor);
+            PageCursor cursor = (PageCursor) pageResult[1];
+            return getAllImagePlants(cursor);
         }
         throw new UnsupportedOperationException(methodName);
     }
 
     private List<ImagePlantOS> getAllImagePlants(PageCursor pageCursor) {
-        checkForQueryTooManyRecords(pageCursor);
         DBCollection coll = getDatabase().getCollection("ImagePlant");
         int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
         List<DBObject> objects = coll.find().skip(skipRecords).limit(pageCursor.getSize()).toArray();
@@ -92,7 +92,7 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess implements ImageP
                 && result.size() == 0) {
             return null;
         }
-        return getNextPageCursor((PageCursor) pageCursor);
+        return getNextPageCursor((String) pageCursor)[0];
     }
 
 }
