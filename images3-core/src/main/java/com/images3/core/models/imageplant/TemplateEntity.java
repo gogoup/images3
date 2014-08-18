@@ -26,19 +26,8 @@ public class TemplateEntity extends DirtyMark implements Template {
     }
 
     @Override
-    public String getId() {
-        return getObjectSegment().getId().getTemplateId();
-    }
-
-    @Override
-    public void setName(String name) {
-        getObjectSegment().setName(name);
-        markAsDirty();
-    }
-
-    @Override
     public String getName() {
-        return getObjectSegment().getName();
+        return getObjectSegment().getId().getTemplateName();
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.images3.core.models.imageplant;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.images3.NoSuchEntityFoundException;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantRepository;
 import com.images3.core.infrastructure.ImagePlantOS;
@@ -18,18 +17,15 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
     private ImagePlantFactoryService imagePlantFactory;
     private ImageRepositoryService imageRepository;
     private TemplateRepositoryService templateRepository;
-    private VersionRepositoryService versionRepository;
 
     public ImagePlantRepositoryService(ImagePlantAccess imagePlantAccess,
             ImagePlantFactoryService imagePlantFactory,
             ImageRepositoryService imageRepository,
-            TemplateRepositoryService templateRepository,
-            VersionRepositoryService versionRepository) {
+            TemplateRepositoryService templateRepository) {
         this.imagePlantAccess = imagePlantAccess;
         this.imagePlantFactory = imagePlantFactory;
         this.imageRepository = imageRepository;
         this.templateRepository = templateRepository;
-        this.versionRepository = versionRepository;
     }
 
     @Override
@@ -47,7 +43,7 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
         processImages(root);
         root.cleanMarks();
         return imagePlantFactory.reconstituteImagePlant(
-                objectSegment, imageRepository, templateRepository, versionRepository);
+                objectSegment, imageRepository, templateRepository);
     }
     
     private void processTemplates(ImagePlantRoot imagePlant) {
@@ -78,10 +74,7 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
     public ImagePlant findImagePlantById(String id) {
         ImagePlantOS objectSegment = imagePlantAccess.selectImagePlantById(id);
         ImagePlant entity = imagePlantFactory.reconstituteImagePlant(
-                objectSegment, imageRepository, templateRepository, versionRepository);
-        if (null == entity) {
-            throw new NoSuchEntityFoundException("ImagePlant", id);
-        }
+                objectSegment, imageRepository, templateRepository);
         return entity;
     }
 
@@ -98,7 +91,7 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
         List<ImagePlant> imagePlants = new ArrayList<ImagePlant>(objectSegments.size());
         for (ImagePlantOS os: objectSegments) {
             imagePlants.add(imagePlantFactory.reconstituteImagePlant(
-                    os, imageRepository, templateRepository, versionRepository));
+                    os, imageRepository, templateRepository));
         }
         return imagePlants;
     }

@@ -50,7 +50,7 @@ public class ImagePaginatedResultDelegate implements
         List<Version> versions = result.getResult(pageCursor);
         List<ImageResponse> responses = new ArrayList<ImageResponse>(versions.size());
         for (Version version: versions) {
-            Image image = version.getVesioningImage();
+            Image image = version.getOriginalImage();
             responses.add(objectMapper.mapToResponse(image, templateIds));
         }
         return responses;

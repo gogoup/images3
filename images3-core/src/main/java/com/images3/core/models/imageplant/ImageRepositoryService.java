@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.images3.ImageIdentity;
-import com.images3.NoSuchEntityFoundException;
 import com.images3.core.Image;
+import com.images3.core.Version;
 import com.images3.core.infrastructure.ImageOS;
+import com.images3.core.infrastructure.VersionOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageContentAccess;
 
@@ -19,16 +20,13 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     private ImageAccess imageAccess;
     private ImageContentAccess imageContentAccess;
     private ImageFactoryService imageFactory;
-    private VersionRepositoryService versionRepository;
     private TemplateRepositoryService templateRepository;
     
     public ImageRepositoryService(ImageAccess imageAccess, ImageContentAccess imageContentAccess,
-            ImageFactoryService imageFactory, VersionRepositoryService versionRepository, 
-            TemplateRepositoryService templateRepository) {
+            ImageFactoryService imageFactory, TemplateRepositoryService templateRepository) {
         this.imageAccess = imageAccess;
         this.imageContentAccess = imageContentAccess;
         this.imageFactory = imageFactory;
-        this.versionRepository = versionRepository;
         this.templateRepository = templateRepository;
     }
 
@@ -41,23 +39,15 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
             imageContentAccess.insertImageContent(
                     objectSegment.getId(), imagePlant.getAmazonS3Bucket(), image.getContent()); //insert content
         }
-        processVersions(image);
         image.cleanMarks();
         return imageFactory.reconstituteImage(
-                imagePlant, objectSegment, image.getContent(), this, versionRepository, templateRepository);
+                imagePlant, objectSegment, image.getContent(), this, templateRepository, image.getVersion());
     }
-    
-    private void processVersions(ImageEntity image) {
-        List<VersionEntity> versions = image.getDirtyVersions();
-        for (VersionEntity version: versions) {
-            versionRepository.storeVersion(version, this);
-        }
-    }
+   
     
     public void removeImage(ImageEntity image) {
         checkIfVoid(image);
         ImagePlantRoot imagePlant = (ImagePlantRoot) image.getImagePlant();
-        versionRepository.removeVersionsByImage(image); //delete versions
         ImageOS objectSegment = image.getObjectSegment();
         imageContentAccess.deleteImageContent(
                 objectSegment.getId(), imagePlant.getAmazonS3Bucket()); //delete content
@@ -72,7 +62,6 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
             List<Image> images = result.getResult(pageCursor);
             for (Image img: images) {
                 ImageEntity image = (ImageEntity) img;
-                versionRepository.removeVersionsByImage(image); //delete versions
                 removeImage(image);
             }
             pageCursor = result.getNextPageCursor(); //next page.
@@ -82,11 +71,25 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     public Image findImageById(ImagePlantRoot imagePlant, String id) {
         ImageOS objectSegment = imageAccess.selectImageById(new ImageIdentity(imagePlant.getId(), id));
         Image entity = imageFactory.reconstituteImage(
-                imagePlant, objectSegment, null, this, versionRepository, templateRepository);
-        if (null == entity) {
-            throw new NoSuchEntityFoundException("Image", id);
-        }
+                imagePlant, objectSegment, null, this, templateRepository, null);
         return entity;
+    }
+    
+    public Image findImageByVersion(ImagePlantRoot imagePlant, Version version) {
+        VersionOS ver = new VersionOS(
+                version.getTemplate().getName(), version.getOriginalImage().getId());
+        ImageOS objectSegment = imageAccess.selectImageByVersion(ver);
+        Image entity = imageFactory.reconstituteImage(
+                imagePlant, objectSegment, null, this, templateRepository, null);
+        return entity;
+    }
+    
+    public PaginatedResult<List<Image>> findVersioningImages(ImagePlantRoot imagePlant, 
+            Image originalImage) {
+        PaginatedResult<List<ImageOS>> osResult = 
+                imageAccess.selectImagesByOriginalImageId(null, originalImage.getId());
+        return new PaginatedResult<List<Image>>(
+                this, "getAllImages", new Object[] {imagePlant, osResult}) {};
     }
     
     public PaginatedResult<List<Image>> findAllImages(ImagePlantRoot imagePlant) {
@@ -103,7 +106,7 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         for (ImageOS os: objectSegments) {
             images.add(
                     imageFactory.reconstituteImage(
-                            imagePlant, os, null, this, versionRepository, templateRepository));
+                            imagePlant, os, null, this, templateRepository, null));
         }
         return images;
     }

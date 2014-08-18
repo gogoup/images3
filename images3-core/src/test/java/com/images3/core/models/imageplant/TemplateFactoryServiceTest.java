@@ -27,7 +27,6 @@ import com.images3.core.models.imageplant.TemplateFactoryService;
 public class TemplateFactoryServiceTest {
 
     private static final String IMAGE_PLANT_ID = "IMAGE_PLANT_ID";
-    private static final  String TEMPLATE_ID = "TEMPLATE_ID";
     private static final  String TEMPLATE_NAME = "TEMPLATE_NAME";
     private static final  boolean TEMPLATE_ISARCHIVED = false;
     private static final  boolean TEMPLATE_ISREMOVABLE = true;
@@ -67,8 +66,7 @@ public class TemplateFactoryServiceTest {
     
     private void setupTemplateOS() {
         objectSegment = Mockito.mock(TemplateOS.class);
-        Mockito.when(objectSegment.getId()).thenReturn(new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_ID));
-        Mockito.when(objectSegment.getName()).thenReturn(TEMPLATE_NAME);
+        Mockito.when(objectSegment.getId()).thenReturn(new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_NAME));
         Mockito.when(objectSegment.isArchived()).thenReturn(TEMPLATE_ISARCHIVED);
         Mockito.when(objectSegment.isRemovable()).thenReturn(TEMPLATE_ISREMOVABLE);
         Mockito.when(objectSegment.getResizingConfig()).thenReturn(TEMPLATE_RESIZE_CONFIG);
@@ -84,7 +82,6 @@ public class TemplateFactoryServiceTest {
         
         assertTrue(null!=template);
         assertTrue(template.isNew());
-        Mockito.verify(templateAccess).generateTemplateId(Mockito.eq(imagePlantOS));
     }
     
     @Test

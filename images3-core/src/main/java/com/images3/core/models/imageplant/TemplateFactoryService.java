@@ -23,9 +23,8 @@ public class TemplateFactoryService {
         if (templateAccess.isDuplicatedTemplateName(imagePlant.getId(), name)) {
             throw new DuplicateTemplateNameException(name);
         }
-        String id = templateAccess.generateTemplateId(imagePlant.getObjectSegment());
         TemplateOS objectSegment = new TemplateOS(
-                new TemplateIdentity(imagePlant.getId(), id), name, false, true, resizingConfig);
+                new TemplateIdentity(imagePlant.getId(), name), false, true, resizingConfig);
         TemplateEntity template = reconstituteTemplate(imagePlant, objectSegment);
         template.markAsNew();
         return template;

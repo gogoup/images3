@@ -29,7 +29,6 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     private ImageRepositoryService imageRepository;
     private TemplateFactoryService templateFactory;
     private TemplateRepositoryService templateRepository;
-    private VersionRepositoryService versionRepository;
     private Map<String, TemplateEntity> dirtyTemplates;
     private Map<String, ImageEntity> dirtyImages;
     
@@ -37,15 +36,13 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     
     public ImagePlantRoot(ImagePlantOS objectSegment, ImagePlantAccess imagePlantAccess, 
             ImageFactoryService imageFactory, ImageRepositoryService imageRepository,
-            TemplateFactoryService templateFactory, TemplateRepositoryService templateRepository,
-            VersionRepositoryService versionRepository) {
+            TemplateFactoryService templateFactory, TemplateRepositoryService templateRepository) {
         this.objectSegment = objectSegment;
         this.imagePlantAccess = imagePlantAccess;
         this.imageFactory = imageFactory;
         this.imageRepository = imageRepository;
         this.templateFactory = templateFactory;
         this.templateRepository = templateRepository;
-        this.versionRepository = versionRepository;
         this.dirtyTemplates = new HashMap<String, TemplateEntity>();
         this.dirtyImages = new HashMap<String, ImageEntity>();
     }
@@ -55,7 +52,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     }
     
     void addDirtyTemplate(TemplateEntity template) {
-        dirtyTemplates.put(template.getId(), template);
+        dirtyTemplates.put(template.getName(), template);
     }
     
     public List<TemplateEntity> getDirtyTemplates() {
@@ -138,13 +135,13 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     
     private void checkForInvalidTemplate(Template template) {
         if (this != template.getImagePlant()) {
-            throw new IllegalArgumentException(template.getId());
+            throw new IllegalArgumentException(template.getName());
         }
     }
 
     @Override
-    public Template fetchTemplateById(String id) {
-        return templateRepository.findTemplateById(this, id);
+    public Template fetchTemplateByName(String name) {
+        return templateRepository.findTemplateByName(this, name);
     }
 
     @Override
@@ -165,19 +162,21 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     @Override
     public Image createImage(File imageFile) {
         ImageEntity entity = imageFactory.generateImage(
-                this, imageFile, imageRepository, versionRepository, templateRepository);
+                this, imageFile, imageRepository, templateRepository);
         addDirtyImage(entity);
         return entity;
     }
     
-    public ImageEntity createImage(Image image, Template template) {
-        TemplateEntity templateEntity = (TemplateEntity) template;
+    @Override
+    public ImageEntity createImage(Version version) {
+        TemplateEntity templateEntity = (TemplateEntity) version.getTemplate();
         ImageEntity entity = imageFactory.generateImage(
-                this, (ImageEntity) image, templateEntity, imageRepository, versionRepository, templateRepository);
+                this, (ImageEntity) version.getOriginalImage(), templateEntity,
+                imageRepository, templateRepository);
         addDirtyImage(entity);
         if (!templateEntity.isRemovable()) {
             templateEntity.setNotRemovable();
-            dirtyTemplates.put(templateEntity.getId(), templateEntity);
+            dirtyTemplates.put(templateEntity.getName(), templateEntity);
         }
         return entity;
     }
@@ -185,6 +184,17 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     @Override
     public Image fetchImageById(String id) {
         return imageRepository.findImageById(this, id);
+    }
+
+    @Override
+    public Image fetchImageByVersion(Version version) {
+        return imageRepository.findImageByVersion(this, version);
+    }
+
+    @Override
+    public PaginatedResult<List<Image>> fetchVersioningImages(
+            Image originalImage) {
+        return imageRepository.findVersioningImages(this, originalImage);
     }
 
     @Override
@@ -202,13 +212,12 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     @Override
     public void removeImageAndVerions(Image image) {
         ImageEntity entity = (ImageEntity) image;
-        PaginatedResult<List<Version>> result = 
-                versionRepository.findVersionsByImage((ImageEntity) image, imageRepository);
+        PaginatedResult<List<Image>> result = fetchVersioningImages(image);
         Object pageCursor = result.getNextPageCursor();
         while (null != pageCursor) {
-            List<Version> versions = result.getResult(pageCursor);
-            for (Version ver: versions) {
-                ImageEntity imgEntity = (ImageEntity) ver.getImage();
+            List<Image> images = result.getResult(pageCursor);
+            for (Image img: images) {
+                ImageEntity imgEntity = (ImageEntity) img;
                 dirtyImages.put(imgEntity.getId(), imgEntity);
             }
             pageCursor = result.getNextPageCursor(); //next page.

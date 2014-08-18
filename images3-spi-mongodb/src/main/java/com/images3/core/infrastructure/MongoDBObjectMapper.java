@@ -10,7 +10,6 @@ import com.images3.ImageMetadata;
 import com.images3.ResizingConfig;
 import com.images3.ResizingUnit;
 import com.images3.TemplateIdentity;
-import com.images3.VersionIdentity;
 import com.mongodb.BasicDBObject;
 
 public class MongoDBObjectMapper {
@@ -62,8 +61,7 @@ public class MongoDBObjectMapper {
     public BasicDBObject mapToBasicDBObject(TemplateOS source) {
         return new BasicDBObject()
             .append("imagePlantId", source.getId().getImagePlantId())
-            .append("id", source.getId().getTemplateId())
-            .append("name", source.getName())
+            .append("name", source.getId().getTemplateName())
             .append("isArchived", source.isArchived())
             .append("isRemovable", source.isRemovable())
             .append("resizingConfig", mapToBasicDBObject(source.getResizingConfig()));
@@ -73,8 +71,7 @@ public class MongoDBObjectMapper {
         return new TemplateOS(
                 new TemplateIdentity(
                         source.getString("imagePlantId"),
-                        source.getString("id")),
-                source.getString("name"),
+                        source.getString("name")),
                 source.getBoolean("isArchived"),
                 source.getBoolean("isRemovable"),
                 mapToResizingConfig((BasicDBObject) source.get("resizingConfig")));
@@ -97,20 +94,29 @@ public class MongoDBObjectMapper {
     }
     
     public BasicDBObject mapToBasicDBObject(ImageOS source) {
-        return new BasicDBObject()
+        BasicDBObject obj = new BasicDBObject()
             .append("imagePlantId", source.getId().getImagePlantId())
             .append("id", source.getId().getImageId())
             .append("dateTime", source.getDateTime().getTime())
             .append("metadata", mapToBasicDBObject(source.getMetadata()));
+        if (null != source.getVersion()) {
+            obj.append("version", mapToBasicDBObject(source.getVersion()));
+        }
+        return obj;
     }
     
     public ImageOS mapToImageOS(BasicDBObject source) {
+        VersionOS version = null;
+        if (null != source.get("version")) {
+            version = mapToVersionOS((BasicDBObject) source.get("version"));
+        }
         return new ImageOS(
                 new ImageIdentity(
                         source.getString("imagePlantId"), 
                         source.getString("id")),
                 new Date(source.getLong("dateTime")),
-                mapToImageMetadata((BasicDBObject) source.get("metadata")));
+                mapToImageMetadata((BasicDBObject) source.get("metadata")),
+                version);
     }
     
     public BasicDBObject mapToBasicDBObject(ImageMetadata source) {
@@ -141,20 +147,14 @@ public class MongoDBObjectMapper {
     
     public BasicDBObject mapToBasicDBObject(VersionOS source) {
         return new BasicDBObject()
-            .append("imagePlantId", source.getId().getImageId().getImagePlantId())
-            .append("imageId", source.getId().getImageId().getImageId())
-            .append("templateId", source.getId().getTemplateId())
-            .append("vesioningImageId", source.getVesioningImageId());
+            .append("templateName", source.getTemplateName())
+            .append("originalImageId", source.getOriginalImageId());
     }
     
     public VersionOS mapToVersionOS(BasicDBObject source) {
         return new VersionOS(
-                new VersionIdentity(
-                        new ImageIdentity(
-                                source.getString("imagePlantId"), 
-                                source.getString("imageId")),
-                        source.getString("templateId")),
-                source.getString("vesioningImageId"));
+                source.getString("templateName"), 
+                source.getString("originalImageId"));
     }
     
 }

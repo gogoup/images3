@@ -36,10 +36,10 @@ public interface ImageS3 {
     
     public ImageResponse getImage(ImageIdentity id);
     
-    public ImageResponse getVersioningImage(VersionIdentity id);
+    public ImageResponse getImage(ImageIdentity originalImageId, String templateName);
     
     public PaginatedResult<List<ImageResponse>> getImages(String imagePlantId);
     
-    public PaginatedResult<List<ImageResponse>> getVersioningImages(ImageIdentity id);
+    public PaginatedResult<List<ImageResponse>> getVersioningImages(ImageIdentity originalImageId);
     
 }

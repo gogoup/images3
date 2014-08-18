@@ -26,7 +26,7 @@ public interface ImagePlant {
     
     public void updateTemplate(Template template);
     
-    public Template fetchTemplateById(String id);
+    public Template fetchTemplateByName(String name);
     
     public PaginatedResult<List<Template>> listAllTemplates();
     
@@ -38,11 +38,17 @@ public interface ImagePlant {
     
     public Image createImage(File imageFile);
     
-    public Image fetchImageById(String id);
+    public Image createImage(Version version);
     
     public void removeImage(Image image);
     
     public void removeImageAndVerions(Image image);
+    
+    public Image fetchImageById(String id);
+    
+    public Image fetchImageByVersion(Version version);
+    
+    public PaginatedResult<List<Image>> fetchVersioningImages(Image originalImage);
     
     public PaginatedResult<List<Image>> listAllImages();
     

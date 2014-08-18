@@ -29,21 +29,19 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
         Date creationTime = new Date(System.currentTimeMillis());
         ImagePlantOS objectSegment = new ImagePlantOS(
                 id, "", creationTime, amazonS3Bucket);
-        ImagePlantRoot root = reconstituteImagePlant(
-                objectSegment, null, null, null);
+        ImagePlantRoot root = reconstituteImagePlant(objectSegment, null, null);
         root.markAsNew();
         root.updateName(name);
         return root;
     }
     
     public ImagePlantRoot reconstituteImagePlant(ImagePlantOS objectSegment, 
-            ImageRepositoryService imageRepository, TemplateRepositoryService templateRepository,
-            VersionRepositoryService versionRepository) {
+            ImageRepositoryService imageRepository, TemplateRepositoryService templateRepository) {
         if (null == objectSegment) {
             return null;
         }
         return new ImagePlantRoot(objectSegment,imagePlantAccess, imageFactory, 
-                imageRepository, templateFactory, templateRepository, versionRepository);
+                imageRepository, templateFactory, templateRepository);
     }
 
 }

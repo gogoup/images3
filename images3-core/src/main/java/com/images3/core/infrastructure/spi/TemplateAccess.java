@@ -3,15 +3,12 @@ package com.images3.core.infrastructure.spi;
 import java.util.List;
 
 import com.images3.TemplateIdentity;
-import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.TemplateOS;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 public interface TemplateAccess extends PaginatedResultDelegate<List<TemplateOS>> {
-
-    public String generateTemplateId(ImagePlantOS imagePlant);
     
     public boolean isDuplicatedTemplateName(String imagePlantId, String name);
     

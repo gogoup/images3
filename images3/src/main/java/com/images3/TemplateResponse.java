@@ -3,18 +3,15 @@ package com.images3;
 public class TemplateResponse {
 
     private TemplateIdentity id;
-    private String name;
     private boolean isArchived;
     private boolean isRemovable;
     private ResizingConfig resizingConfig;
     
     public TemplateResponse() {}
     
-    public TemplateResponse(TemplateIdentity id, String name,
-            boolean isArchived, boolean isRemovable,
-            ResizingConfig resizingConfig) {
+    public TemplateResponse(TemplateIdentity id, boolean isArchived,
+            boolean isRemovable, ResizingConfig resizingConfig) {
         this.id = id;
-        this.name = name;
         this.isArchived = isArchived;
         this.isRemovable = isRemovable;
         this.resizingConfig = resizingConfig;
@@ -22,10 +19,6 @@ public class TemplateResponse {
 
     public TemplateIdentity getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public boolean isArchived() {
@@ -47,7 +40,6 @@ public class TemplateResponse {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + (isArchived ? 1231 : 1237);
         result = prime * result + (isRemovable ? 1231 : 1237);
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result
                 + ((resizingConfig == null) ? 0 : resizingConfig.hashCode());
         return result;
@@ -70,11 +62,6 @@ public class TemplateResponse {
         if (isArchived != other.isArchived)
             return false;
         if (isRemovable != other.isRemovable)
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
             return false;
         if (resizingConfig == null) {
             if (other.resizingConfig != null)

@@ -16,15 +16,12 @@ import com.images3.core.infrastructure.spi.ImageContentAccess;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
 import com.images3.core.infrastructure.spi.ImageProcessor;
 import com.images3.core.infrastructure.spi.TemplateAccess;
-import com.images3.core.infrastructure.spi.VersionAccess;
 import com.images3.core.models.imageplant.ImageFactoryService;
 import com.images3.core.models.imageplant.ImagePlantFactoryService;
 import com.images3.core.models.imageplant.ImagePlantRepositoryService;
 import com.images3.core.models.imageplant.ImageRepositoryService;
 import com.images3.core.models.imageplant.TemplateFactoryService;
 import com.images3.core.models.imageplant.TemplateRepositoryService;
-import com.images3.core.models.imageplant.VersionFactoryService;
-import com.images3.core.models.imageplant.VersionRepositoryService;
 
 public class ImageS3Server implements ImageS3 {
     
@@ -95,8 +92,7 @@ public class ImageS3Server implements ImageS3 {
     @Override
     public TemplateResponse updateTemplate(TemplateIdentity id, TemplateRequest request) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImagePlantId());
-        Template template = imagePlant.fetchTemplateById(id.getTemplateId());
-        template.setName(request.getName());
+        Template template = imagePlant.fetchTemplateByName(id.getTemplateName());
         template.setArchived(request.isArchived());
         imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(template);
@@ -105,7 +101,7 @@ public class ImageS3Server implements ImageS3 {
     @Override
     public void deleteTemplate(TemplateIdentity id) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImagePlantId());
-        Template template = imagePlant.fetchTemplateById(id.getTemplateId());
+        Template template = imagePlant.fetchTemplateByName(id.getTemplateName());
         imagePlant.removeTemplate(template);
         imagePlantRepository.storeImagePlant(imagePlant);
     }
@@ -113,7 +109,7 @@ public class ImageS3Server implements ImageS3 {
     @Override
     public TemplateResponse getTemplate(TemplateIdentity id) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImagePlantId());
-        Template template = imagePlant.fetchTemplateById(id.getTemplateId());
+        Template template = imagePlant.fetchTemplateByName(id.getTemplateName());
         return objectMapper.mapToResponse(template);
     }
 
@@ -142,17 +138,17 @@ public class ImageS3Server implements ImageS3 {
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(
                 image, 
-                getTemplateIds(imagePlant));
+                getTemplateNames(imagePlant));
     }
     
-    private List<String> getTemplateIds(ImagePlant imagePlant) {
+    private List<String> getTemplateNames(ImagePlant imagePlant) {
         PaginatedResult<List<Template>> result = imagePlant.listActiveTemplates();
         List<Template> templates = result.getAllResults();
-        List<String> templateIds = new ArrayList<String>(templates.size());
+        List<String> templateNames = new ArrayList<String>(templates.size());
         for (Template template: templates) {
-            templateIds.add(template.getId());
+            templateNames.add(template.getName());
         }
-        return templateIds;
+        return templateNames;
     }
 
     @Override
@@ -177,45 +173,47 @@ public class ImageS3Server implements ImageS3 {
         Image image = imagePlant.fetchImageById(id.getImageId());
         return objectMapper.mapToResponse(
                 image, 
-                getTemplateIds(imagePlant));
+                getTemplateNames(imagePlant));
     }
 
     @Override
-    public ImageResponse getVersioningImage(VersionIdentity id) {
-        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImageId().getImagePlantId());
-        Image image = imagePlant.fetchImageById(id.getImageId().getImageId());
-        Template template = imagePlant.fetchTemplateById(id.getTemplateId());
-        Version version = getGurenteedVersion(imagePlant, image, template);
+    public ImageResponse getImage(ImageIdentity originalImageId, String templateName) {
+        ImagePlant imagePlant = 
+                imagePlantRepository.findImagePlantById(originalImageId.getImagePlantId());
+        Image originalImage = imagePlant.fetchImageById(originalImageId.getImageId());
+        Template template = imagePlant.fetchTemplateByName(templateName);
+        Image versioningImage = getGurenteedVersioningImage(
+                imagePlant, new Version(template, originalImage));
         return objectMapper.mapToResponse(
-                version.getImage(), 
-                getTemplateIds(imagePlant));
+                versioningImage, 
+                getTemplateNames(imagePlant));
     }
     
-    private Version getGurenteedVersion(ImagePlant imagePlant, Image image, Template template) {
-        Version version = image.fetchVersion(template);
-        if (null == version) {
-            version = image.createVersion(template);
+    private Image getGurenteedVersioningImage(ImagePlant imagePlant, Version version) {
+        Image image = imagePlant.fetchImageByVersion(version);
+        if (null == image) {
+            image = imagePlant.createImage(version);
             imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         }
-        return version;
+        return image;
     }
 
     @Override
     public PaginatedResult<List<ImageResponse>> getImages(String imagePlantId) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
         PaginatedResult<List<Image>> result = imagePlant.listAllImages();
-        List<String> templateIds = getTemplateIds(imagePlant);
+        List<String> templateIds = getTemplateNames(imagePlant);
         return new PaginatedResult<List<ImageResponse>>(
                 imageDelegate, "getImages", new Object[]{result, templateIds}) {};
     }
 
     @Override
     public PaginatedResult<List<ImageResponse>> getVersioningImages(
-            ImageIdentity id) {
-        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImagePlantId());
-        Image image = imagePlant.fetchImageById(id.getImageId());
-        PaginatedResult<List<Version>> result = image.fetchAllVersions();
-        List<String> templateIds = getTemplateIds(imagePlant);
+            ImageIdentity originalImageId) {
+        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(originalImageId.getImagePlantId());
+        Image originalImage = imagePlant.fetchImageById(originalImageId.getImageId());
+        PaginatedResult<List<Image>> result = imagePlant.fetchVersioningImages(originalImage);
+        List<String> templateIds = getTemplateNames(imagePlant);
         return new PaginatedResult<List<ImageResponse>>(
                 imageDelegate, "getVersioningImages", new Object[]{result, templateIds}) {};
     }
@@ -227,7 +225,6 @@ public class ImageS3Server implements ImageS3 {
         private ImageContentAccess imageContentAccess;
         private ImageProcessor imageProcessor;
         private TemplateAccess templateAccess;
-        private VersionAccess versionAccess;
         
         public Builder() {
             
@@ -255,11 +252,6 @@ public class ImageS3Server implements ImageS3 {
 
         public Builder setTempalteAccess(TemplateAccess templateAccess) {
             this.templateAccess = templateAccess;
-            return this;
-        }
-
-        public Builder setVersionAccess(VersionAccess versionAccess) {
-            this.versionAccess = versionAccess;
             return this;
         }
         
@@ -297,13 +289,6 @@ public class ImageS3Server implements ImageS3 {
             }
             return templateAccess;
         }
-
-        protected VersionAccess getVersionAccess() {
-            if (null == versionAccess) {
-                throw new NullPointerException("VersionAccess");
-            }
-            return versionAccess;
-        }
         
         private void checkForNecessaryParameters() {
             getImagePlantAccess();
@@ -311,17 +296,14 @@ public class ImageS3Server implements ImageS3 {
             getImageContentAccess();
             getImageProcessor();
             getTemplateAccess();
-            getVersionAccess();
         }
 
         public ImageS3 build() {
             checkForNecessaryParameters();
             TemplateFactoryService templateFactory = new TemplateFactoryService(templateAccess);
-            VersionFactoryService versionFactory = new VersionFactoryService();
             ImageFactoryService imageFactory = new ImageFactoryService(
                     imageAccess, 
-                    imageProcessor,
-                    versionFactory);
+                    imageProcessor);
             ImagePlantFactoryService imagePlantFactory = new ImagePlantFactoryService(
                     imagePlantAccess,
                     templateFactory,
@@ -329,22 +311,16 @@ public class ImageS3Server implements ImageS3 {
             TemplateRepositoryService templateRepository = new TemplateRepositoryService(
                     templateAccess,
                     templateFactory);
-            VersionRepositoryService versionRepository = new VersionRepositoryService(
-                    versionAccess, 
-                    versionFactory, 
-                    templateRepository);
             ImageRepositoryService imageRepository = new ImageRepositoryService(
                     imageAccess, 
                     imageContentAccess,
                     imageFactory, 
-                    versionRepository, 
                     templateRepository);
             ImagePlantRepositoryService imagePlantRepository = new ImagePlantRepositoryService(
                     imagePlantAccess,
                     imagePlantFactory,
                     imageRepository,
-                    templateRepository,
-                    versionRepository);
+                    templateRepository);
             AppObjectMapper objectMapper = new AppObjectMapper();
             ImagePlantPaginatedResultDelegate imagePlantDelegate =
                     new ImagePlantPaginatedResultDelegate(objectMapper);

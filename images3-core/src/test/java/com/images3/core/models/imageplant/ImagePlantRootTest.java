@@ -26,6 +26,7 @@ import com.images3.TemplateIdentity;
 import com.images3.UnremovableTemplateException;
 import com.images3.core.Image;
 import com.images3.core.Template;
+import com.images3.core.Version;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.TemplateOS;
@@ -39,7 +40,6 @@ public class ImagePlantRootTest {
     private static final String BUCKET_ACCESS_KEY = "BUCKET_ACCESS_KEY";
     private static final String BUCKET_SECRET_KEY = "BUCKET_SECRET_KEY";
     private static final String BUCKET_NAME = "BUCKET_NAME";
-    private static final String TEMPLATE_ID = "TEMPLATE_ID";
     private static final String TEMPLATE_NAME = "TEMPLATE_NAME";
     private static final boolean TEMPLATE_ISARCHIVED = false;
     private static final boolean TEMPLATE_ISREMOVABLE = true;
@@ -56,7 +56,6 @@ public class ImagePlantRootTest {
     private ImageRepositoryService imageRepository;
     private TemplateFactoryService templateFactory;
     private TemplateRepositoryService templateRepository;
-    private VersionRepositoryService versionRepository;
     private TemplateOS templateOS;
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -74,11 +73,10 @@ public class ImagePlantRootTest {
         setupImageRepositoryService();
         setupTemplateFactoryService();
         setupTemplateRepositoryService();
-        setupVersionRepositoryService();
         
         templateOS = SetupHelper.setupTemplateOS(
-                new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_ID), 
-                TEMPLATE_NAME, TEMPLATE_ISARCHIVED, TEMPLATE_ISREMOVABLE, resizingConfig);
+                new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_NAME), 
+                TEMPLATE_ISARCHIVED, TEMPLATE_ISREMOVABLE, resizingConfig);
         
     }
     
@@ -102,14 +100,9 @@ public class ImagePlantRootTest {
         templateRepository = Mockito.mock(TemplateRepositoryService.class);
     }
     
-    private void setupVersionRepositoryService() {
-        versionRepository = Mockito.mock(VersionRepositoryService.class);
-    }
-    
     private ImagePlantRoot createImagePlant() {
         ImagePlantRoot imagePlant = new ImagePlantRoot(objectSegment, imagePlantAccess, 
-                imageFactory, imageRepository, templateFactory, templateRepository, 
-                versionRepository);
+                imageFactory, imageRepository, templateFactory, templateRepository);
         return imagePlant;
     }
     
@@ -225,11 +218,11 @@ public class ImagePlantRootTest {
         ImagePlantRoot imagePlant = createImagePlant();
         TemplateEntity template = SetupHelper.setupTemplateEntity(imagePlant, templateOS);
         Mockito.when(
-                templateRepository.findTemplateById(imagePlant, TEMPLATE_ID)).thenReturn(template);
-        Template oldTemplate = imagePlant.fetchTemplateById(TEMPLATE_ID);
+                templateRepository.findTemplateByName(imagePlant, TEMPLATE_NAME)).thenReturn(template);
+        Template oldTemplate = imagePlant.fetchTemplateByName(TEMPLATE_NAME);
         assertTrue(template.equals(oldTemplate));
         
-        Mockito.verify(templateRepository).findTemplateById(imagePlant, TEMPLATE_ID);
+        Mockito.verify(templateRepository).findTemplateByName(imagePlant, TEMPLATE_NAME);
     }
     
     @SuppressWarnings("unchecked")
@@ -281,12 +274,12 @@ public class ImagePlantRootTest {
         Mockito.when(
                 imageFactory.generateImage(
                         imagePlant, image.getContent(), imageRepository, 
-                        versionRepository, templateRepository)).thenReturn(image);
+                        templateRepository)).thenReturn(image);
         Image newImage = image.getImagePlant().createImage(image.getContent());
         assertTrue(newImage.equals(image));
         
         Mockito.verify(imageFactory).generateImage(
-                imagePlant, image.getContent(), imageRepository, versionRepository, templateRepository);
+                imagePlant, image.getContent(), imageRepository, templateRepository);
     }
     
     private ImageEntity setupImageEntity() {
@@ -312,13 +305,12 @@ public class ImagePlantRootTest {
         Mockito.when(
                 imageFactory.generateImage(
                         imagePlant, originalImage, template, imageRepository, 
-                        versionRepository, templateRepository)).thenReturn(image);
-        Image newImage = imagePlant.createImage(originalImage, template);
+                        templateRepository)).thenReturn(image);
+        Image newImage = imagePlant.createImage(new Version(template, originalImage));
         assertTrue(newImage.equals(image));
         
         Mockito.verify(imageFactory).generateImage(
-                imagePlant, originalImage, template, imageRepository, 
-                versionRepository, templateRepository);
+                imagePlant, originalImage, template, imageRepository, templateRepository);
     }
     
     

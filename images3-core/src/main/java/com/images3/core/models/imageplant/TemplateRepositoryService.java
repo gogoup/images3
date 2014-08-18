@@ -2,7 +2,6 @@ package com.images3.core.models.imageplant;
 
 import java.util.List;
 
-import com.images3.NoSuchEntityFoundException;
 import com.images3.TemplateIdentity;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.TemplateOS;
@@ -42,14 +41,11 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
         template.markAsVoid();
     }
     
-    public Template findTemplateById(ImagePlantRoot imagePlant, String id) {
+    public Template findTemplateByName(ImagePlantRoot imagePlant, String name) {
         TemplateOS objectSegment = templateAccess.selectTemplateById(
-                new TemplateIdentity(imagePlant.getId(), id));
+                new TemplateIdentity(imagePlant.getId(), name));
         TemplateEntity entity = templateFactory.reconstituteTemplate(
                 imagePlant, objectSegment);
-        if (null == entity) {
-            throw new NoSuchEntityFoundException("Template", id);
-        }
         return entity;
     }
     

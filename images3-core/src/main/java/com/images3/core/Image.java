@@ -2,9 +2,6 @@ package com.images3.core;
 
 import java.io.File;
 import java.util.Date;
-import java.util.List;
-
-import org.gogoup.dddutils.pagination.PaginatedResult;
 
 public interface Image {
     
@@ -16,10 +13,6 @@ public interface Image {
     
     public Date getDateTime();
     
-    public Version createVersion(Template template);
-    
-    public Version fetchVersion(Template template);
-    
-    public PaginatedResult<List<Version>> fetchAllVersions();
+    public Version getVersion();
     
 }

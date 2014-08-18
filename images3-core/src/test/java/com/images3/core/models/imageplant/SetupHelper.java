@@ -48,11 +48,10 @@ public class SetupHelper {
         return objectSegment;
     }
     
-    public static TemplateOS setupTemplateOS(TemplateIdentity id, String name, 
+    public static TemplateOS setupTemplateOS(TemplateIdentity id, 
             boolean isArchived, boolean isRemovable, ResizingConfig resizingConfig) {
         TemplateOS objectSegment = Mockito.mock(TemplateOS.class);
         Mockito.when(objectSegment.getId()).thenReturn(id);
-        Mockito.when(objectSegment.getName()).thenReturn(name);
         Mockito.when(objectSegment.isArchived()).thenReturn(isArchived);
         Mockito.when(objectSegment.isRemovable()).thenReturn(isRemovable);
         Mockito.when(objectSegment.getResizingConfig()).thenReturn(resizingConfig);
@@ -63,9 +62,7 @@ public class SetupHelper {
         TemplateEntity template = Mockito.mock(TemplateEntity.class);
         Mockito.when(template.getImagePlant()).thenReturn(imagePlant);
         Mockito.when(template.getObjectSegment()).thenReturn(objectSegment);
-        String id = objectSegment.getId().getTemplateId();
-        Mockito.when(template.getId()).thenReturn(id);
-        String name = objectSegment.getName();
+        String name = objectSegment.getId().getTemplateName();
         Mockito.when(template.getName()).thenReturn(name);
         boolean isArchived = objectSegment.isArchived();
         Mockito.when(template.isArchived()).thenReturn(isArchived);

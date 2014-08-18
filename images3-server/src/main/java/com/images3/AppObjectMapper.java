@@ -20,8 +20,7 @@ public class AppObjectMapper {
         return new TemplateResponse(
                 new TemplateIdentity(
                         source.getImagePlant().getId(), 
-                        source.getId()),
-                source.getName(),
+                        source.getName()),
                 source.isArchived(), 
                 source.isRemovable(),
                 source.getResizingConfig());

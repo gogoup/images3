@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-import com.images3.NoSuchEntityFoundException;
 import com.images3.ResizingConfig;
 import com.images3.ResizingUnit;
 import com.images3.TemplateIdentity;
@@ -29,7 +28,6 @@ import org.gogoup.dddutils.pagination.PaginatedResult;
 public class TemplateRepositoryServiceTest {
 
     private static final String IMAGE_PLANT_ID = "IMAGE_PLANT_ID";
-    private static final  String TEMPLATE_ID = "TEMPLATE_ID";
     private static final  String TEMPLATE_NAME = "TEMPLATE_NAME";
     private static final  boolean TEMPLATE_ISARCHIVED = false;
     private static final  boolean TEMPLATE_ISREMOVABLE = true;
@@ -82,8 +80,7 @@ public class TemplateRepositoryServiceTest {
     
     private void setupTemplateOS() {
         objectSegment = Mockito.mock(TemplateOS.class);
-        Mockito.when(objectSegment.getId()).thenReturn(new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_ID));
-        Mockito.when(objectSegment.getName()).thenReturn(TEMPLATE_NAME);
+        Mockito.when(objectSegment.getId()).thenReturn(new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_NAME));
         Mockito.when(objectSegment.isArchived()).thenReturn(TEMPLATE_ISARCHIVED);
         Mockito.when(objectSegment.isRemovable()).thenReturn(TEMPLATE_ISREMOVABLE);
         Mockito.when(objectSegment.getResizingConfig()).thenReturn(TEMPLATE_RESIZE_CONFIG);
@@ -129,23 +126,13 @@ public class TemplateRepositoryServiceTest {
         TemplateEntity oldTemplate = Mockito.mock(TemplateEntity.class);
         Mockito.when(
                 templateAccess.selectTemplateById(
-                        new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_ID))).thenReturn(objectSegment);
+                        new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_NAME))).thenReturn(objectSegment);
         Mockito.when(templateFactory.reconstituteTemplate(imagePlant, objectSegment)).thenReturn(oldTemplate);
         TemplateRepositoryService repository = new TemplateRepositoryService(templateAccess, templateFactory);
-        repository.findTemplateById(imagePlant, TEMPLATE_ID);
+        repository.findTemplateByName(imagePlant, TEMPLATE_NAME);
         
-        Mockito.verify(templateAccess).selectTemplateById(new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_ID));
+        Mockito.verify(templateAccess).selectTemplateById(new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_NAME));
         Mockito.verify(templateFactory).reconstituteTemplate(imagePlant, objectSegment);
-    }
-    
-    @Test
-    public void testFindTemplateById_NotFound() {
-        expectedException.expect(NoSuchEntityFoundException.class);
-        Mockito.when(templateAccess.selectTemplateById(
-                new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_ID))).thenReturn(null);
-        Mockito.when(templateFactory.reconstituteTemplate(imagePlant, null)).thenReturn(null);
-        TemplateRepositoryService repository = new TemplateRepositoryService(templateAccess, templateFactory);
-        repository.findTemplateById(imagePlant, TEMPLATE_ID);
     }
     
     @Test

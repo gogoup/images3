@@ -22,10 +22,6 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
         super(mongoClient, dbname, objectMapper, pageSize);
     }
 
-    public String generateTemplateId(ImagePlantOS imagePlant) {
-        return ShortUUID.randomUUID();
-    }
-
     public boolean isDuplicatedTemplateName(String imagePlantId, String name) {
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()

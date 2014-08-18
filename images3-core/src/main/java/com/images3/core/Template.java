@@ -5,10 +5,6 @@ import com.images3.ResizingConfig;
 public interface Template {
     
     public ImagePlant getImagePlant();
-
-    public String getId();
-    
-    public void setName(String name);
     
     public String getName();
     

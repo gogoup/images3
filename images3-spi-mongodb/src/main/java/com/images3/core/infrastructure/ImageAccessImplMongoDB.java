@@ -22,6 +22,16 @@ public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess
         super(mongoClient, dbname, objectMapper, pageSize);
     }
 
+    @Override
+    public boolean isDuplicateVersion(VersionOS version) {
+        DBCollection coll = getDatabase().getCollection("Image");
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("imagePlantId", 
+                                            getObjectMapper().mapToBasicDBObject(version));
+        DBCursor cursor = coll.find(criteria);
+        return cursor.hasNext();
+    }
+
     public String generateImageId(ImagePlantOS imagePlant) {
         return ShortUUID.randomUUID();
     }
@@ -52,6 +62,26 @@ public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess
         return getObjectMapper().mapToImageOS((BasicDBObject) cursor.next());
     }
 
+    @Override
+    public ImageOS selectImageByVersion(VersionOS version) {
+        DBCollection coll = getDatabase().getCollection("Image");
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("version", 
+                                            getObjectMapper().mapToBasicDBObject(version));
+        DBCursor cursor = coll.find(criteria);
+        if (!cursor.hasNext()) {
+            return null;
+        }
+        return getObjectMapper().mapToImageOS((BasicDBObject) cursor.next());
+    }
+
+    @Override
+    public PaginatedResult<List<ImageOS>> selectImagesByOriginalImageId(
+            String imagePlantId, String originalImageId) {
+        return new PaginatedResult<List<ImageOS>>(
+                this, "getImagesByOriginalImageId", new Object[] {imagePlantId, originalImageId}) {};
+    }
+
     public PaginatedResult<List<ImageOS>> selectImagesByImagePlantId(
             String imagePlantId) {
         return new PaginatedResult<List<ImageOS>>(
@@ -60,19 +90,42 @@ public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess
     
     public List<ImageOS> fetchResult(String methodName, Object[] arguments,
             Object pageCursor) {
+        if ("getImagesByOriginalImageId".equals(methodName)) {
+            String imagePlantId = (String) arguments[0];
+            String originalImageId = (String) arguments[1];
+            return getImagesByOriginalImageId(imagePlantId, originalImageId, (PageCursor) pageCursor);
+        }
         if ("getImagesByImagePlantId".equals(methodName)) {
             String imagePlantId = (String) arguments[0];
             return getImagesByImagePlantId(imagePlantId, (PageCursor) pageCursor);
         }
         throw new UnsupportedOperationException(methodName);
     }
+    
+    private List<ImageOS> getImagesByOriginalImageId(String imagePlantId, 
+            String originalImageId, PageCursor pageCursor) {
+        checkForQueryTooManyRecords(pageCursor);
+        DBCollection coll = getDatabase().getCollection("Image");
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("imagePlantId", imagePlantId)
+                                    .append("version.originalImageId", originalImageId);
+        int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
+        List<DBObject> objects = coll.find(criteria).skip(skipRecords).limit(pageCursor.getSize()).toArray();
+        List<ImageOS> images = new ArrayList<ImageOS>(objects.size());
+        for (DBObject obj: objects) {
+            images.add(getObjectMapper().mapToImageOS((BasicDBObject) obj));
+        }
+        return images;
+    }
 
     private List<ImageOS> getImagesByImagePlantId(String imagePlantId, 
             PageCursor pageCursor) {
         checkForQueryTooManyRecords(pageCursor);
         DBCollection coll = getDatabase().getCollection("Image");
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("imagePlantId", imagePlantId);
         int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
-        List<DBObject> objects = coll.find().skip(skipRecords).limit(pageCursor.getSize()).toArray();
+        List<DBObject> objects = coll.find(criteria).skip(skipRecords).limit(pageCursor.getSize()).toArray();
         List<ImageOS> images = new ArrayList<ImageOS>(objects.size());
         for (DBObject obj: objects) {
             images.add(getObjectMapper().mapToImageOS((BasicDBObject) obj));

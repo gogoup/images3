@@ -1,32 +1,34 @@
 package com.images3.core.infrastructure;
 
-import com.images3.VersionIdentity;
-
 public class VersionOS {
     
-    private VersionIdentity id;
-    private String vesioningImageId;
+    private String templateName;
+    private String originalImageId;
     
-    public VersionOS(VersionIdentity id, String vesioningImageId) {
-        this.id = id;
-        this.vesioningImageId = vesioningImageId;
+    public VersionOS(String templateName, String originalImageId) {
+        this.templateName = templateName;
+        this.originalImageId = originalImageId;
     }
-    public VersionIdentity getId() {
-        return id;
+
+    public String getTemplateName() {
+        return templateName;
     }
-    public String getVesioningImageId() {
-        return vesioningImageId;
+
+    public String getOriginalImageId() {
+        return originalImageId;
     }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime
-                * result
-                + ((vesioningImageId == null) ? 0 : vesioningImageId.hashCode());
+        result = prime * result
+                + ((originalImageId == null) ? 0 : originalImageId.hashCode());
+        result = prime * result
+                + ((templateName == null) ? 0 : templateName.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -36,17 +38,23 @@ public class VersionOS {
         if (getClass() != obj.getClass())
             return false;
         VersionOS other = (VersionOS) obj;
-        if (id == null) {
-            if (other.id != null)
+        if (originalImageId == null) {
+            if (other.originalImageId != null)
                 return false;
-        } else if (!id.equals(other.id))
+        } else if (!originalImageId.equals(other.originalImageId))
             return false;
-        if (vesioningImageId == null) {
-            if (other.vesioningImageId != null)
+        if (templateName == null) {
+            if (other.templateName != null)
                 return false;
-        } else if (!vesioningImageId.equals(other.vesioningImageId))
+        } else if (!templateName.equals(other.templateName))
             return false;
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "VersionOS [templateName=" + templateName + ", originalImageId="
+                + originalImageId + "]";
     }
     
 }

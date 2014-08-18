@@ -1,11 +1,22 @@
 package com.images3.core;
 
-public interface Version {
+public class Version {
+    
+    private Template template;
+    private Image originalImage;
+    
+    public Version(Template template, Image originalImage) {
+        this.template = template;
+        this.originalImage = originalImage;
+    }
 
-    public Image getImage();
+    public Template getTemplate() {
+        return template;
+    }
+
+    public Image getOriginalImage() {
+        return originalImage;
+    }
     
-    public Template getTemplate();
-    
-    public Image getVesioningImage();
     
 }

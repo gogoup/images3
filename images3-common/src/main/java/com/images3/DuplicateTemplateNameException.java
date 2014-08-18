@@ -1,7 +1,7 @@
 package com.images3;
 
 public class DuplicateTemplateNameException extends RuntimeException {
-
+    
     /**
      * 
      */
@@ -17,5 +17,6 @@ public class DuplicateTemplateNameException extends RuntimeException {
     public String getName() {
         return name;
     }
+    
     
 }
