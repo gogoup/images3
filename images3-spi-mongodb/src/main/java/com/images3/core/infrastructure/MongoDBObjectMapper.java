@@ -83,7 +83,7 @@ public class MongoDBObjectMapper {
         return new BasicDBObject()
             .append("height", source.getHeight())
             .append("width", source.getWidth())
-            .append("unit", source.getUnit())
+            .append("unit", source.getUnit().toString())
             .append("isKeepProportions", source.isKeepProportions());
     }
     

@@ -40,7 +40,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", template.getId().getImagePlantId())
-                                    .append("id", template.getId());
+                                    .append("name", template.getId().getTemplateName());
         WriteResult result = coll.update(criteria, getObjectMapper().mapToBasicDBObject(template));
         checkForAffectedDocuments(result, 1);
     }
@@ -49,7 +49,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", template.getId().getImagePlantId())
-                                    .append("id", template.getId());
+                                    .append("name", template.getId().getTemplateName());
         WriteResult result = coll.remove(criteria);
         checkForAffectedDocuments(result, 1);
     }
@@ -64,8 +64,8 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
     public TemplateOS selectTemplateById(TemplateIdentity id) {
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()
-                                    .append("imagePlantId", id)
-                                    .append("id", id);
+                                    .append("imagePlantId", id.getImagePlantId())
+                                    .append("name", id.getTemplateName());
         DBCursor cursor = coll.find(criteria);
         if (!cursor.hasNext()) {
             return null;

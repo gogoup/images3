@@ -10,7 +10,7 @@ public class UnremovableTemplateException extends RuntimeException {
     private TemplateIdentity id;
     
     public UnremovableTemplateException(TemplateIdentity id) {
-        super(id.getIdentity());
+        super(id.identity());
         this.id = id;
     }
 
