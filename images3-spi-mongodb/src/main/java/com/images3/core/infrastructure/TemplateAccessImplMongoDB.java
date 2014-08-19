@@ -84,7 +84,9 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
         if ("getTemplatesByImagePlantId".equals(methodName)) {
             String imagePlantId = (String) arguments[0];
             Boolean isArchived = (Boolean) arguments[1];
-            return getTemplatesByImagePlantId(imagePlantId, isArchived, (PageCursor) pageCursor);
+            Object[] pageResult = getNextPageCursor((String) pageCursor);
+            PageCursor cursor = (PageCursor) pageResult[1];
+            return getTemplatesByImagePlantId(imagePlantId, isArchived, cursor);
         }
         throw new UnsupportedOperationException(methodName);
     }

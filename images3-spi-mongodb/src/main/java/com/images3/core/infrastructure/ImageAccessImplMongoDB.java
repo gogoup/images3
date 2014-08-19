@@ -23,11 +23,12 @@ public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess
     }
 
     @Override
-    public boolean isDuplicateVersion(VersionOS version) {
+    public boolean isDuplicateVersion(String imagePlantId, VersionOS version) {
         DBCollection coll = getDatabase().getCollection("Image");
         BasicDBObject criteria = new BasicDBObject()
-                                    .append("imagePlantId", 
-                                            getObjectMapper().mapToBasicDBObject(version));
+                                    .append("imagePlantId", imagePlantId)
+                                    .append("version.templateName", version.getTemplateName())
+                                    .append("version.originalImageId", version.getOriginalImageId());
         DBCursor cursor = coll.find(criteria);
         return cursor.hasNext();
     }
@@ -63,11 +64,12 @@ public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess
     }
 
     @Override
-    public ImageOS selectImageByVersion(VersionOS version) {
+    public ImageOS selectImageByVersion(String imagePlantId, VersionOS version) {
         DBCollection coll = getDatabase().getCollection("Image");
         BasicDBObject criteria = new BasicDBObject()
-                                    .append("version", 
-                                            getObjectMapper().mapToBasicDBObject(version));
+                                    .append("imagePlantId", imagePlantId)
+                                    .append("version.templateName", version.getTemplateName())
+                                    .append("version.originalImageId", version.getOriginalImageId());
         DBCursor cursor = coll.find(criteria);
         if (!cursor.hasNext()) {
             return null;
@@ -93,11 +95,15 @@ public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess
         if ("getImagesByOriginalImageId".equals(methodName)) {
             String imagePlantId = (String) arguments[0];
             String originalImageId = (String) arguments[1];
-            return getImagesByOriginalImageId(imagePlantId, originalImageId, (PageCursor) pageCursor);
+            Object[] pageResult = getNextPageCursor((String) pageCursor);
+            PageCursor cursor = (PageCursor) pageResult[1];
+            return getImagesByOriginalImageId(imagePlantId, originalImageId, cursor);
         }
         if ("getImagesByImagePlantId".equals(methodName)) {
             String imagePlantId = (String) arguments[0];
-            return getImagesByImagePlantId(imagePlantId, (PageCursor) pageCursor);
+            Object[] pageResult = getNextPageCursor((String) pageCursor);
+            PageCursor cursor = (PageCursor) pageResult[1];
+            return getImagesByImagePlantId(imagePlantId, cursor);
         }
         throw new UnsupportedOperationException(methodName);
     }

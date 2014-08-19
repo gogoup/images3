@@ -46,15 +46,15 @@ public class ImageS3Server implements ImageS3 {
     }
 
     @Override
-    public ImagePlantResponse addImagePlant(ImagePlantRequest request) {
+    public ImagePlantResponse addImagePlant(ImagePlantCreateRequest request) {
         ImagePlant imagePlant = imagePlantFactory.generateImagePlant(
-                request.getName(), request.getBucket());
+                request.getName(), request.getBucket(), request.getResizingConfig());
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(imagePlant);
     }
 
     @Override
-    public ImagePlantResponse updateImagePlant(String id, ImagePlantRequest request) {
+    public ImagePlantResponse updateImagePlant(String id, ImagePlantUpdateRequest request) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id);
         imagePlant.updateName(request.getName());
         imagePlant.setAmazonS3Bucket(request.getBucket());
@@ -190,8 +190,10 @@ public class ImageS3Server implements ImageS3 {
     }
     
     private Image getGurenteedVersioningImage(ImagePlant imagePlant, Version version) {
-        Image image = imagePlant.fetchImageByVersion(version);
-        if (null == image) {
+        Image image = null;
+        if (imagePlant.hasVersiongImage(version)) {
+            image = imagePlant.fetchImageByVersion(version);
+        } else {
             image = imagePlant.createImage(version);
             imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         }

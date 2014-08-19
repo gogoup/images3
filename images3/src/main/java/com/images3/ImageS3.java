@@ -6,9 +6,9 @@ import org.gogoup.dddutils.pagination.PaginatedResult;
 
 public interface ImageS3 {
     
-    public ImagePlantResponse addImagePlant(ImagePlantRequest request);
+    public ImagePlantResponse addImagePlant(ImagePlantCreateRequest request);
     
-    public ImagePlantResponse updateImagePlant(String id, ImagePlantRequest request);
+    public ImagePlantResponse updateImagePlant(String id, ImagePlantUpdateRequest request);
     
     public void deleteImagePlant(String id);
     

@@ -1,13 +1,13 @@
 package com.images3;
 
-public class ImagePlantRequest {
+public class ImagePlantUpdateRequest {
 
     private String name;
     private AmazonS3Bucket bucket;
     
-    public ImagePlantRequest() {}
+    public ImagePlantUpdateRequest() {}
     
-    public ImagePlantRequest(String name, AmazonS3Bucket bucket) {
+    public ImagePlantUpdateRequest(String name, AmazonS3Bucket bucket) {
         this.name = name;
         this.bucket = bucket;
     }
@@ -34,7 +34,7 @@ public class ImagePlantRequest {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ImagePlantRequest other = (ImagePlantRequest) obj;
+        ImagePlantUpdateRequest other = (ImagePlantUpdateRequest) obj;
         if (bucket == null) {
             if (other.bucket != null)
                 return false;

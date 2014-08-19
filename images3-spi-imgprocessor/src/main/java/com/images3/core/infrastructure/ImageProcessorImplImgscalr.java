@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Iterator;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -19,6 +20,7 @@ import com.images3.ImageDimension;
 import com.images3.ImageFormat;
 import com.images3.ImageMetadata;
 import com.images3.ResizingConfig;
+import com.images3.ResizingUnit;
 import com.images3.core.infrastructure.spi.ImageProcessor;
 
 public class ImageProcessorImplImgscalr implements ImageProcessor {
@@ -36,30 +38,7 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
 
     @Override
     public boolean isSupportedFormat(File imageFile) {
-        boolean result = true;
-        InputStream imageInputStream = null;
-        try {
-            imageInputStream = Files.newInputStream(imageFile.toPath());
-            byte[] magicBytes = new byte[4];
-            imageInputStream.read(magicBytes);
-            if (!isJPEG(magicBytes)
-                    && !isPNG(magicBytes)
-                    && !isGIF(magicBytes)
-                    && !isBMP(magicBytes)) {
-                result = false;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (null != imageInputStream) {
-                try {
-                    imageInputStream.close();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        return result;
+        return (null != getImageFormat(imageFile));
     }
 
     public ImageMetadata readImageMetadata(File imageFile) {
@@ -103,21 +82,34 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
         return new ImageMetadata(dimension, format, imageFile.length());
     }
 
-    public File resizeImage(String imageId, ImageOS image, File imageFile, ResizingConfig resizingConfig) {
+    public File resizeImage(ImageMetadata metadata, File imageFile, ResizingConfig resizingConfig) {
         File resizedImageFile = null;
         try {
             BufferedImage originalImage = ImageIO.read(
                     new BufferedInputStream(Files.newInputStream(imageFile.toPath())));
+            resizingConfig = getResizingConfig(metadata, resizingConfig);
             BufferedImage resizedImage = resizeImage(originalImage, resizingConfig);
-            resizedImageFile = prepareImageFile(tempDir + File.separator + imageId);
+            String fileName = UUID.randomUUID().toString();
+            resizedImageFile = prepareImageFile(tempDir + File.separator + fileName);
             ImageIO.write(
                     resizedImage,
-                    image.getMetadata().getFormat().toString(), 
+                    getImageFormat(imageFile).toString(), 
                     new BufferedOutputStream(Files.newOutputStream(resizedImageFile.toPath())));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return resizedImageFile;
+    }
+    
+    private ResizingConfig getResizingConfig(ImageMetadata metadata, ResizingConfig resizingConfig) {
+        if (resizingConfig.getUnit() == ResizingUnit.PERCENT) {
+            return new ResizingConfig(
+                    ResizingUnit.PIXEL, 
+                    metadata.getDimension().getWidth() * (resizingConfig.getWidth() / 100), 
+                    metadata.getDimension().getHeight() * (resizingConfig.getHeight() / 100),
+                    resizingConfig.isKeepProportions());
+        }
+        return resizingConfig;
     }
     
     private BufferedImage resizeImage(BufferedImage originalImage, ResizingConfig resizingConfig) {
@@ -142,6 +134,38 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
             file.createNewFile();
         }
         return file;
+    }
+    
+    public ImageFormat getImageFormat(File imageFile) {
+        InputStream imageInputStream = null;
+        try {
+            imageInputStream = Files.newInputStream(imageFile.toPath());
+            byte[] magicBytes = new byte[4];
+            imageInputStream.read(magicBytes);
+            if (isJPEG(magicBytes)) {
+                return ImageFormat.JPEG;
+            }
+            if (isPNG(magicBytes)) {
+                return ImageFormat.PNG;
+            }
+            if (isGIF(magicBytes)) {
+                return ImageFormat.GIF;
+            }
+            if (isBMP(magicBytes)) {
+                return ImageFormat.BMP;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (null != imageInputStream) {
+                try {
+                    imageInputStream.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
     }
     
     private static boolean isJPEG(byte[] content) {

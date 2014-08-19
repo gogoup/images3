@@ -22,7 +22,9 @@ public interface ImagePlant {
     
     public void setAmazonS3Bucket(AmazonS3Bucket amazonS3Bucket);
     
-    public Template createTemplate(String name, ResizingConfig filterConfig);
+    public Template getMasterTemplate();
+    
+    public Template createTemplate(String name, ResizingConfig resizingConfig);
     
     public void updateTemplate(Template template);
     
@@ -45,6 +47,8 @@ public interface ImagePlant {
     public void removeImageAndVerions(Image image);
     
     public Image fetchImageById(String id);
+    
+    public boolean hasVersiongImage(Version version);
     
     public Image fetchImageByVersion(Version version);
     

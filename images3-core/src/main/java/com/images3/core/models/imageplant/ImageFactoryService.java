@@ -7,8 +7,11 @@ import com.images3.DuplicateImageVersionException;
 import com.images3.ImageIdentity;
 import com.images3.ImageMetadata;
 import com.images3.UnknownImageFormatException;
+import com.images3.core.Image;
+import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImageOS;
+import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.VersionOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageProcessor;
@@ -23,46 +26,79 @@ public class ImageFactoryService {
         this.imageProcessor = imageProcessor;
     }
 
-    public ImageEntity generateImage(ImagePlantRoot imagePlant, File imageFile, 
+    public ImageEntity generateImage(ImagePlantRoot imagePlant, File imageContent, 
             ImageRepositoryService imageRepository, TemplateRepositoryService templateRepository) {
         String id = imageAccess.generateImageId(imagePlant.getObjectSegment());
-        if (!imageProcessor.isSupportedFormat(imageFile)) {
+        if (!imageProcessor.isSupportedFormat(imageContent)) {
             throw new UnknownImageFormatException(id);
         }
+        TemplateEntity template = (TemplateEntity) imagePlant.getMasterTemplate();
+        Version version = new Version(template, null);
+        ImageMetadata metadata = imageProcessor.readImageMetadata(imageContent);
+        File resizedContent = imageProcessor.resizeImage(
+                metadata, 
+                imageContent, 
+                version.getTemplate().getResizingConfig());
         return generateImage(
-                id, imagePlant, imageFile, imageRepository, templateRepository, null);
+                imagePlant, 
+                resizedContent,
+                version,
+                imageRepository, 
+                templateRepository);
     }
     
     public ImageEntity generateImage(ImagePlantRoot imagePlant, ImageEntity originalImage, 
             TemplateEntity template, ImageRepositoryService imageRepository,
             TemplateRepositoryService templateRepository) {
         if (imageAccess.isDuplicateVersion(
-                new VersionOS(template.getName(), originalImage.getId()))) {
+                imagePlant.getId(), new VersionOS(template.getName(), originalImage.getId()))) {
             throw new DuplicateImageVersionException(
                     template.getName(), originalImage.getId());
         }
-        String id = imageAccess.generateImageId(imagePlant.getObjectSegment());
-        File imageContent = imageProcessor.resizeImage(
-                id, originalImage.getObjectSegment(), originalImage.getContent(), template.getResizingConfig());
         Version version = new Version(template, originalImage);
+        File resizedContent = imageProcessor.resizeImage(
+                originalImage.getObjectSegment().getMetadata(), 
+                originalImage.getContent(), 
+                version.getTemplate().getResizingConfig());
         return generateImage(
-                id, imagePlant,  imageContent, imageRepository, templateRepository, version);
+                imagePlant,  
+                resizedContent, 
+                version,
+                imageRepository,
+                templateRepository);
     }
     
-    private ImageEntity generateImage(String imageId, ImagePlantRoot imagePlant, File imageContent, 
-            ImageRepositoryService imageRepository, TemplateRepositoryService templateRepository, Version version) {
-        Date dateTime = new Date(System.currentTimeMillis());
+    private ImageEntity generateImage(ImagePlantRoot imagePlant, File imageContent, Version version,
+            ImageRepositoryService imageRepository, TemplateRepositoryService templateRepository) {
+        VersionOS versionOS = getVersionOS(version);
+        String imageId = imageAccess.generateImageId(imagePlant.getObjectSegment());
         ImageMetadata metadata = imageProcessor.readImageMetadata(imageContent);
-        VersionOS versionOS = null;
-        if (null != version) {
-            versionOS = new VersionOS(version.getTemplate().getName(), version.getOriginalImage().getId());
-        }
-        ImageOS objectSegment = new ImageOS(
-                new ImageIdentity(imagePlant.getId(), imageId), dateTime, metadata, versionOS);
+        ImageOS objectSegment = generateImageOS(
+                imageId, metadata, imagePlant.getObjectSegment(), versionOS);
         ImageEntity entity = reconstituteImage(
                 imagePlant, objectSegment, imageContent, imageRepository, templateRepository, version);
         entity.markAsNew();
         return entity;
+    }
+    
+    private VersionOS getVersionOS(Version version) {
+        Template template = version.getTemplate();
+        Image originalImage = version.getOriginalImage();
+        VersionOS versionOS = null;
+        if (null != originalImage) {
+            versionOS = new VersionOS(template.getName(), originalImage.getId());
+        } else {
+            versionOS = new VersionOS(template.getName(), null);
+        }
+        return versionOS;
+    }
+    
+    private ImageOS generateImageOS(String id, ImageMetadata metadata, 
+            ImagePlantOS imagePlantOS, VersionOS versionOS) {
+        Date dateTime = new Date(System.currentTimeMillis());
+        ImageOS objectSegment = new ImageOS(
+                new ImageIdentity(imagePlantOS.getId(), id), dateTime, metadata, versionOS);
+        return objectSegment;
     }
     
     public ImageEntity reconstituteImage(ImagePlantRoot imagePlant, ImageOS objectSegment, File imageContent,

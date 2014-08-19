@@ -139,7 +139,7 @@ public class TemplateRepositoryServiceTest {
     @SuppressWarnings("unchecked")
     public void testFindAllTemplates() {
         List<TemplateOS> objectSegments = new ArrayList<TemplateOS>();
-        objectSegments.add(Mockito.mock(TemplateOS.class));
+        objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, null)).thenReturn(osResult);
         Mockito.when(osResult.getAllResults()).thenReturn(objectSegments);
@@ -156,7 +156,7 @@ public class TemplateRepositoryServiceTest {
     @SuppressWarnings("unchecked")
     public void testFindAllTemplates_ForPages() {
         List<TemplateOS> objectSegments = new ArrayList<TemplateOS>();
-        objectSegments.add(Mockito.mock(TemplateOS.class));
+        objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
         Mockito.when(osResult.getNextPageCursor()).thenReturn(1);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, null)).thenReturn(osResult);
@@ -176,7 +176,7 @@ public class TemplateRepositoryServiceTest {
     @SuppressWarnings("unchecked")
     public void testFindActiveTemplates() {
         List<TemplateOS> objectSegments = new ArrayList<TemplateOS>();
-        objectSegments.add(Mockito.mock(TemplateOS.class));
+        objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, false)).thenReturn(osResult);
         Mockito.when(osResult.getAllResults()).thenReturn(objectSegments);
@@ -193,7 +193,7 @@ public class TemplateRepositoryServiceTest {
     @SuppressWarnings("unchecked")
     public void testFindActiveTemplates_ForPages() {
         List<TemplateOS> objectSegments = new ArrayList<TemplateOS>();
-        objectSegments.add(Mockito.mock(TemplateOS.class));
+        objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
         Mockito.when(osResult.getNextPageCursor()).thenReturn(1);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, false)).thenReturn(osResult);
@@ -213,7 +213,7 @@ public class TemplateRepositoryServiceTest {
     @SuppressWarnings("unchecked")
     public void testFindArchivedTemplates() {
         List<TemplateOS> objectSegments = new ArrayList<TemplateOS>();
-        objectSegments.add(Mockito.mock(TemplateOS.class));
+        objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, true)).thenReturn(osResult);
         Mockito.when(osResult.getAllResults()).thenReturn(objectSegments);
@@ -230,7 +230,7 @@ public class TemplateRepositoryServiceTest {
     @SuppressWarnings("unchecked")
     public void testFindArchivedTemplates_ForPages() {
         List<TemplateOS> objectSegments = new ArrayList<TemplateOS>();
-        objectSegments.add(Mockito.mock(TemplateOS.class));
+        objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
         Mockito.when(osResult.getNextPageCursor()).thenReturn(1);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, true)).thenReturn(osResult);

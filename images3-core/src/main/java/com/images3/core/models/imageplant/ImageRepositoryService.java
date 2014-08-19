@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.images3.ImageIdentity;
+import com.images3.NoSuchEntityFoundException;
 import com.images3.core.Image;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImageOS;
@@ -72,22 +73,34 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         ImageOS objectSegment = imageAccess.selectImageById(new ImageIdentity(imagePlant.getId(), id));
         Image entity = imageFactory.reconstituteImage(
                 imagePlant, objectSegment, null, this, templateRepository, null);
+        if (null == entity) {
+            throw new NoSuchEntityFoundException("Image", id);
+        }
         return entity;
+    }
+    
+    public boolean hasVersioningImage(ImagePlantRoot imagePlant, Version version) {
+        VersionOS ver = new VersionOS(
+                version.getTemplate().getName(), version.getOriginalImage().getId());
+        return imageAccess.isDuplicateVersion(imagePlant.getId(), ver);
     }
     
     public Image findImageByVersion(ImagePlantRoot imagePlant, Version version) {
         VersionOS ver = new VersionOS(
                 version.getTemplate().getName(), version.getOriginalImage().getId());
-        ImageOS objectSegment = imageAccess.selectImageByVersion(ver);
+        ImageOS objectSegment = imageAccess.selectImageByVersion(imagePlant.getId(), ver);
         Image entity = imageFactory.reconstituteImage(
-                imagePlant, objectSegment, null, this, templateRepository, null);
+                imagePlant, objectSegment, null, this, templateRepository, version);
+        if (null == entity) {
+            throw new NoSuchEntityFoundException("Image", version.toString());
+        }
         return entity;
     }
     
     public PaginatedResult<List<Image>> findVersioningImages(ImagePlantRoot imagePlant, 
             Image originalImage) {
         PaginatedResult<List<ImageOS>> osResult = 
-                imageAccess.selectImagesByOriginalImageId(null, originalImage.getId());
+                imageAccess.selectImagesByOriginalImageId(imagePlant.getId(), originalImage.getId());
         return new PaginatedResult<List<Image>>(
                 this, "getAllImages", new Object[] {imagePlant, osResult}) {};
     }

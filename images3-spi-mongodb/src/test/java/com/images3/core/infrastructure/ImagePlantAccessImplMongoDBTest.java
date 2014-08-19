@@ -19,7 +19,7 @@ public class ImagePlantAccessImplMongoDBTest {
         System.out.println("ID: " + id);
         if (!imagePlantAccess.isDuplicatedImagePlantName("TestImagePlant")) {
             imagePlantAccess.insertImagePlant(new ImagePlantOS(id, "TestImagePlant", new Date(),
-                    new AmazonS3Bucket("AccessKey123", "SecretKey123" , "TestAccessKey")));
+                    new AmazonS3Bucket("AccessKey123", "SecretKey123" , "TestAccessKey"), "MasterTemplateName"));
         }
         //ImagePlantOS imagePlant = imagePlantAccess.selectImagePlantById("ID123");
     }

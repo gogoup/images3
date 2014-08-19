@@ -116,7 +116,10 @@ public class ObjectSegmentAccessProvider {
                 new BasicDBObject().append("imagePlantId", 1).append("id", 1), 
                 new BasicDBObject("unique", true));
         coll.createIndex(
-                new BasicDBObject().append("version.templateName", 1).append("version.originalImageId", 1), 
+                new BasicDBObject()
+                    .append("imagePlantId", 1)
+                    .append("version.templateName", 1)
+                    .append("version.originalImageId", 1), 
                 new BasicDBObject("unique", true).append("sparse", true));
     }
     

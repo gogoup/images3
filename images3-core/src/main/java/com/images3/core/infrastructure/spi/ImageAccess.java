@@ -12,7 +12,7 @@ import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 public interface ImageAccess extends PaginatedResultDelegate<List<ImageOS>> {
     
-    public boolean isDuplicateVersion(VersionOS version);
+    public boolean isDuplicateVersion(String imagePlantId, VersionOS version);
     
     public String generateImageId(ImagePlantOS imagePlant);
 
@@ -22,7 +22,7 @@ public interface ImageAccess extends PaginatedResultDelegate<List<ImageOS>> {
     
     public ImageOS selectImageById(ImageIdentity id);
     
-    public ImageOS selectImageByVersion(VersionOS version);
+    public ImageOS selectImageByVersion(String imagePlantId, VersionOS version);
     
     public PaginatedResult<List<ImageOS>> selectImagesByOriginalImageId(
             String imagePlantId, String originalImageId);

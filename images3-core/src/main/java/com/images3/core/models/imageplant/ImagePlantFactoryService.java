@@ -3,6 +3,7 @@ package com.images3.core.models.imageplant;
 import java.util.Date;
 
 import com.images3.AmazonS3Bucket;
+import com.images3.ResizingConfig;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantFactory;
 import com.images3.core.infrastructure.ImagePlantOS;
@@ -24,14 +25,15 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
 
     @Override
     public ImagePlant generateImagePlant(String name, 
-            AmazonS3Bucket amazonS3Bucket) {
+            AmazonS3Bucket amazonS3Bucket, ResizingConfig resizingConfig) {
         String id = imagePlantAccess.genertateImagePlantId();
         Date creationTime = new Date(System.currentTimeMillis());
-        ImagePlantOS objectSegment = new ImagePlantOS(
-                id, "", creationTime, amazonS3Bucket);
+        ImagePlantOS objectSegment =
+                new ImagePlantOS(id, "", creationTime, amazonS3Bucket, name);
         ImagePlantRoot root = reconstituteImagePlant(objectSegment, null, null);
         root.markAsNew();
         root.updateName(name);
+        root.createTemplate(name, resizingConfig);
         return root;
     }
     

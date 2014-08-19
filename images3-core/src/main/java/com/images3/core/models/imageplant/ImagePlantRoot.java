@@ -31,6 +31,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     private TemplateRepositoryService templateRepository;
     private Map<String, TemplateEntity> dirtyTemplates;
     private Map<String, ImageEntity> dirtyImages;
+    private Template masterTemplate;
     
     public ImagePlantRoot() {}
     
@@ -45,6 +46,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
         this.templateRepository = templateRepository;
         this.dirtyTemplates = new HashMap<String, TemplateEntity>();
         this.dirtyImages = new HashMap<String, ImageEntity>();
+        this.masterTemplate = null;
     }
     
     public ImagePlantOS getObjectSegment() {
@@ -106,6 +108,16 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
         }
         getObjectSegment().setAmazonS3Bucket(amazonS3Bucket);
         markAsDirty();
+    }
+
+    @Override
+    public Template getMasterTemplate() {
+        if (null == masterTemplate) {
+            masterTemplate = 
+                    templateRepository.findTemplateByName(
+                            this, getObjectSegment().getMasterTemplateName());
+        }
+        return masterTemplate;
     }
 
     @Override
@@ -184,6 +196,11 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     @Override
     public Image fetchImageById(String id) {
         return imageRepository.findImageById(this, id);
+    }
+
+    @Override
+    public boolean hasVersiongImage(Version version) {
+        return imageRepository.hasVersioningImage(this, version);
     }
 
     @Override

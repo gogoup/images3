@@ -15,6 +15,18 @@ public class ResizingConfig {
         this.width = width;
         this.height = height;
         this.isKeepProportions = isKeepProportions;
+        checkForPercentResizing();
+    }
+    
+    private void checkForPercentResizing() {
+        if (unit == ResizingUnit.PERCENT) {
+            if (width <= 0 || width > 100) {
+                throw new IllegalArgumentException("Percent of width need to be 1 to 100.");
+            }
+            if (height <= 0 || height > 100) {
+                throw new IllegalArgumentException("Percent of height need to be 1 to 100.");
+            }
+        }
     }
 
     public ResizingUnit getUnit() {

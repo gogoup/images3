@@ -1,7 +1,9 @@
 package com.images3.core.models.imageplant;
 
+import java.util.Iterator;
 import java.util.List;
 
+import com.images3.NoSuchEntityFoundException;
 import com.images3.TemplateIdentity;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.TemplateOS;
@@ -46,6 +48,9 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
                 new TemplateIdentity(imagePlant.getId(), name));
         TemplateEntity entity = templateFactory.reconstituteTemplate(
                 imagePlant, objectSegment);
+        if (null == entity) {
+            throw new NoSuchEntityFoundException("Template", name);
+        }
         return entity;
     }
     
@@ -78,7 +83,21 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
         } else {
             objectSegments = osResult.getResult(pageCursor);
         }
+        objectSegments = removeMasterTemplate(imagePlant, objectSegments);
         return templateFactory.reconstituteTemplates(imagePlant, objectSegments);
+    }
+    
+    private List<TemplateOS> removeMasterTemplate(ImagePlantRoot imagePlant, 
+            List<TemplateOS> objectSegments) {
+        String masterTemplateName = imagePlant.getObjectSegment().getMasterTemplateName();
+        for (Iterator<TemplateOS> iter = objectSegments.iterator(); iter.hasNext();) {
+            TemplateOS os = iter.next();
+            if (os.getId().getTemplateName().equalsIgnoreCase(masterTemplateName)) {
+                iter.remove();
+                return  objectSegments;
+            }
+        }
+        return objectSegments;
     }
     
     private void checkIfVoid(TemplateEntity template) {

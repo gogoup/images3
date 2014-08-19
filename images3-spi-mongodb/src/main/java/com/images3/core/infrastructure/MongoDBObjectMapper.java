@@ -33,7 +33,8 @@ public class MongoDBObjectMapper {
             .append("id", source.getId())
             .append("name", source.getName())
             .append("creationTime", source.getCreationTime().getTime())
-            .append("bucket", mapToBasicDBObject(source.getAmazonS3Bucket()));
+            .append("bucket", mapToBasicDBObject(source.getAmazonS3Bucket()))
+            .append("masterTemplateName", source.getMasterTemplateName());
     }
     
     public ImagePlantOS mapToImagePlantOS(BasicDBObject source) {
@@ -41,7 +42,8 @@ public class MongoDBObjectMapper {
                 source.getString("id"),
                 source.getString("name"),
                 new Date(source.getLong("creationTime")),
-                mapToAmazonS3Bucket((BasicDBObject) source.get("bucket")));
+                mapToAmazonS3Bucket((BasicDBObject) source.get("bucket")),
+                source.getString("masterTemplateName"));
     }
     
     public BasicDBObject mapToBasicDBObject(AmazonS3Bucket source) {
@@ -98,25 +100,19 @@ public class MongoDBObjectMapper {
             .append("imagePlantId", source.getId().getImagePlantId())
             .append("id", source.getId().getImageId())
             .append("dateTime", source.getDateTime().getTime())
-            .append("metadata", mapToBasicDBObject(source.getMetadata()));
-        if (null != source.getVersion()) {
-            obj.append("version", mapToBasicDBObject(source.getVersion()));
-        }
+            .append("metadata", mapToBasicDBObject(source.getMetadata()))
+            .append("version", mapToBasicDBObject(source.getVersion()));
         return obj;
     }
     
     public ImageOS mapToImageOS(BasicDBObject source) {
-        VersionOS version = null;
-        if (null != source.get("version")) {
-            version = mapToVersionOS((BasicDBObject) source.get("version"));
-        }
         return new ImageOS(
                 new ImageIdentity(
                         source.getString("imagePlantId"), 
                         source.getString("id")),
                 new Date(source.getLong("dateTime")),
                 mapToImageMetadata((BasicDBObject) source.get("metadata")),
-                version);
+                mapToVersionOS((BasicDBObject) source.get("version")));
     }
     
     public BasicDBObject mapToBasicDBObject(ImageMetadata source) {

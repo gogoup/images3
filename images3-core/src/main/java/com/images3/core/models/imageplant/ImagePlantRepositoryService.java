@@ -3,6 +3,7 @@ package com.images3.core.models.imageplant;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.images3.NoSuchEntityFoundException;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantRepository;
 import com.images3.core.infrastructure.ImagePlantOS;
@@ -75,6 +76,9 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
         ImagePlantOS objectSegment = imagePlantAccess.selectImagePlantById(id);
         ImagePlant entity = imagePlantFactory.reconstituteImagePlant(
                 objectSegment, imageRepository, templateRepository);
+        if (null == entity) {
+            throw new NoSuchEntityFoundException("ImagePlant", id);
+        }
         return entity;
     }
 
