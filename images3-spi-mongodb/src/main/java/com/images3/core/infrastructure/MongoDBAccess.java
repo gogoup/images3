@@ -30,6 +30,10 @@ public abstract class MongoDBAccess {
         return objectMapper;
     }
     
+    protected int getPageSize() {
+        return pageSize;
+    }
+    
     protected void checkForAffectedDocuments(WriteResult result, int expectedAffectedNumber) {
         if (result.getN() != expectedAffectedNumber) {
             throw new RuntimeException(

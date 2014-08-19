@@ -59,7 +59,7 @@ public class TemplateIdentity {
                 + ", templateName=" + templateName + "]";
     }
 
-    public String identity() {
+    public String getIdentity() {
         return imagePlantId + "-" + templateName;
     }
     

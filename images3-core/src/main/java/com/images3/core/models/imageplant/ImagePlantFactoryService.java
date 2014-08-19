@@ -11,6 +11,8 @@ import com.images3.core.infrastructure.spi.ImagePlantAccess;
 
 public class ImagePlantFactoryService implements ImagePlantFactory {
     
+    private final static String MASTER_TEMPLATE_NAME = "Master";
+    
     private ImagePlantAccess imagePlantAccess;
     private TemplateFactoryService templateFactory;
     private ImageFactoryService imageFactory;
@@ -29,11 +31,11 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
         String id = imagePlantAccess.genertateImagePlantId();
         Date creationTime = new Date(System.currentTimeMillis());
         ImagePlantOS objectSegment =
-                new ImagePlantOS(id, "", creationTime, amazonS3Bucket, name);
+                new ImagePlantOS(id, "", creationTime, amazonS3Bucket, MASTER_TEMPLATE_NAME);
         ImagePlantRoot root = reconstituteImagePlant(objectSegment, null, null);
         root.markAsNew();
         root.updateName(name);
-        root.createTemplate(name, resizingConfig);
+        root.createTemplate(MASTER_TEMPLATE_NAME, resizingConfig);
         return root;
     }
     

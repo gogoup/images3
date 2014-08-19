@@ -88,8 +88,8 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess implements ImageP
     
     public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor, List<ImagePlantOS> result) {
-        if (null != result 
-                && result.size() == 0) {
+        if ((null != result && result.size() == 0)
+                || getPageSize() > result.size()) {
             return null;
         }
         return getNextPageCursor((String) pageCursor)[0];
