@@ -54,8 +54,8 @@ public class ImageS3Server implements ImageS3 {
     }
 
     @Override
-    public ImagePlantResponse updateImagePlant(String id, ImagePlantUpdateRequest request) {
-        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id);
+    public ImagePlantResponse updateImagePlant(ImagePlantUpdateRequest request) {
+        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(request.getId());
         imagePlant.updateName(request.getName());
         imagePlant.setAmazonS3Bucket(request.getBucket());
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
@@ -82,17 +82,21 @@ public class ImageS3Server implements ImageS3 {
     }
     
     @Override
-    public TemplateResponse addTemplate(TemplateRequest request) {
-        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(request.getImagePlantId());
-        Template template = imagePlant.createTemplate(request.getName(), request.getResizingConfig());
+    public TemplateResponse addTemplate(TemplateCreateRequest request) {
+        ImagePlant imagePlant = 
+                imagePlantRepository.findImagePlantById(request.getId().getImagePlantId());
+        Template template = imagePlant.createTemplate(
+                request.getId().getTemplateName(), request.getResizingConfig());
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(template);
     }
 
     @Override
-    public TemplateResponse updateTemplate(TemplateIdentity id, TemplateRequest request) {
-        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImagePlantId());
-        Template template = imagePlant.fetchTemplateByName(id.getTemplateName());
+    public TemplateResponse updateTemplate(TemplateUpdateRequest request) {
+        ImagePlant imagePlant = 
+                imagePlantRepository.findImagePlantById(request.getId().getImagePlantId());
+        Template template = 
+                imagePlant.fetchTemplateByName(request.getId().getTemplateName());
         template.setArchived(request.isArchived());
         imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(template);
