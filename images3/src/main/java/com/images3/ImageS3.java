@@ -8,7 +8,7 @@ public interface ImageS3 {
     
     public ImagePlantResponse addImagePlant(ImagePlantCreateRequest request);
     
-    public ImagePlantResponse updateImagePlant(String id, ImagePlantUpdateRequest request);
+    public ImagePlantResponse updateImagePlant(ImagePlantUpdateRequest request);
     
     public void deleteImagePlant(String id);
     
@@ -16,9 +16,9 @@ public interface ImageS3 {
     
     public PaginatedResult<List<ImagePlantResponse>> getAllImagePlants();
     
-    public TemplateResponse addTemplate(TemplateRequest request);
+    public TemplateResponse addTemplate(TemplateCreateRequest request);
     
-    public TemplateResponse updateTemplate(TemplateIdentity id, TemplateRequest request);
+    public TemplateResponse updateTemplate(TemplateUpdateRequest request);
     
     public void deleteTemplate(TemplateIdentity id);
    
