@@ -82,6 +82,8 @@ public class TemplateFactoryServiceTest {
         
         assertTrue(null!=template);
         assertTrue(template.isNew());
+        assertTrue(template.isArchived());
+        assertTrue(template.isRemovable());
     }
     
     @Test

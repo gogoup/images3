@@ -12,6 +12,9 @@ import com.images3.core.infrastructure.spi.TemplateAccess;
 
 public class TemplateFactoryService {
     
+    private static final boolean DEFAULT_ISARCHIVED = true;
+    private static final boolean DEFAULT_ISREMOVABLE = true;
+    
     private TemplateAccess templateAccess;
     
     public TemplateFactoryService(TemplateAccess templateAccess) {
@@ -24,7 +27,10 @@ public class TemplateFactoryService {
             throw new DuplicateTemplateNameException(name);
         }
         TemplateOS objectSegment = new TemplateOS(
-                new TemplateIdentity(imagePlant.getId(), name), false, true, resizingConfig);
+                new TemplateIdentity(imagePlant.getId(), name), 
+                DEFAULT_ISARCHIVED, 
+                DEFAULT_ISREMOVABLE, 
+                resizingConfig);
         TemplateEntity template = reconstituteTemplate(imagePlant, objectSegment);
         template.markAsNew();
         return template;
