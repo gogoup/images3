@@ -24,6 +24,8 @@ public interface ImageS3 {
    
     public TemplateResponse getTemplate(TemplateIdentity id);
     
+    public PaginatedResult<List<TemplateResponse>> getAllTemplates(String imagePlantId);
+    
     public PaginatedResult<List<TemplateResponse>> getActiveTempaltes(String imagePlantId);
     
     public PaginatedResult<List<TemplateResponse>> getArchivedTemplates(String imagePlantId);
