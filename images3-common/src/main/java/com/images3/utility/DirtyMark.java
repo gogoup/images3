@@ -45,8 +45,10 @@ public class DirtyMark {
     }
 
     public void markAsVoid() {
-        cleanMarks();
-        isVoid = true;
+        if (!isVoid()) {
+            cleanMarks();
+            isVoid = true;
+        }
     }
 
     public boolean isVoid() {
