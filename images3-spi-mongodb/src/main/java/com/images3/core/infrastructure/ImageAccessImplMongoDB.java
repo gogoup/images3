@@ -15,7 +15,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
 
-public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess {
+public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements ImageAccess {
 
     public ImageAccessImplMongoDB(MongoClient mongoClient, String dbname,
             MongoDBObjectMapper objectMapper, int pageSize) {
@@ -139,13 +139,4 @@ public class ImageAccessImplMongoDB extends MongoDBAccess implements ImageAccess
         return images;
     }
     
-    public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor, List<ImageOS> result) {
-        if (null != result 
-                && result.size() == 0) {
-            return null;
-        }
-        return getNextPageCursor((String) pageCursor)[0];
-    }
-
 }

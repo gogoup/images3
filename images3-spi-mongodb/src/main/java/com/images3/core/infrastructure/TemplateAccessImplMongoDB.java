@@ -15,7 +15,7 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
 
-public class TemplateAccessImplMongoDB extends MongoDBAccess implements TemplateAccess {
+public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> implements TemplateAccess {
 
     public TemplateAccessImplMongoDB(MongoClient mongoClient, String dbname,
             MongoDBObjectMapper objectMapper, int pageSize) {
@@ -104,15 +104,6 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess implements Template
             templates.add(getObjectMapper().mapToTemplateOS((BasicDBObject) obj));
         }
         return templates;
-    }
-    
-    public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor, List<TemplateOS> result) {
-        if (null != result 
-                && result.size() == 0) {
-            return null;
-        }
-        return getNextPageCursor((String) pageCursor)[0];
     }
 
 }

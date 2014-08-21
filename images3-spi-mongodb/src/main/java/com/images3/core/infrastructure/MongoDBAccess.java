@@ -1,5 +1,7 @@
 package com.images3.core.infrastructure;
 
+import java.util.List;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -7,7 +9,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.MongoClient;
 import com.mongodb.WriteResult;
 
-public abstract class MongoDBAccess {
+public abstract class MongoDBAccess<T> {
 
     private MongoClient mongoClient;
     private String dbname;
@@ -83,4 +85,12 @@ public abstract class MongoDBAccess {
         return getObjectMapper().mapToPageCursor((BasicDBObject) cursor.next());
     }
     
+    public Object getNextPageCursor(String tag, Object[] arguments,
+            Object pageCursor, List<T> result) {
+        if ((null != result && result.size() == 0)
+                || getPageSize() > result.size()) {
+            return null;
+        }
+        return getNextPageCursor((String) pageCursor)[0];
+    }
 }
