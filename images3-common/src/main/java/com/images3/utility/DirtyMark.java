@@ -27,8 +27,10 @@ public class DirtyMark {
     }
 
     public void markAsDirty() {
-        checkForVoidMark();
-        isDirty = true;
+        if (!isDirty()) {
+            checkForVoidMark();
+            isDirty = true;
+        }
     }
 
     public boolean isDirty() {
@@ -36,8 +38,10 @@ public class DirtyMark {
     }
 
     public void markAsNew() {
-        cleanMarks();
-        isNew = true;
+        if (!isNew()) {
+            cleanMarks();
+            isNew = true;
+        }
     }
 
     public boolean isNew() {
