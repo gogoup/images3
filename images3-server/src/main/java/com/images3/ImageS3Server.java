@@ -118,6 +118,15 @@ public class ImageS3Server implements ImageS3 {
     }
 
     @Override
+    public PaginatedResult<List<TemplateResponse>> getAllTemplates(
+            String imagePlantId) {
+        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
+        PaginatedResult<List<Template>> result = imagePlant.listAllTemplates();
+        return new PaginatedResult<List<TemplateResponse>>(
+                templateDelegate, "getAllTemplates", new Object[]{result}) {};
+    }
+
+    @Override
     public PaginatedResult<List<TemplateResponse>> getActiveTempaltes(
             String imagePlantId) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);

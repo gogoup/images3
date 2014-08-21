@@ -29,6 +29,10 @@ public class TemplatePaginatedResultDelegate implements
             PaginatedResult<List<Template>> result = (PaginatedResult<List<Template>>) arguments[0];
             return getTempaltes(result, pageCursor);
         }
+        if ("getAllTemplates".equals(tag)) {
+            PaginatedResult<List<Template>> result = (PaginatedResult<List<Template>>) arguments[0];
+            return getTempaltes(result, pageCursor);
+        }
         throw new UnsupportedOperationException(tag);
     }
     
@@ -46,7 +50,8 @@ public class TemplatePaginatedResultDelegate implements
     public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor, List<TemplateResponse> result) {
         if (!"getActiveTempaltes".equals(tag)
-                && !"getArchivedTemplates".equals(tag)) {
+                && !"getArchivedTemplates".equals(tag)
+                && !"getAllTemplates".equals(tag)) {
             throw new UnsupportedOperationException(tag);
         }
         PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];
