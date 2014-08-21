@@ -6,6 +6,7 @@ import com.images3.AmazonS3Bucket;
 import com.images3.ResizingConfig;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantFactory;
+import com.images3.core.Template;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
 
@@ -35,8 +36,14 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
         ImagePlantRoot root = reconstituteImagePlant(objectSegment, null, null);
         root.markAsNew();
         root.updateName(name);
-        root.createTemplate(MASTER_TEMPLATE_NAME, resizingConfig);
+        addMasterTemplate(root, resizingConfig);
         return root;
+    }
+    
+    private void addMasterTemplate(ImagePlantRoot root, ResizingConfig resizingConfig) {
+        Template masterTemplate = root.createTemplate(MASTER_TEMPLATE_NAME, resizingConfig);
+        masterTemplate.setArchived(false); //bring to active immediately.
+        root.updateTemplate(masterTemplate);
     }
     
     public ImagePlantRoot reconstituteImagePlant(ImagePlantOS objectSegment, 
