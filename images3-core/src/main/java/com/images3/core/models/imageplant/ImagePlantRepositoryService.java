@@ -50,14 +50,23 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
     private void processTemplates(ImagePlantRoot imagePlant) {
         List<TemplateEntity> templates = imagePlant.getDirtyTemplates();
         for (TemplateEntity template: templates) {
-            templateRepository.storeTemplate(template);
+            if (!template.isVoid()) {
+                templateRepository.storeTemplate(template);
+            } else {
+                templateRepository.removeTemplate(template);
+            }
+            
         }
     }
     
     private void processImages(ImagePlantRoot imagePlant) {
         List<ImageEntity> images = imagePlant.getDirtyImages();
         for (ImageEntity image: images) {
-            imageRepository.storeImage(image);
+            if (!image.isVoid()) {
+                imageRepository.storeImage(image);
+            } else {
+                imageRepository.removeImage(image);
+            }
         }
     }
 

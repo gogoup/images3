@@ -47,7 +47,6 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
    
     
     public void removeImage(ImageEntity image) {
-        checkIfVoid(image);
         ImagePlantRoot imagePlant = (ImagePlantRoot) image.getImagePlant();
         ImageOS objectSegment = image.getObjectSegment();
         imageContentAccess.deleteImageContent(

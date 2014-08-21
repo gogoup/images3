@@ -37,7 +37,6 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
     }
     
     public void removeTemplate(TemplateEntity template) {
-        checkIfVoid(template);
         TemplateOS objectSegment = template.getObjectSegment();
         templateAccess.deleteTemplate(objectSegment);
         template.markAsVoid();
