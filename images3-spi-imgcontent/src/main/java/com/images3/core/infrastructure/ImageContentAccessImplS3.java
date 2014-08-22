@@ -26,13 +26,24 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     public void insertImageContent(ImageIdentity id, AmazonS3Bucket bucket,
             File content) {
         AmazonS3 client = clients.getClient(bucket);
-        client.putObject(new PutObjectRequest(bucket.getName(), id.getIdentity(), content));
+        client.putObject(
+                new PutObjectRequest(
+                        bucket.getName(), 
+                        generateS3ObjectKey(id), 
+                        content));
     }
 
     @Override
     public void deleteImageContent(ImageIdentity id, AmazonS3Bucket bucket) {
         AmazonS3 client = clients.getClient(bucket);
-        client.deleteObject(new DeleteObjectRequest(bucket.getName(), id.getIdentity()));
+        client.deleteObject(new DeleteObjectRequest(bucket.getName(), generateS3ObjectKey(id)));
+    }
+
+    @Override
+    public void deleteImageContentByImagePlantId(String imagePlantId,
+            AmazonS3Bucket bucket) {
+        AmazonS3 client = clients.getClient(bucket);
+        client.deleteObject(new DeleteObjectRequest(bucket.getName(), imagePlantId + "/"));
     }
 
     @Override
@@ -41,11 +52,11 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
         AmazonS3 client = clients.getClient(bucket);
         try {
             client.getObject(
-                    new GetObjectRequest(bucket.getName(), id.getIdentity()),
+                    new GetObjectRequest(bucket.getName(), generateS3ObjectKey(id)),
                     imageContent);
         } catch (AmazonS3Exception e) {
             if (e.getStatusCode() == 404) {
-                throw new NoSuchEntityFoundException("ImageContent", id.getIdentity());
+                throw new NoSuchEntityFoundException("ImageContent", generateS3ObjectKey(id));
             }
             throw new RuntimeException(e);
         }
@@ -54,6 +65,10 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     
     private String generateFilePath(ImageIdentity id) {
        return imageContentDownloadDir + File.separator + id.getIdentity();
+    }
+    
+    private String generateS3ObjectKey(ImageIdentity id) {
+        return id.getImagePlantId() + "/" + id.getImageId();
     }
 
 }
