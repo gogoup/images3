@@ -87,8 +87,9 @@ public abstract class MongoDBAccess<T> {
     
     public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor, List<T> result) {
-        if ((null != result && result.size() == 0)
-                || getPageSize() > result.size()) {
+        if (null != result 
+                && (result.size() == 0
+                    || getPageSize() > result.size())) {
             return null;
         }
         return getNextPageCursor((String) pageCursor)[0];

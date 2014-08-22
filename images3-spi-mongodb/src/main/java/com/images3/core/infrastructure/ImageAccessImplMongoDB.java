@@ -51,6 +51,14 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
         checkForAffectedDocuments(result, 1);
     }
 
+    @Override
+    public void deleteImages(String imagePlantId) {
+        DBCollection coll = getDatabase().getCollection("Image");
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("imagePlantId", imagePlantId);
+        coll.remove(criteria);
+    }
+
     public ImageOS selectImageById(ImageIdentity id) {
         DBCollection coll = getDatabase().getCollection("Image");
         BasicDBObject criteria = new BasicDBObject()
