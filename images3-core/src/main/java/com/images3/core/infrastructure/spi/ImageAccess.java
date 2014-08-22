@@ -29,6 +29,9 @@ public interface ImageAccess extends PaginatedResultDelegate<List<ImageOS>> {
     public PaginatedResult<List<ImageOS>> selectImagesByOriginalImageId(
             String imagePlantId, String originalImageId);
     
+    public PaginatedResult<List<ImageOS>> selectImagesByTemplateName(
+            String imagePlantId, String templateName);
+    
     public PaginatedResult<List<ImageOS>> selectImagesByImagePlantId(String imagePlantId);
     
 }

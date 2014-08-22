@@ -7,6 +7,7 @@ import java.util.List;
 import com.images3.ImageIdentity;
 import com.images3.NoSuchEntityFoundException;
 import com.images3.core.Image;
+import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.VersionOS;
@@ -100,6 +101,14 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     public PaginatedResult<List<Image>> findAllImages(ImagePlantRoot imagePlant) {
         PaginatedResult<List<ImageOS>> osResult = 
                 imageAccess.selectImagesByImagePlantId(imagePlant.getId());
+        return new PaginatedResult<List<Image>>(
+                this, "getAllImages", new Object[] {imagePlant, osResult}) {};
+    }
+    
+    public PaginatedResult<List<Image>> findImagesByTemplate(ImagePlantRoot imagePlant,
+            Template template) {
+        PaginatedResult<List<ImageOS>> osResult = 
+                imageAccess.selectImagesByTemplateName(imagePlant.getId(), template.getName());
         return new PaginatedResult<List<Image>>(
                 this, "getAllImages", new Object[] {imagePlant, osResult}) {};
     }

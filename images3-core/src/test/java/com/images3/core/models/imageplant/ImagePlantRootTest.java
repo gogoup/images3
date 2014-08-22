@@ -219,7 +219,7 @@ public class ImagePlantRootTest {
         TemplateEntity template = SetupHelper.setupTemplateEntity(imagePlant, templateOS);
         Mockito.when(
                 templateRepository.findTemplateByName(imagePlant, TEMPLATE_NAME)).thenReturn(template);
-        Template oldTemplate = imagePlant.fetchTemplateByName(TEMPLATE_NAME);
+        Template oldTemplate = imagePlant.fetchTemplate(TEMPLATE_NAME);
         assertTrue(template.equals(oldTemplate));
         
         Mockito.verify(templateRepository).findTemplateByName(imagePlant, TEMPLATE_NAME);

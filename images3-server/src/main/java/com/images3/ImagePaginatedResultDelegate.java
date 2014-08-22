@@ -27,11 +27,6 @@ public class ImagePaginatedResultDelegate implements
             List<String> templateIds = (List<String>) arguments[1];
             return getImages(result, templateIds, pageCursor);
         }
-        if ("getVersioningImages".equals(tag)) {
-            PaginatedResult<List<Version>> result = (PaginatedResult<List<Version>>) arguments[0];
-            List<String> templateIds = (List<String>) arguments[1];
-            return getVersioningImages(result, templateIds, pageCursor);
-        }
         throw new UnsupportedOperationException(tag);
     }
     
@@ -44,23 +39,11 @@ public class ImagePaginatedResultDelegate implements
         }
         return responses;
     }
-    
-    private List<ImageResponse> getVersioningImages(
-            PaginatedResult<List<Version>> result, List<String> templateIds, Object pageCursor) {
-        List<Version> versions = result.getResult(pageCursor);
-        List<ImageResponse> responses = new ArrayList<ImageResponse>(versions.size());
-        for (Version version: versions) {
-            Image image = version.getOriginalImage();
-            responses.add(objectMapper.mapToResponse(image, templateIds));
-        }
-        return responses;
-    }
 
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor, List<ImageResponse> result) {
-        if (!"getImages".equals(tag)
-                && !"getVersioningImages".equals(tag)) {
+        if (!"getImages".equals(tag)) {
             throw new UnsupportedOperationException(tag);
         }
         PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];

@@ -164,7 +164,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     }
 
     @Override
-    public Template fetchTemplateByName(String name) {
+    public Template fetchTemplate(String name) {
         return templateRepository.findTemplateByName(this, name);
     }
 
@@ -224,6 +224,11 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     public PaginatedResult<List<Image>> fetchVersioningImages(
             Image originalImage) {
         return imageRepository.findVersioningImages(this, originalImage);
+    }
+
+    @Override
+    public PaginatedResult<List<Image>> fetchImagesByTemplate(Template template) {
+        return imageRepository.findImagesByTemplate(this, template);
     }
 
     @Override

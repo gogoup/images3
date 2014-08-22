@@ -96,7 +96,7 @@ public class ImageS3Server implements ImageS3 {
         ImagePlant imagePlant = 
                 imagePlantRepository.findImagePlantById(request.getId().getImagePlantId());
         Template template = 
-                imagePlant.fetchTemplateByName(request.getId().getTemplateName());
+                imagePlant.fetchTemplate(request.getId().getTemplateName());
         template.setArchived(request.isArchived());
         imagePlant.updateTemplate(template);
         imagePlantRepository.storeImagePlant(imagePlant);
@@ -106,7 +106,7 @@ public class ImageS3Server implements ImageS3 {
     @Override
     public void deleteTemplate(TemplateIdentity id) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImagePlantId());
-        Template template = imagePlant.fetchTemplateByName(id.getTemplateName());
+        Template template = imagePlant.fetchTemplate(id.getTemplateName());
         imagePlant.removeTemplate(template);
         imagePlantRepository.storeImagePlant(imagePlant);
     }
@@ -114,7 +114,7 @@ public class ImageS3Server implements ImageS3 {
     @Override
     public TemplateResponse getTemplate(TemplateIdentity id) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImagePlantId());
-        Template template = imagePlant.fetchTemplateByName(id.getTemplateName());
+        Template template = imagePlant.fetchTemplate(id.getTemplateName());
         return objectMapper.mapToResponse(template);
     }
 
@@ -152,15 +152,17 @@ public class ImageS3Server implements ImageS3 {
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(
                 image, 
-                getTemplateNames(imagePlant));
+                getTemplateNames(image.getVersion().getTemplate().getName(), imagePlant));
     }
     
-    private List<String> getTemplateNames(ImagePlant imagePlant) {
+    private List<String> getTemplateNames(String currentTemplateName, ImagePlant imagePlant) {
         PaginatedResult<List<Template>> result = imagePlant.listActiveTemplates();
         List<Template> templates = result.getAllResults();
         List<String> templateNames = new ArrayList<String>(templates.size());
         for (Template template: templates) {
-            templateNames.add(template.getName());
+            if (!template.getName().equalsIgnoreCase(currentTemplateName)) {
+                templateNames.add(template.getName());
+            }
         }
         return templateNames;
     }
@@ -187,7 +189,7 @@ public class ImageS3Server implements ImageS3 {
         Image image = imagePlant.fetchImageById(id.getImageId());
         return objectMapper.mapToResponse(
                 image, 
-                getTemplateNames(imagePlant));
+                getTemplateNames(image.getVersion().getTemplate().getName(), imagePlant));
     }
 
     @Override
@@ -195,12 +197,12 @@ public class ImageS3Server implements ImageS3 {
         ImagePlant imagePlant = 
                 imagePlantRepository.findImagePlantById(originalImageId.getImagePlantId());
         Image originalImage = imagePlant.fetchImageById(originalImageId.getImageId());
-        Template template = imagePlant.fetchTemplateByName(templateName);
+        Template template = imagePlant.fetchTemplate(templateName);
         Image versioningImage = getGurenteedVersioningImage(
                 imagePlant, new Version(template, originalImage));
         return objectMapper.mapToResponse(
                 versioningImage, 
-                getTemplateNames(imagePlant));
+                getTemplateNames(templateName, imagePlant));
     }
     
     private Image getGurenteedVersioningImage(ImagePlant imagePlant, Version version) {
@@ -218,9 +220,8 @@ public class ImageS3Server implements ImageS3 {
     public PaginatedResult<List<ImageResponse>> getImages(String imagePlantId) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
         PaginatedResult<List<Image>> result = imagePlant.listAllImages();
-        List<String> templateIds = getTemplateNames(imagePlant);
         return new PaginatedResult<List<ImageResponse>>(
-                imageDelegate, "getImages", new Object[]{result, templateIds}) {};
+                imageDelegate, "getImages", new Object[]{result, null}) {};
     }
 
     @Override
@@ -229,9 +230,18 @@ public class ImageS3Server implements ImageS3 {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(originalImageId.getImagePlantId());
         Image originalImage = imagePlant.fetchImageById(originalImageId.getImageId());
         PaginatedResult<List<Image>> result = imagePlant.fetchVersioningImages(originalImage);
-        List<String> templateIds = getTemplateNames(imagePlant);
         return new PaginatedResult<List<ImageResponse>>(
-                imageDelegate, "getVersioningImages", new Object[]{result, templateIds}) {};
+                imageDelegate, "getImages", new Object[]{result, null}) {};
+    }
+
+    @Override
+    public PaginatedResult<List<ImageResponse>> getImages(String imagePlantId,
+            String templateName) {
+        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
+        Template template = imagePlant.fetchTemplate(templateName);
+        PaginatedResult<List<Image>> result = imagePlant.fetchImagesByTemplate(template);
+        return new PaginatedResult<List<ImageResponse>>(
+                imageDelegate, "getImages", new Object[]{result, null}) {};
     }
 
     public static class Builder {

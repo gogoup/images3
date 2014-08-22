@@ -44,4 +44,6 @@ public interface ImageS3 {
     
     public PaginatedResult<List<ImageResponse>> getVersioningImages(ImageIdentity originalImageId);
     
+    public PaginatedResult<List<ImageResponse>> getImages(String imagePlantId, String templateName);
+    
 }
