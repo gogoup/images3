@@ -20,6 +20,17 @@ public class TemplateFactoryService {
     public TemplateFactoryService(TemplateAccess templateAccess) {
         this.templateAccess = templateAccess;
     }
+    
+    public TemplateEntity generateMasterTemplate(ImagePlantRoot imagePlant, 
+            ResizingConfig resizingConfig) {
+        TemplateEntity entity = generateTemplate(
+                imagePlant, 
+                TemplateEntity.MASTER_TEMPLATE_NAME,
+                resizingConfig);
+        entity.setArchived(false);
+        entity.setNotRemovable();
+        return entity;
+    }
 
     public TemplateEntity generateTemplate(ImagePlantRoot imagePlant, String name, 
             ResizingConfig resizingConfig) {

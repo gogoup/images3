@@ -11,6 +11,8 @@ public interface ImageContentAccess {
     
     public void deleteImageContent(ImageIdentity id, AmazonS3Bucket bucket);
     
+    public void deleteImageContentByImagePlantId(String imagePlantId, AmazonS3Bucket bucket);
+    
     public File selectImageContent(ImageIdentity id, AmazonS3Bucket bucket);
     
 }

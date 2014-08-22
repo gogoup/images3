@@ -20,6 +20,8 @@ public interface ImageAccess extends PaginatedResultDelegate<List<ImageOS>> {
     
     public void deleteImage(ImageOS image);
     
+    public void deleteImages(String imagePlantId);
+    
     public ImageOS selectImageById(ImageIdentity id);
     
     public ImageOS selectImageByVersion(String imagePlantId, VersionOS version);

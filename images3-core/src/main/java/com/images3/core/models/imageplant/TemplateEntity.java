@@ -8,6 +8,9 @@ import com.images3.utility.DirtyMark;
 
 public class TemplateEntity extends DirtyMark implements Template {
 
+
+    public final static String MASTER_TEMPLATE_NAME = "Master";
+    
     private ImagePlantRoot imagePlant;
     private TemplateOS objectSegment;
     

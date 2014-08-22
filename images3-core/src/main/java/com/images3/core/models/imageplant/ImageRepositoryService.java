@@ -56,16 +56,9 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     }
     
     public void removeImages(ImagePlantRoot imagePlant) {
-        PaginatedResult<List<Image>> result = findAllImages(imagePlant);
-        Object pageCursor = result.getNextPageCursor();
-        while (null != pageCursor) {
-            List<Image> images = result.getResult(pageCursor);
-            for (Image img: images) {
-                ImageEntity image = (ImageEntity) img;
-                removeImage(image);
-            }
-            pageCursor = result.getNextPageCursor(); //next page.
-        }
+        imageAccess.deleteImages(imagePlant.getId());
+        imageContentAccess.deleteImageContentByImagePlantId(
+                imagePlant.getId(), imagePlant.getAmazonS3Bucket());
     }
     
     public Image findImageById(ImagePlantRoot imagePlant, String id) {

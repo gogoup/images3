@@ -130,19 +130,30 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     @Override
     public void updateTemplate(Template template) {
         checkForInvalidTemplate(template);
+        checkForArchivedMasterTemplate(template);
         TemplateEntity entity = (TemplateEntity) template;
         addDirtyTemplate(entity);
+    }
+    
+    private void checkForArchivedMasterTemplate(Template template) {
+        if (template.getName().equalsIgnoreCase(getObjectSegment().getMasterTemplateName())) {
+            throw new UnsupportedOperationException("Modify master template is not allowed!");
+        }
     }
 
     @Override
     public void removeTemplate(Template template) {
         checkForInvalidTemplate(template);
         TemplateEntity entity = (TemplateEntity) template;
-        if (!entity.isRemovable()) {
-            throw new UnremovableTemplateException(entity.getObjectSegment().getId());
-        }
+        checkForUnremoveTemplate(entity);
         entity.markAsVoid();
         addDirtyTemplate(entity);
+    }
+    
+    private void checkForUnremoveTemplate(TemplateEntity template) {
+        if (!template.isRemovable()) {
+            throw new UnremovableTemplateException(template.getObjectSegment().getId());
+        }
     }
     
     private void checkForInvalidTemplate(Template template) {

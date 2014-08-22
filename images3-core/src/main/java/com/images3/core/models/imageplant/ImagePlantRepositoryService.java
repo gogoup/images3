@@ -74,10 +74,11 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
     public void removeImagePlant(ImagePlant imagePlant) {
         ImagePlantRoot root = (ImagePlantRoot) imagePlant;
         checkIfVoid(root);
-        imageRepository.removeImages(root);
         ImagePlantOS objectSegment = root.getObjectSegment();
         imagePlantAccess.deleteImagePlant(objectSegment);
         root.markAsVoid();
+        templateRepository.removeTemplates(root);
+        imageRepository.removeImages(root);
     }
 
     @Override

@@ -142,7 +142,7 @@ public class TemplateRepositoryServiceTest {
         objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, null)).thenReturn(osResult);
-        Mockito.when(osResult.getAllResults()).thenReturn(objectSegments);
+        Mockito.when(osResult.getResult(null)).thenReturn(objectSegments);
         
         TemplateRepositoryService repository = new TemplateRepositoryService(templateAccess, templateFactory);
         PaginatedResult<List<Template>> result = repository.findAllTemplatesByImagePlant(imagePlant);
@@ -179,7 +179,7 @@ public class TemplateRepositoryServiceTest {
         objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, false)).thenReturn(osResult);
-        Mockito.when(osResult.getAllResults()).thenReturn(objectSegments);
+        Mockito.when(osResult.getResult(null)).thenReturn(objectSegments);
         
         TemplateRepositoryService repository = new TemplateRepositoryService(templateAccess, templateFactory);
         PaginatedResult<List<Template>> result = repository.findActiveTemplatesByImagePlant(imagePlant);
@@ -216,7 +216,7 @@ public class TemplateRepositoryServiceTest {
         objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, true)).thenReturn(osResult);
-        Mockito.when(osResult.getAllResults()).thenReturn(objectSegments);
+        Mockito.when(osResult.getResult(null)).thenReturn(objectSegments);
         
         TemplateRepositoryService repository = new TemplateRepositoryService(templateAccess, templateFactory);
         PaginatedResult<List<Template>> result = repository.findArchivedTemplatesByImagePlant(imagePlant);
