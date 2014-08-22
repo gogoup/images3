@@ -1,12 +1,18 @@
 package com.images3.core.infrastructure;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.images3.AmazonS3Bucket;
 import com.images3.ImageIdentity;
 import com.images3.NoSuchEntityFoundException;
@@ -45,7 +51,14 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     public void deleteImageContentByImagePlantId(String imagePlantId,
             AmazonS3Bucket bucket) {
         AmazonS3 client = clients.getClient(bucket);
-        client.deleteObject(new DeleteObjectRequest(bucket.getName(), imagePlantId));
+        ObjectListing objList = client.listObjects(bucket.getName(), imagePlantId);
+        DeleteObjectsRequest request = new DeleteObjectsRequest(bucket.getName());
+        List<KeyVersion> keys = new ArrayList<KeyVersion>(objList.getMaxKeys());
+        for (S3ObjectSummary sum: objList.getObjectSummaries()) {
+            keys.add(new KeyVersion(sum.getKey()));
+        }
+        request.setKeys(keys);
+        client.deleteObjects(request);
     }
 
     @Override
