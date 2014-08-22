@@ -136,8 +136,9 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     }
     
     private void checkForArchivedMasterTemplate(Template template) {
-        if (template.getName().equalsIgnoreCase(getObjectSegment().getMasterTemplateName())) {
-            throw new UnsupportedOperationException("Modify master template is not allowed!");
+        if (template.getName().equalsIgnoreCase(getObjectSegment().getMasterTemplateName())
+                && template.isArchived()) {
+            throw new UnsupportedOperationException("Archive master template is not allowed!");
         }
     }
 

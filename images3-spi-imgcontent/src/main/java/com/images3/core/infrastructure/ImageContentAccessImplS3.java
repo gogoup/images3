@@ -25,12 +25,14 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     @Override
     public void insertImageContent(ImageIdentity id, AmazonS3Bucket bucket,
             File content) {
+        File imageFile = new File(generateFilePath(id));
+        content.renameTo(imageFile);
         AmazonS3 client = clients.getClient(bucket);
         client.putObject(
                 new PutObjectRequest(
                         bucket.getName(), 
                         generateS3ObjectKey(id), 
-                        content));
+                        imageFile));
     }
 
     @Override
@@ -43,7 +45,7 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     public void deleteImageContentByImagePlantId(String imagePlantId,
             AmazonS3Bucket bucket) {
         AmazonS3 client = clients.getClient(bucket);
-        client.deleteObject(new DeleteObjectRequest(bucket.getName(), imagePlantId + "/"));
+        client.deleteObject(new DeleteObjectRequest(bucket.getName(), imagePlantId));
     }
 
     @Override
@@ -64,7 +66,12 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     }
     
     private String generateFilePath(ImageIdentity id) {
-       return imageContentDownloadDir + File.separator + id.getIdentity();
+       String path = imageContentDownloadDir + File.separator + id.getImagePlantId();
+       File folder = new File(path);
+       if (!folder.exists()) {
+           folder.mkdir();
+       }
+       return path + File.separator + id.getImageId();
     }
     
     private String generateS3ObjectKey(ImageIdentity id) {

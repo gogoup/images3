@@ -43,7 +43,6 @@ public class ImageContentAccessImplS3Test {
                         "AKIAIRNABSSGDJCXC6PQ", 
                         "shy7ZUJC5YjDeWDPXEuAp2rS8knIRCT32RAJgVCw", 
                         "com.images3.images"));
-        System.out.println("HERE======>" + imageContent.getAbsolutePath());
     }
     
 }

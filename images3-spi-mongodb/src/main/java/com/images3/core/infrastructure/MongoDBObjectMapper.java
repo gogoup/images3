@@ -118,7 +118,7 @@ public class MongoDBObjectMapper {
     public BasicDBObject mapToBasicDBObject(ImageMetadata source) {
         return new BasicDBObject()
             .append("dimension", mapToBasicDBObject(source.getDimension()))
-            .append("format", source.getFormat())
+            .append("format", source.getFormat().toString())
             .append("size", source.getSize());
     }
     

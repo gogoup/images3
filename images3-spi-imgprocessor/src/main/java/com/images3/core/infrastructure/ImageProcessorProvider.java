@@ -27,7 +27,7 @@ public class ImageProcessorProvider {
     }
 
     public ImageProcessor getImageProcessor() {
-        String dir = config.getProperty("imagecontent.download.dir");
+        String dir = config.getProperty("image.processing.tempdir");
         return new ImageProcessorImplImgscalr(dir);
     }
 }

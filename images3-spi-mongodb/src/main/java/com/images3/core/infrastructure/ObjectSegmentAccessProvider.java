@@ -119,8 +119,7 @@ public class ObjectSegmentAccessProvider {
                 new BasicDBObject()
                     .append("imagePlantId", 1)
                     .append("version.templateName", 1)
-                    .append("version.originalImageId", 1), 
-                new BasicDBObject("unique", true).append("sparse", true));
+                    .append("version.originalImageId", 1));
     }
     
 }

@@ -93,8 +93,6 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
 
     private List<TemplateOS> getTemplatesByImagePlantId(String imagePlantId, 
             Boolean isArchived, PageCursor pageCursor) {
-        System.out.println("HERE======>getTemplatesByImagePlantId() imagePlantId: " + imagePlantId);
-        System.out.println("HERE======>getTemplatesByImagePlantId() isArchived: " + isArchived);
         DBCollection coll = getDatabase().getCollection("Template");
         int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
         BasicDBObject criteria = new BasicDBObject()
@@ -103,7 +101,6 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
             criteria.append("isArchived", isArchived);  
         }
         List<DBObject> objects = coll.find(criteria).skip(skipRecords).limit(pageCursor.getSize()).toArray();
-        System.out.println("HERE======>getTemplatesByImagePlantId() objects: " + objects.size());
         List<TemplateOS> templates = new ArrayList<TemplateOS>(objects.size());
         for (DBObject obj: objects) {
             templates.add(getObjectMapper().mapToTemplateOS((BasicDBObject) obj));

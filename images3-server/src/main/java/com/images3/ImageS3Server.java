@@ -98,6 +98,7 @@ public class ImageS3Server implements ImageS3 {
         Template template = 
                 imagePlant.fetchTemplateByName(request.getId().getTemplateName());
         template.setArchived(request.isArchived());
+        imagePlant.updateTemplate(template);
         imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(template);
     }
