@@ -61,15 +61,25 @@ public class ImageEntity extends DirtyMark implements Image {
     
     @Override
     public Version getVersion() {
-        if (null == version 
-                && null != getObjectSegment().getVersion()) {
-            Image originalImage = imageRepository.findImageById(
-                    imagePlant, getObjectSegment().getVersion().getOriginalImageId());
-            Template template = templateRepository.findTemplateByName(
-                    imagePlant, getObjectSegment().getVersion().getTemplateName());
+        if (null == version) {
+            Image originalImage = getOriginalImage();
+            Template template = getTemplate();
             version = new Version(template, originalImage);
         }
         return version;
+    }
+    
+    private Image getOriginalImage() {
+        if (getObjectSegment().getVersion().getOriginalImageId() != null) {
+            return imageRepository.findImageById(
+                    imagePlant, getObjectSegment().getVersion().getOriginalImageId());
+        }
+        return null;
+    }
+    
+    private Template getTemplate() {
+        return templateRepository.findTemplateByName(
+                imagePlant, getObjectSegment().getVersion().getTemplateName());
     }
 
     @Override

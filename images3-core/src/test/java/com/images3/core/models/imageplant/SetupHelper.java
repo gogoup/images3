@@ -13,6 +13,9 @@ import com.images3.common.ImageMetadata;
 import com.images3.common.ResizingConfig;
 import com.images3.common.ResizingUnit;
 import com.images3.common.TemplateIdentity;
+import com.images3.core.Image;
+import com.images3.core.Template;
+import com.images3.core.Version;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.TemplateOS;
@@ -106,7 +109,7 @@ public class SetupHelper {
     }
     
     public static ImageEntity setupImageEntity(ImagePlantRoot imagePlant, 
-            ImageOS objectSegment, File imageContent) {
+            ImageOS objectSegment, File imageContent, Version version) {
         ImageEntity image = Mockito.mock(ImageEntity.class);
         Mockito.when(image.getImagePlant()).thenReturn(imagePlant);
         Mockito.when(image.getObjectSegment()).thenReturn(objectSegment);
@@ -115,7 +118,15 @@ public class SetupHelper {
         Mockito.when(image.getContent()).thenReturn(imageContent);
         Date dateTime = objectSegment.getDateTime();
         Mockito.when(image.getDateTime()).thenReturn(dateTime);
+        Mockito.when(image.getVersion()).thenReturn(version);
         return image;
+    }
+    
+    public static Version setupVersion(Template template, Image originalImage) {
+        Version version = Mockito.mock(Version.class);
+        Mockito.when(version.getTemplate()).thenReturn(template);
+        Mockito.when(version.getOriginalImage()).thenReturn(originalImage);
+        return version;
     }
     
 }

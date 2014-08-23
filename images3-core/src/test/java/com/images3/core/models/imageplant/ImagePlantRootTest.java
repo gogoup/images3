@@ -292,8 +292,11 @@ public class ImagePlantRootTest {
                 imagePlant.getId(), "IMAGE_ID");
         ImageOS objectSegment = SetupHelper.setupImageOS(imageIdentity, dateTime, metadata);
         File imageContent = Mockito.mock(File.class);
+        Template template = Mockito.mock(Template.class);
+        Mockito.when(template.getName()).thenReturn("Master");
+        Version version = SetupHelper.setupVersion(template, null);
         return SetupHelper.setupImageEntity(
-                imagePlant, objectSegment, imageContent);
+                imagePlant, objectSegment, imageContent, version);
     }
   
     @Test

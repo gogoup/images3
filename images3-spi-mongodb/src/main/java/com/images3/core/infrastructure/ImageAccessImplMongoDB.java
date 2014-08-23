@@ -96,8 +96,8 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
     @Override
     public PaginatedResult<List<ImageOS>> selectImagesByTemplateName(
             String imagePlantId, String templateName) {
-        // TODO Auto-generated method stub
-        return null;
+        return new PaginatedResult<List<ImageOS>>(
+                this, "getImagesByTemplateName", new Object[] {imagePlantId, templateName}) {};
     }
 
     public PaginatedResult<List<ImageOS>> selectImagesByImagePlantId(
@@ -121,31 +121,41 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
             PageCursor cursor = (PageCursor) pageResult[1];
             return getImagesByImagePlantId(imagePlantId, cursor);
         }
+        if ("getImagesByTemplateName".equals(methodName)) {
+            String imagePlantId = (String) arguments[0];
+            String templateName = (String) arguments[1];
+            Object[] pageResult = getNextPageCursor((String) pageCursor);
+            PageCursor cursor = (PageCursor) pageResult[1];
+            return getImagesByTemplateName(imagePlantId, templateName, cursor);
+        }
         throw new UnsupportedOperationException(methodName);
     }
     
     private List<ImageOS> getImagesByOriginalImageId(String imagePlantId, 
             String originalImageId, PageCursor pageCursor) {
-        checkForQueryTooManyRecords(pageCursor);
-        DBCollection coll = getDatabase().getCollection("Image");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", imagePlantId)
                                     .append("version.originalImageId", originalImageId);
-        int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
-        List<DBObject> objects = coll.find(criteria).skip(skipRecords).limit(pageCursor.getSize()).toArray();
-        List<ImageOS> images = new ArrayList<ImageOS>(objects.size());
-        for (DBObject obj: objects) {
-            images.add(getObjectMapper().mapToImageOS((BasicDBObject) obj));
-        }
-        return images;
+        return getImages(criteria, pageCursor);
     }
 
     private List<ImageOS> getImagesByImagePlantId(String imagePlantId, 
             PageCursor pageCursor) {
-        checkForQueryTooManyRecords(pageCursor);
-        DBCollection coll = getDatabase().getCollection("Image");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", imagePlantId);
+        return getImages(criteria, pageCursor);
+    }
+    
+    private List<ImageOS> getImagesByTemplateName(String imagePlantId, 
+            String templateName, PageCursor pageCursor) {
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("imagePlantId", imagePlantId)
+                                    .append("version.templateName", templateName);
+        return getImages(criteria, pageCursor);
+    }
+    
+    private List<ImageOS> getImages(BasicDBObject criteria, PageCursor pageCursor) {
+        DBCollection coll = getDatabase().getCollection("Image");
         int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
         List<DBObject> objects = coll.find(criteria).skip(skipRecords).limit(pageCursor.getSize()).toArray();
         List<ImageOS> images = new ArrayList<ImageOS>(objects.size());
@@ -154,5 +164,4 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
         }
         return images;
     }
-    
 }

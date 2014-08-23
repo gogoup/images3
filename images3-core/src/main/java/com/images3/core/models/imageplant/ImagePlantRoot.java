@@ -212,31 +212,14 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
 
     @Override
     public boolean hasVersiongImage(Version version) {
-        checkForCurrentVersion(version);
         return imageRepository.hasVersioningImage(this, version);
     }
 
     @Override
     public Image fetchImageByVersion(Version version) {
-        checkForCurrentVersion(version);
         return imageRepository.findImageByVersion(this, version);
     }
     
-    private void checkForCurrentVersion(Version version) {
-        if (isCurrentVersion(version)) {
-            throw new IllegalArgumentException(
-                    "The asking template {" + version.getTemplate().getName()
-                            + "} is the original image {"
-                            + version.getOriginalImage().getId() + "} itself.");
-        }
-    }
-
-    private boolean isCurrentVersion(Version version) {
-        Image originalImage = version.getOriginalImage();
-        Template originalTemplate = originalImage.getVersion().getTemplate();
-        Template template = version.getTemplate();
-        return  (originalTemplate.getName().equalsIgnoreCase(template.getName()));
-    }
     @Override
     public PaginatedResult<List<Image>> fetchVersioningImages(
             Image originalImage) {

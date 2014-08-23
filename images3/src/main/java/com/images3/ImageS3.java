@@ -42,6 +42,8 @@ public interface ImageS3 {
     
     public ImageResponse getImage(ImageIdentity id);
     
+    public ImageResponse getImage(ImageIdentity id, String templateName);
+    
     public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId);
     
     public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId, String templateName);

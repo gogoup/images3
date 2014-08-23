@@ -7,9 +7,9 @@ public class TemplateIdentity {
     
     public TemplateIdentity() {}
     
-    public TemplateIdentity(String imagePlantId, String templateId) {
+    public TemplateIdentity(String imagePlantId, String templateName) {
         this.imagePlantId = imagePlantId;
-        this.templateName = templateId;
+        this.templateName = templateName;
     }
     
     public String getImagePlantId() {

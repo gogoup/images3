@@ -101,9 +101,6 @@ public class ObjectSegmentAccessProvider {
     private void initTemplate(DB db) {
         DBCollection coll = db.getCollection("Template");
         coll.createIndex(
-                new BasicDBObject().append("imagePlantId", 1).append("id", 1), 
-                new BasicDBObject("unique", true));
-        coll.createIndex(
                 new BasicDBObject().append("imagePlantId", 1).append("name", 1), 
                 new BasicDBObject("unique", true));
         coll.createIndex(

@@ -196,6 +196,19 @@ public class ImageS3Server implements ImageS3 {
     }
 
     @Override
+    public ImageResponse getImage(ImageIdentity id, String templateName) {
+        ImagePlant imagePlant = 
+                imagePlantRepository.findImagePlantById(id.getImagePlantId());
+        Image originalImage = imagePlant.fetchImageById(id.getImageId());
+        Template template = imagePlant.fetchTemplate(templateName);
+        Image image = getGurenteedVersioningImage(
+                imagePlant, new Version(template, originalImage));
+        return objectMapper.mapToResponse(
+                image, 
+                getTemplateNames(image.getVersion().getTemplate().getName(), imagePlant));
+    }
+
+    @Override
     public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
         PaginatedResult<List<Image>> result = imagePlant.listAllImages();

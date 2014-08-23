@@ -63,12 +63,6 @@ public abstract class MongoDBAccess<T> {
         }
     }
     
-    protected void checkForQueryTooManyRecords(Object pageCursor) {
-        if (null == pageCursor) {
-            throw new UnsupportedOperationException("Too many records to find.");
-        }
-    }
-    
     private void insertPageCursor(String id, PageCursor pageCursor) {
         DBCollection coll = getDatabase().getCollection("PageCursor");
         coll.insert(getObjectMapper().mapToBasicDBObject(id, pageCursor));

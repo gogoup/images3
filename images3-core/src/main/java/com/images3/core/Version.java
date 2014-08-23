@@ -8,6 +8,9 @@ public class Version {
     public Version(Template template, Image originalImage) {
         this.template = template;
         this.originalImage = originalImage;
+        if (null != originalImage) {
+            checkForCurrentVersion();
+        }
     }
 
     public Template getTemplate() {
@@ -18,5 +21,17 @@ public class Version {
         return originalImage;
     }
     
+    private void checkForCurrentVersion() {
+        if (isCurrentVersion()) {
+            throw new IllegalArgumentException(
+                    "Create the same version of " + template.getName() + " for image {"
+                            + originalImage.getId() + "} is not allowed.");
+        }
+    }
+
+    private boolean isCurrentVersion() {
+        Template originalTemplate = originalImage.getVersion().getTemplate();
+        return  (originalTemplate.getName().equalsIgnoreCase(template.getName()));
+    }
     
 }

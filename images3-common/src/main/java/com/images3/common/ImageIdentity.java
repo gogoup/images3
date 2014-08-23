@@ -48,8 +48,4 @@ public class ImageIdentity {
         return true;
     }
     
-    public String getIdentity() {
-        return imagePlantId + "-" + imageId;
-    }
-    
 }

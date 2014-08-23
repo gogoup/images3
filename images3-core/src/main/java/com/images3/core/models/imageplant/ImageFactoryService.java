@@ -50,12 +50,9 @@ public class ImageFactoryService {
     public ImageEntity generateImage(ImagePlantRoot imagePlant, ImageEntity originalImage, 
             TemplateEntity template, ImageRepositoryService imageRepository,
             TemplateRepositoryService templateRepository) {
-        if (imageAccess.isDuplicateVersion(
-                imagePlant.getId(), new ImageVersion(template.getName(), originalImage.getId()))) {
-            throw new DuplicateImageVersionException(
-                    template.getName(), originalImage.getId());
-        }
         Version version = new Version(template, originalImage);
+        checkForMasterVersionGeneration(originalImage, template);
+        checkForDuplicateVersion(imagePlant, originalImage, template);
         File resizedContent = imageProcessor.resizeImage(
                 originalImage.getObjectSegment().getMetadata(), 
                 originalImage.getContent(), 
@@ -66,6 +63,25 @@ public class ImageFactoryService {
                 version,
                 imageRepository,
                 templateRepository);
+    }
+    
+    private void checkForMasterVersionGeneration(ImageEntity originalImage,
+            TemplateEntity template) {
+        if (template.getName().equalsIgnoreCase(TemplateEntity.MASTER_TEMPLATE_NAME)) {
+            throw new UnsupportedOperationException(
+                    "Generate a " + TemplateEntity.MASTER_TEMPLATE_NAME 
+                            + " version of image from another image {"
+                            + originalImage.getId() + "} is not supported");
+        }
+    }
+    
+    private void checkForDuplicateVersion(ImagePlantRoot imagePlant, 
+            ImageEntity originalImage, TemplateEntity template) {
+        if (imageAccess.isDuplicateVersion(
+                imagePlant.getId(), new ImageVersion(template.getName(), originalImage.getId()))) {
+            throw new DuplicateImageVersionException(
+                    template.getName(), originalImage.getId());
+        }
     }
     
     private ImageEntity generateImage(ImagePlantRoot imagePlant, File imageContent, Version version,
