@@ -3,7 +3,8 @@ package com.images3.core.infrastructure;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.images3.ImageIdentity;
+import com.images3.common.ImageIdentity;
+import com.images3.common.ImageVersion;
 import com.images3.core.infrastructure.spi.ImageAccess;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
@@ -23,7 +24,7 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
     }
 
     @Override
-    public boolean isDuplicateVersion(String imagePlantId, VersionOS version) {
+    public boolean isDuplicateVersion(String imagePlantId, ImageVersion version) {
         DBCollection coll = getDatabase().getCollection("Image");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", imagePlantId)
@@ -72,7 +73,7 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
     }
 
     @Override
-    public ImageOS selectImageByVersion(String imagePlantId, VersionOS version) {
+    public ImageOS selectImageByVersion(String imagePlantId, ImageVersion version) {
         DBCollection coll = getDatabase().getCollection("Image");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", imagePlantId)
@@ -90,6 +91,13 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
             String imagePlantId, String originalImageId) {
         return new PaginatedResult<List<ImageOS>>(
                 this, "getImagesByOriginalImageId", new Object[] {imagePlantId, originalImageId}) {};
+    }
+
+    @Override
+    public PaginatedResult<List<ImageOS>> selectImagesByTemplateName(
+            String imagePlantId, String templateName) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     public PaginatedResult<List<ImageOS>> selectImagesByImagePlantId(

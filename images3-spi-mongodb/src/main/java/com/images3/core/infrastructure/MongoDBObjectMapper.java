@@ -2,14 +2,15 @@ package com.images3.core.infrastructure;
 
 import java.util.Date;
 
-import com.images3.AmazonS3Bucket;
-import com.images3.ImageDimension;
-import com.images3.ImageFormat;
-import com.images3.ImageIdentity;
-import com.images3.ImageMetadata;
-import com.images3.ResizingConfig;
-import com.images3.ResizingUnit;
-import com.images3.TemplateIdentity;
+import com.images3.common.AmazonS3Bucket;
+import com.images3.common.ImageDimension;
+import com.images3.common.ImageFormat;
+import com.images3.common.ImageIdentity;
+import com.images3.common.ImageMetadata;
+import com.images3.common.ImageVersion;
+import com.images3.common.ResizingConfig;
+import com.images3.common.ResizingUnit;
+import com.images3.common.TemplateIdentity;
 import com.mongodb.BasicDBObject;
 
 public class MongoDBObjectMapper {
@@ -112,7 +113,7 @@ public class MongoDBObjectMapper {
                         source.getString("id")),
                 new Date(source.getLong("dateTime")),
                 mapToImageMetadata((BasicDBObject) source.get("metadata")),
-                mapToVersionOS((BasicDBObject) source.get("version")));
+                mapToImageVersion((BasicDBObject) source.get("version")));
     }
     
     public BasicDBObject mapToBasicDBObject(ImageMetadata source) {
@@ -141,14 +142,14 @@ public class MongoDBObjectMapper {
                 source.getInt("height"));
     }
     
-    public BasicDBObject mapToBasicDBObject(VersionOS source) {
+    public BasicDBObject mapToBasicDBObject(ImageVersion source) {
         return new BasicDBObject()
             .append("templateName", source.getTemplateName())
             .append("originalImageId", source.getOriginalImageId());
     }
     
-    public VersionOS mapToVersionOS(BasicDBObject source) {
-        return new VersionOS(
+    public ImageVersion mapToImageVersion(BasicDBObject source) {
+        return new ImageVersion(
                 source.getString("templateName"), 
                 source.getString("originalImageId"));
     }

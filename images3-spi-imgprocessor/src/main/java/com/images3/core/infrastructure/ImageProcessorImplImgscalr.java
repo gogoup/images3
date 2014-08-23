@@ -16,11 +16,11 @@ import javax.imageio.stream.ImageInputStream;
 
 import org.imgscalr.Scalr;
 
-import com.images3.ImageDimension;
-import com.images3.ImageFormat;
-import com.images3.ImageMetadata;
-import com.images3.ResizingConfig;
-import com.images3.ResizingUnit;
+import com.images3.common.ImageDimension;
+import com.images3.common.ImageFormat;
+import com.images3.common.ImageMetadata;
+import com.images3.common.ResizingConfig;
+import com.images3.common.ResizingUnit;
 import com.images3.core.infrastructure.spi.ImageProcessor;
 
 public class ImageProcessorImplImgscalr implements ImageProcessor {

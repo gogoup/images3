@@ -6,7 +6,7 @@ import java.util.Map;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.images3.AmazonS3Bucket;
+import com.images3.common.AmazonS3Bucket;
 
 public class AmazonS3ClientPool {
 
