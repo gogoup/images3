@@ -13,4 +13,5 @@
         <version>1.0.1</version>
     </dependency>
   </dependencies>
+  <description>Objects shared by different layers or different modules.</description>
 </project>

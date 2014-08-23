@@ -1,4 +1,4 @@
-package com.images3;
+package com.images3.common;
 
 public enum ResizingUnit {
 

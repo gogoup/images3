@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.images3.utility;
+package com.images3.common;
 
 public class DirtyMark {
 
