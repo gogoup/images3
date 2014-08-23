@@ -7,10 +7,9 @@ import org.gogoup.dddutils.pagination.PaginatedResult;
 import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 import com.images3.core.Image;
-import com.images3.core.Version;
 
 public class ImagePaginatedResultDelegate implements
-        PaginatedResultDelegate<List<ImageResponse>> {
+        PaginatedResultDelegate<List<SimpleImageResponse>> {
 
     private AppObjectMapper objectMapper;
     
@@ -20,29 +19,28 @@ public class ImagePaginatedResultDelegate implements
     
     @SuppressWarnings("unchecked")
     @Override
-    public List<ImageResponse> fetchResult(String tag, Object[] arguments,
+    public List<SimpleImageResponse> fetchResult(String tag, Object[] arguments,
             Object pageCursor) {
         if ("getImages".equals(tag)) {
             PaginatedResult<List<Image>> result = (PaginatedResult<List<Image>>) arguments[0];
-            List<String> templateIds = (List<String>) arguments[1];
-            return getImages(result, templateIds, pageCursor);
+            return getImages(result, pageCursor);
         }
         throw new UnsupportedOperationException(tag);
     }
     
-    private List<ImageResponse> getImages(
-            PaginatedResult<List<Image>> result, List<String> templateIds, Object pageCursor) {
+    private List<SimpleImageResponse> getImages(
+            PaginatedResult<List<Image>> result, Object pageCursor) {
         List<Image> images = result.getResult(pageCursor);
-        List<ImageResponse> responses = new ArrayList<ImageResponse>(images.size());
+        List<SimpleImageResponse> responses = new ArrayList<SimpleImageResponse>(images.size());
         for (Image image: images) {
-            responses.add(objectMapper.mapToResponse(image, templateIds));
+            responses.add(objectMapper.mapToResponse(image));
         }
         return responses;
     }
 
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor, List<ImageResponse> result) {
+            Object pageCursor, List<SimpleImageResponse> result) {
         if (!"getImages".equals(tag)) {
             throw new UnsupportedOperationException(tag);
         }

@@ -2,6 +2,9 @@ package com.images3;
 
 import java.util.List;
 
+import com.images3.common.ImageIdentity;
+import com.images3.common.ImageVersion;
+import com.images3.common.TemplateIdentity;
 import com.images3.core.Image;
 import com.images3.core.ImagePlant;
 import com.images3.core.Template;
@@ -27,13 +30,22 @@ public class AppObjectMapper {
                 source.getResizingConfig());
     }
     
-    public ImageResponse mapToResponse(Image source, List<String> templateIds) {
-        return new ImageResponse(
+    public SimpleImageResponse mapToResponse(Image source) {
+        Image originalImage = source.getVersion().getOriginalImage();
+        return new SimpleImageResponse(
                 new ImageIdentity(
                         source.getImagePlant().getId(), 
                         source.getId()),
-                source.getContent(),
                 source.getDateTime(),
-                templateIds);
+                new ImageVersion(
+                        source.getVersion().getTemplate().getName(),
+                        originalImage == null ? null: source.getVersion().getOriginalImage().getId()),
+                source.getMetadata());
+    }
+    
+    public ImageResponse mapToResponse(Image source, List<String> templateNames) {
+        return new ImageResponse(
+                mapToResponse(source),
+                templateNames);
     }
 }

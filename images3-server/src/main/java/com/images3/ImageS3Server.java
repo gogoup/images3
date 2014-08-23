@@ -1,10 +1,13 @@
 package com.images3;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
+import com.images3.common.ImageIdentity;
+import com.images3.common.TemplateIdentity;
 import com.images3.core.Image;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantFactory;
@@ -46,7 +49,7 @@ public class ImageS3Server implements ImageS3 {
     }
 
     @Override
-    public ImagePlantResponse addImagePlant(ImagePlantCreateRequest request) {
+    public ImagePlantResponse addImagePlant(ImagePlantAddRequest request) {
         ImagePlant imagePlant = imagePlantFactory.generateImagePlant(
                 request.getName(), request.getBucket(), request.getResizingConfig());
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
@@ -82,7 +85,7 @@ public class ImageS3Server implements ImageS3 {
     }
     
     @Override
-    public TemplateResponse addTemplate(TemplateCreateRequest request) {
+    public TemplateResponse addTemplate(TemplateAddRequest request) {
         ImagePlant imagePlant = 
                 imagePlantRepository.findImagePlantById(request.getId().getImagePlantId());
         Template template = imagePlant.createTemplate(
@@ -146,7 +149,7 @@ public class ImageS3Server implements ImageS3 {
     }
 
     @Override
-    public ImageResponse addImage(ImageRequest request) {
+    public ImageResponse addImage(ImageAddRequest request) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(request.getImagePlantId());
         Image image = imagePlant.createImage(request.getContent());
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
@@ -193,18 +196,44 @@ public class ImageS3Server implements ImageS3 {
     }
 
     @Override
-    public ImageResponse getImage(ImageIdentity originalImageId, String templateName) {
-        ImagePlant imagePlant = 
-                imagePlantRepository.findImagePlantById(originalImageId.getImagePlantId());
+    public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId) {
+        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
+        PaginatedResult<List<Image>> result = imagePlant.listAllImages();
+        return new PaginatedResult<List<SimpleImageResponse>>(
+                imageDelegate, "getImages", new Object[]{result}) {};
+    }
+
+    @Override
+    public PaginatedResult<List<SimpleImageResponse>> getVersioningImages(
+            ImageIdentity originalImageId) {
+        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(originalImageId.getImagePlantId());
         Image originalImage = imagePlant.fetchImageById(originalImageId.getImageId());
+        PaginatedResult<List<Image>> result = imagePlant.fetchVersioningImages(originalImage);
+        return new PaginatedResult<List<SimpleImageResponse>>(
+                imageDelegate, "getImages", new Object[]{result}) {};
+    }
+
+    @Override
+    public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId,
+            String templateName) {
+        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
+        Template template = imagePlant.fetchTemplate(templateName);
+        PaginatedResult<List<Image>> result = imagePlant.fetchImagesByTemplate(template);
+        return new PaginatedResult<List<SimpleImageResponse>>(
+                imageDelegate, "getImages", new Object[]{result}) {};
+    }
+
+    @Override
+    public File getImageContent(ImageIdentity id, String templateName) {
+        ImagePlant imagePlant = 
+                imagePlantRepository.findImagePlantById(id.getImagePlantId());
+        Image originalImage = imagePlant.fetchImageById(id.getImageId());
         Template template = imagePlant.fetchTemplate(templateName);
         Image versioningImage = getGurenteedVersioningImage(
                 imagePlant, new Version(template, originalImage));
-        return objectMapper.mapToResponse(
-                versioningImage, 
-                getTemplateNames(templateName, imagePlant));
+        return versioningImage.getContent();
     }
-    
+
     private Image getGurenteedVersioningImage(ImagePlant imagePlant, Version version) {
         Image image = null;
         if (imagePlant.hasVersiongImage(version)) {
@@ -217,31 +246,11 @@ public class ImageS3Server implements ImageS3 {
     }
 
     @Override
-    public PaginatedResult<List<ImageResponse>> getImages(String imagePlantId) {
-        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
-        PaginatedResult<List<Image>> result = imagePlant.listAllImages();
-        return new PaginatedResult<List<ImageResponse>>(
-                imageDelegate, "getImages", new Object[]{result, null}) {};
-    }
-
-    @Override
-    public PaginatedResult<List<ImageResponse>> getVersioningImages(
-            ImageIdentity originalImageId) {
-        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(originalImageId.getImagePlantId());
-        Image originalImage = imagePlant.fetchImageById(originalImageId.getImageId());
-        PaginatedResult<List<Image>> result = imagePlant.fetchVersioningImages(originalImage);
-        return new PaginatedResult<List<ImageResponse>>(
-                imageDelegate, "getImages", new Object[]{result, null}) {};
-    }
-
-    @Override
-    public PaginatedResult<List<ImageResponse>> getImages(String imagePlantId,
-            String templateName) {
-        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
-        Template template = imagePlant.fetchTemplate(templateName);
-        PaginatedResult<List<Image>> result = imagePlant.fetchImagesByTemplate(template);
-        return new PaginatedResult<List<ImageResponse>>(
-                imageDelegate, "getImages", new Object[]{result, null}) {};
+    public File getImageContent(ImageIdentity id) {
+        ImagePlant imagePlant = 
+                imagePlantRepository.findImagePlantById(id.getImagePlantId());
+        Image image = imagePlant.fetchImageById(id.getImageId());
+        return image.getContent();
     }
 
     public static class Builder {
