@@ -1,13 +1,16 @@
 package com.images3;
 
-public class TemplateCreateRequest {
+import com.images3.common.ResizingConfig;
+import com.images3.common.TemplateIdentity;
+
+public class TemplateAddRequest {
 
     private TemplateIdentity id;
     private ResizingConfig resizingConfig;
     
-    public TemplateCreateRequest() {}
+    public TemplateAddRequest() {}
 
-    public TemplateCreateRequest(TemplateIdentity id,
+    public TemplateAddRequest(TemplateIdentity id,
             ResizingConfig resizingConfig) {
         this.id = id;
         this.resizingConfig = resizingConfig;
@@ -39,7 +42,7 @@ public class TemplateCreateRequest {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        TemplateCreateRequest other = (TemplateCreateRequest) obj;
+        TemplateAddRequest other = (TemplateAddRequest) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

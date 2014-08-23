@@ -1,14 +1,17 @@
 package com.images3;
 
-public class ImagePlantCreateRequest {
+import com.images3.common.AmazonS3Bucket;
+import com.images3.common.ResizingConfig;
+
+public class ImagePlantAddRequest {
 
     private String name;
     private AmazonS3Bucket bucket;
     private ResizingConfig resizingConfig; 
     
-    public ImagePlantCreateRequest() {}
+    public ImagePlantAddRequest() {}
 
-    public ImagePlantCreateRequest(String name, AmazonS3Bucket bucket,
+    public ImagePlantAddRequest(String name, AmazonS3Bucket bucket,
             ResizingConfig resizingConfig) {
         this.name = name;
         this.bucket = bucket;
@@ -46,7 +49,7 @@ public class ImagePlantCreateRequest {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ImagePlantCreateRequest other = (ImagePlantCreateRequest) obj;
+        ImagePlantAddRequest other = (ImagePlantAddRequest) obj;
         if (bucket == null) {
             if (other.bucket != null)
                 return false;

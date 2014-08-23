@@ -2,14 +2,14 @@ package com.images3;
 
 import java.io.File;
 
-public class ImageRequest {
+public class ImageAddRequest {
 
     private String imagePlantId;
     private File content;
     
-    public ImageRequest() {}
+    public ImageAddRequest() {}
     
-    public ImageRequest(String imagePlantId, File content) {
+    public ImageAddRequest(String imagePlantId, File content) {
         this.imagePlantId = imagePlantId;
         this.content = content;
     }
@@ -37,7 +37,7 @@ public class ImageRequest {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        ImageRequest other = (ImageRequest) obj;
+        ImageAddRequest other = (ImageAddRequest) obj;
         if (content == null) {
             if (other.content != null)
                 return false;

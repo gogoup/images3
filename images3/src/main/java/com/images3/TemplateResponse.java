@@ -1,5 +1,8 @@
 package com.images3;
 
+import com.images3.common.ResizingConfig;
+import com.images3.common.TemplateIdentity;
+
 public class TemplateResponse {
 
     private TemplateIdentity id;

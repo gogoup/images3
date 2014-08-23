@@ -1,12 +1,16 @@
 package com.images3;
 
+import java.io.File;
 import java.util.List;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
+import com.images3.common.ImageIdentity;
+import com.images3.common.TemplateIdentity;
+
 public interface ImageS3 {
     
-    public ImagePlantResponse addImagePlant(ImagePlantCreateRequest request);
+    public ImagePlantResponse addImagePlant(ImagePlantAddRequest request);
     
     public ImagePlantResponse updateImagePlant(ImagePlantUpdateRequest request);
     
@@ -16,7 +20,7 @@ public interface ImageS3 {
     
     public PaginatedResult<List<ImagePlantResponse>> getAllImagePlants();
     
-    public TemplateResponse addTemplate(TemplateCreateRequest request);
+    public TemplateResponse addTemplate(TemplateAddRequest request);
     
     public TemplateResponse updateTemplate(TemplateUpdateRequest request);
     
@@ -30,7 +34,7 @@ public interface ImageS3 {
     
     public PaginatedResult<List<TemplateResponse>> getArchivedTemplates(String imagePlantId);
     
-    public ImageResponse addImage(ImageRequest request);
+    public ImageResponse addImage(ImageAddRequest request);
     
     public void deleteImage(ImageIdentity id);
     
@@ -38,12 +42,14 @@ public interface ImageS3 {
     
     public ImageResponse getImage(ImageIdentity id);
     
-    public ImageResponse getImage(ImageIdentity originalImageId, String templateName);
+    public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId);
     
-    public PaginatedResult<List<ImageResponse>> getImages(String imagePlantId);
+    public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId, String templateName);
+
+    public PaginatedResult<List<SimpleImageResponse>> getVersioningImages(ImageIdentity originalImageId);
+
+    public File getImageContent(ImageIdentity id);
     
-    public PaginatedResult<List<ImageResponse>> getVersioningImages(ImageIdentity originalImageId);
-    
-    public PaginatedResult<List<ImageResponse>> getImages(String imagePlantId, String templateName);
+    public File getImageContent(ImageIdentity id, String templateName);
     
 }

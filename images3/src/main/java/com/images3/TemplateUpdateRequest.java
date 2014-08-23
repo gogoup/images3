@@ -1,5 +1,7 @@
 package com.images3;
 
+import com.images3.common.TemplateIdentity;
+
 public class TemplateUpdateRequest {
 
     private TemplateIdentity id;

@@ -1,5 +1,7 @@
 package com.images3;
 
+import com.images3.common.AmazonS3Bucket;
+
 public class ImagePlantUpdateRequest {
 
     private String id;

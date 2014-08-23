@@ -2,6 +2,8 @@ package com.images3;
 
 import java.util.Date;
 
+import com.images3.common.AmazonS3Bucket;
+
 public class ImagePlantResponse {
 
     private String id;
