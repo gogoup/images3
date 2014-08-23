@@ -5,14 +5,14 @@ import java.util.Date;
 
 import org.mockito.Mockito;
 
-import com.images3.AmazonS3Bucket;
-import com.images3.ImageDimension;
-import com.images3.ImageFormat;
-import com.images3.ImageIdentity;
-import com.images3.ImageMetadata;
-import com.images3.ResizingConfig;
-import com.images3.ResizingUnit;
-import com.images3.TemplateIdentity;
+import com.images3.common.AmazonS3Bucket;
+import com.images3.common.ImageDimension;
+import com.images3.common.ImageFormat;
+import com.images3.common.ImageIdentity;
+import com.images3.common.ImageMetadata;
+import com.images3.common.ResizingConfig;
+import com.images3.common.ResizingUnit;
+import com.images3.common.TemplateIdentity;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.TemplateOS;

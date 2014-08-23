@@ -7,17 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.images3.AmazonS3Bucket;
-import com.images3.DuplicatedImagePlantNameException;
-import com.images3.ResizingConfig;
-import com.images3.UnremovableTemplateException;
+import com.images3.common.AmazonS3Bucket;
+import com.images3.common.DirtyMark;
+import com.images3.common.DuplicatedImagePlantNameException;
+import com.images3.common.ResizingConfig;
+import com.images3.common.UnremovableTemplateException;
 import com.images3.core.Image;
 import com.images3.core.ImagePlant;
 import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
-import com.images3.utility.DirtyMark;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
@@ -212,14 +212,31 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
 
     @Override
     public boolean hasVersiongImage(Version version) {
+        checkForCurrentVersion(version);
         return imageRepository.hasVersioningImage(this, version);
     }
 
     @Override
     public Image fetchImageByVersion(Version version) {
+        checkForCurrentVersion(version);
         return imageRepository.findImageByVersion(this, version);
     }
+    
+    private void checkForCurrentVersion(Version version) {
+        if (isCurrentVersion(version)) {
+            throw new IllegalArgumentException(
+                    "The asking template {" + version.getTemplate().getName()
+                            + "} is the original image {"
+                            + version.getOriginalImage().getId() + "} itself.");
+        }
+    }
 
+    private boolean isCurrentVersion(Version version) {
+        Image originalImage = version.getOriginalImage();
+        Template originalTemplate = originalImage.getVersion().getTemplate();
+        Template template = version.getTemplate();
+        return  (originalTemplate.getName().equalsIgnoreCase(template.getName()));
+    }
     @Override
     public PaginatedResult<List<Image>> fetchVersioningImages(
             Image originalImage) {

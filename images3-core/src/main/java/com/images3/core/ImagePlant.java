@@ -4,8 +4,9 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import com.images3.AmazonS3Bucket;
-import com.images3.ResizingConfig;
+import com.images3.common.AmazonS3Bucket;
+import com.images3.common.ResizingConfig;
+
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
 public interface ImagePlant {

@@ -3,12 +3,13 @@ package com.images3.core.models.imageplant;
 import java.io.File;
 import java.util.Date;
 
+import com.images3.common.DirtyMark;
+import com.images3.common.ImageMetadata;
 import com.images3.core.Image;
 import com.images3.core.ImagePlant;
 import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImageOS;
-import com.images3.utility.DirtyMark;
 
 public class ImageEntity extends DirtyMark implements Image {
     
@@ -69,6 +70,11 @@ public class ImageEntity extends DirtyMark implements Image {
             version = new Version(template, originalImage);
         }
         return version;
+    }
+
+    @Override
+    public ImageMetadata getMetadata() {
+        return getObjectSegment().getMetadata();
     }
 
 }

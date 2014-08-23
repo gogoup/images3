@@ -2,8 +2,8 @@ package com.images3.core.infrastructure.spi;
 
 import java.io.File;
 
-import com.images3.AmazonS3Bucket;
-import com.images3.ImageIdentity;
+import com.images3.common.AmazonS3Bucket;
+import com.images3.common.ImageIdentity;
 
 public interface ImageContentAccess {
 

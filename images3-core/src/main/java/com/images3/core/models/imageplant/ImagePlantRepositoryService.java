@@ -3,7 +3,7 @@ package com.images3.core.models.imageplant;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.images3.NoSuchEntityFoundException;
+import com.images3.common.NoSuchEntityFoundException;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantRepository;
 import com.images3.core.infrastructure.ImagePlantOS;

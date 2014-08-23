@@ -2,8 +2,8 @@ package com.images3.core.models.imageplant;
 
 import java.util.Date;
 
-import com.images3.AmazonS3Bucket;
-import com.images3.ResizingConfig;
+import com.images3.common.AmazonS3Bucket;
+import com.images3.common.ResizingConfig;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantFactory;
 import com.images3.core.Template;

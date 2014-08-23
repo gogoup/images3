@@ -2,7 +2,7 @@ package com.images3.core.infrastructure.spi;
 
 import java.util.List;
 
-import com.images3.TemplateIdentity;
+import com.images3.common.TemplateIdentity;
 import com.images3.core.infrastructure.TemplateOS;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;

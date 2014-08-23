@@ -4,13 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.images3.ImageIdentity;
-import com.images3.NoSuchEntityFoundException;
+import com.images3.common.ImageIdentity;
+import com.images3.common.ImageVersion;
+import com.images3.common.NoSuchEntityFoundException;
 import com.images3.core.Image;
 import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImageOS;
-import com.images3.core.infrastructure.VersionOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageContentAccess;
 
@@ -73,13 +73,13 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     }
     
     public boolean hasVersioningImage(ImagePlantRoot imagePlant, Version version) {
-        VersionOS ver = new VersionOS(
+        ImageVersion ver = new ImageVersion(
                 version.getTemplate().getName(), version.getOriginalImage().getId());
         return imageAccess.isDuplicateVersion(imagePlant.getId(), ver);
     }
     
     public Image findImageByVersion(ImagePlantRoot imagePlant, Version version) {
-        VersionOS ver = new VersionOS(
+        ImageVersion ver = new ImageVersion(
                 version.getTemplate().getName(), version.getOriginalImage().getId());
         ImageOS objectSegment = imageAccess.selectImageByVersion(imagePlant.getId(), ver);
         Image entity = imageFactory.reconstituteImage(

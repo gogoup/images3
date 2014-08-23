@@ -1,7 +1,7 @@
 package com.images3.core;
 
-import com.images3.AmazonS3Bucket;
-import com.images3.ResizingConfig;
+import com.images3.common.AmazonS3Bucket;
+import com.images3.common.ResizingConfig;
 
 public interface ImagePlantFactory {
 

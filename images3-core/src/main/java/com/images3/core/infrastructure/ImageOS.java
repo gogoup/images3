@@ -2,18 +2,19 @@ package com.images3.core.infrastructure;
 
 import java.util.Date;
 
-import com.images3.ImageIdentity;
-import com.images3.ImageMetadata;
+import com.images3.common.ImageIdentity;
+import com.images3.common.ImageMetadata;
+import com.images3.common.ImageVersion;
 
 public class ImageOS {
     
     private ImageIdentity id;
     private Date dateTime;
     private ImageMetadata metadata;
-    private VersionOS version;
+    private ImageVersion version;
     
     public ImageOS(ImageIdentity id, Date dateTime, ImageMetadata metadata,
-            VersionOS version) {
+            ImageVersion version) {
         this.id = id;
         this.dateTime = dateTime;
         this.metadata = metadata;
@@ -32,7 +33,7 @@ public class ImageOS {
         return metadata;
     }
 
-    public VersionOS getVersion() {
+    public ImageVersion getVersion() {
         return version;
     }
 

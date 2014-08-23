@@ -2,17 +2,17 @@ package com.images3.core.infrastructure.spi;
 
 import java.util.List;
 
-import com.images3.ImageIdentity;
+import com.images3.common.ImageIdentity;
+import com.images3.common.ImageVersion;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.ImagePlantOS;
-import com.images3.core.infrastructure.VersionOS;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 public interface ImageAccess extends PaginatedResultDelegate<List<ImageOS>> {
     
-    public boolean isDuplicateVersion(String imagePlantId, VersionOS version);
+    public boolean isDuplicateVersion(String imagePlantId, ImageVersion version);
     
     public String generateImageId(ImagePlantOS imagePlant);
 
@@ -24,7 +24,7 @@ public interface ImageAccess extends PaginatedResultDelegate<List<ImageOS>> {
     
     public ImageOS selectImageById(ImageIdentity id);
     
-    public ImageOS selectImageByVersion(String imagePlantId, VersionOS version);
+    public ImageOS selectImageByVersion(String imagePlantId, ImageVersion version);
     
     public PaginatedResult<List<ImageOS>> selectImagesByOriginalImageId(
             String imagePlantId, String originalImageId);

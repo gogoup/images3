@@ -11,9 +11,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-import com.images3.ResizingConfig;
-import com.images3.ResizingUnit;
-import com.images3.TemplateIdentity;
+import com.images3.common.ResizingConfig;
+import com.images3.common.ResizingUnit;
+import com.images3.common.TemplateIdentity;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.TemplateOS;

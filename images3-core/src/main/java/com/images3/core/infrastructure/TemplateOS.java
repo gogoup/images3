@@ -1,7 +1,7 @@
 package com.images3.core.infrastructure;
 
-import com.images3.ResizingConfig;
-import com.images3.TemplateIdentity;
+import com.images3.common.ResizingConfig;
+import com.images3.common.TemplateIdentity;
 
 public class TemplateOS {
 

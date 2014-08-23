@@ -2,7 +2,7 @@ package com.images3.core.infrastructure;
 
 import java.util.Date;
 
-import com.images3.AmazonS3Bucket;
+import com.images3.common.AmazonS3Bucket;
 
 public class ImagePlantOS {
 

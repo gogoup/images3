@@ -2,8 +2,8 @@ package com.images3.core.models.imageplant;
 
 import java.util.List;
 
-import com.images3.NoSuchEntityFoundException;
-import com.images3.TemplateIdentity;
+import com.images3.common.NoSuchEntityFoundException;
+import com.images3.common.TemplateIdentity;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.TemplateOS;
 import com.images3.core.infrastructure.spi.TemplateAccess;
