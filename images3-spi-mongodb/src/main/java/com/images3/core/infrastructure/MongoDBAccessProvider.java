@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
 
@@ -15,8 +16,10 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
-public class ObjectSegmentAccessProvider {
+public class MongoDBAccessProvider {
     
     private static final String DBNAME = "images3";
     
@@ -24,7 +27,7 @@ public class ObjectSegmentAccessProvider {
     private MongoClient mongoClient;
     private MongoDBObjectMapper objectMapper;
     
-    public ObjectSegmentAccessProvider(String pathToConfig) {
+    public MongoDBAccessProvider(String pathToConfig) {
         loadConfigProperties(pathToConfig);
         initMongoClient();
         objectMapper = new MongoDBObjectMapper();
@@ -58,10 +61,12 @@ public class ObjectSegmentAccessProvider {
     private void initMongoClient() {
         String url = config.getProperty("mongodb.url");
         int port = Integer.valueOf(config.getProperty("mongodb.port"));
-        //String username = config.getProperty("mongodb.username");
-        //String password = config.getProperty("mongodb.password");
+        String username = config.getProperty("mongodb.username");
+        String password = config.getProperty("mongodb.password");
+        MongoCredential credential = 
+                MongoCredential.createMongoCRCredential(username, DBNAME, password.toCharArray());
         try {
-            this.mongoClient = new MongoClient(url, port);
+            this.mongoClient = new MongoClient(new ServerAddress(url, port), Arrays.asList(credential));
             initCollections();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
