@@ -48,16 +48,16 @@ public abstract class MongoDBAccess<T> {
         PageCursor cursor = null;
         String nextPageCursor = ShortUUID.randomUUID();
         if (null != pageCursor) {
-            cursor = selectPageCursorById(pageCursor);
+            cursor = getSavedPageCursorById(pageCursor);
         }
-        cursor = getNextPageCursor(cursor);
+        cursor = generateNextPageCursor(cursor);
         insertPageCursor(nextPageCursor, cursor);
         return new Object[] {nextPageCursor, cursor};
     }
     
-    private PageCursor getNextPageCursor(PageCursor cursor) {
+    private PageCursor generateNextPageCursor(PageCursor cursor) {
         if (null == cursor) {
-            return new PageCursor().startAtPage(1).withSize(pageSize);
+            return new PageCursor().startAtPage(1).withSize(pageSize); //first page
         } else {
             return new PageCursor().startAtPage(cursor.getStart() + 1).withSize(pageSize);
         }
@@ -68,7 +68,7 @@ public abstract class MongoDBAccess<T> {
         coll.insert(getObjectMapper().mapToBasicDBObject(id, pageCursor));
     }
     
-    private PageCursor selectPageCursorById(String id) {
+    private PageCursor getSavedPageCursorById(String id) {
         DBCollection coll = getDatabase().getCollection("PageCursor");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("id", id);
@@ -79,7 +79,7 @@ public abstract class MongoDBAccess<T> {
         return getObjectMapper().mapToPageCursor((BasicDBObject) cursor.next());
     }
     
-    public Object getNextPageCursor(String tag, Object[] arguments,
+    public Object nextPageCursor(String tag, Object[] arguments,
             Object pageCursor, List<T> result) {
         if (null != result 
                 && (result.size() == 0

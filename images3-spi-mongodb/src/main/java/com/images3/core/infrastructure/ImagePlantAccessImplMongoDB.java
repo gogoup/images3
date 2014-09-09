@@ -86,5 +86,15 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess<ImagePlantOS> imp
         return imagePlants;
     }
     
+    @Override
+    public Object getNextPageCursor(String tag, Object[] arguments,
+            Object pageCursor, List<ImagePlantOS> result) {
+        return nextPageCursor(tag, arguments, pageCursor, result);
+    }
+
+    @Override
+    public Object getFirstPageCursor(String tag, Object[] arguments) {
+        return getNextPageCursor(null)[0];
+    }
 
 }

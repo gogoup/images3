@@ -108,4 +108,15 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
         return templates;
     }
 
+    @Override
+    public Object getNextPageCursor(String tag, Object[] arguments,
+            Object pageCursor, List<TemplateOS> result) {
+        return nextPageCursor(tag, arguments, pageCursor, result);
+    }
+
+    @Override
+    public Object getFirstPageCursor(String tag, Object[] arguments) {
+        return getNextPageCursor(null)[0];
+    }
+
 }

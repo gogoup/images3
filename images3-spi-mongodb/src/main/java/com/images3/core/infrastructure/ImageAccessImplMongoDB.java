@@ -130,7 +130,7 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
         }
         throw new UnsupportedOperationException(methodName);
     }
-    
+   
     private List<ImageOS> getImagesByOriginalImageId(String imagePlantId, 
             String originalImageId, PageCursor pageCursor) {
         BasicDBObject criteria = new BasicDBObject()
@@ -163,5 +163,16 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
             images.add(getObjectMapper().mapToImageOS((BasicDBObject) obj));
         }
         return images;
+    }
+
+    @Override
+    public Object getNextPageCursor(String tag, Object[] arguments,
+            Object pageCursor, List<ImageOS> result) {
+        return nextPageCursor(tag, arguments, pageCursor, result);
+    }
+
+    @Override
+    public Object getFirstPageCursor(String tag, Object[] arguments) {
+        return getNextPageCursor(null)[0];
     }
 }
