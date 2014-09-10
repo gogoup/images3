@@ -31,6 +31,8 @@ public interface ImagePlant {
     
     public Template fetchTemplate(String name);
     
+    public int countTemplates();
+    
     public PaginatedResult<List<Template>> listAllTemplates();
     
     public PaginatedResult<List<Template>> listActiveTemplates();
@@ -58,5 +60,9 @@ public interface ImagePlant {
     public PaginatedResult<List<Image>> fetchImagesByTemplate(Template template);
     
     public PaginatedResult<List<Image>> listAllImages();
+    
+    public ImageReporter generateImageReporter();
+    
+    public ImageReporter generateImageReporter(Template template);
     
 }

@@ -23,14 +23,43 @@ public class ImagePaginatedResultDelegate implements
             Object pageCursor) {
         if ("getImages".equals(tag)) {
             PaginatedResult<List<Image>> result = (PaginatedResult<List<Image>>) arguments[0];
-            return getImages(result, pageCursor);
+            List<Image> images = result.getResult(pageCursor);
+            return getImages(images);
         }
         throw new UnsupportedOperationException(tag);
     }
     
-    private List<SimpleImageResponse> getImages(
-            PaginatedResult<List<Image>> result, Object pageCursor) {
-        List<Image> images = result.getResult(pageCursor);
+    @Override
+    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
+        if ("getImages".equals(tag)) {
+            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
+            return osResult.isGetAllResultsSupported();
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<SimpleImageResponse> fetchAllResults(String tag,
+            Object[] arguments) {
+        if ("getImages".equals(tag)) {
+            PaginatedResult<List<Image>> result = (PaginatedResult<List<Image>>) arguments[0];
+            List<Image> images = result.getAllResults();
+            return getImages(images);
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public Object getFirstPageCursor(String tag, Object[] arguments) {
+        if (!"getImages".equals(tag)) {
+            throw new UnsupportedOperationException(tag);
+        }
+        PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];
+        return osResult.getFirstPageCursor();
+    }
+
+    private List<SimpleImageResponse> getImages(List<Image> images) {
         List<SimpleImageResponse> responses = new ArrayList<SimpleImageResponse>(images.size());
         for (Image image: images) {
             responses.add(objectMapper.mapToResponse(image));

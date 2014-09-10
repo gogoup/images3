@@ -76,14 +76,7 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
         return new PaginatedResult<List<Template>>(
                 this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, osResult}){};
     }
-    
-    private List<Template> getAllTemplatesByImagePlant(ImagePlantRoot imagePlant, 
-            PaginatedResult<List<TemplateOS>> osResult,  Object pageCursor) {
-        List<TemplateOS> objectSegments = null;
-        objectSegments = osResult.getResult(pageCursor);
-        return templateFactory.reconstituteTemplates(imagePlant, objectSegments);
-    }
-    
+   
     private void checkIfVoid(TemplateEntity template) {
         if (template.isVoid()) {
             throw new IllegalStateException(template.toString());
@@ -92,14 +85,36 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<Template> fetchResult(String methodName, Object[] arguments,
+    public List<Template> fetchResult(String tag, Object[] arguments,
             Object pageCursor) {
-        if ("getAllTemplatesByImagePlant".equals(methodName)) {
+        if ("getAllTemplatesByImagePlant".equals(tag)) {
             ImagePlantRoot imagePlant = (ImagePlantRoot) arguments[0]; 
             PaginatedResult<List<TemplateOS>> osResult = (PaginatedResult<List<TemplateOS>>) arguments[1];
-            return getAllTemplatesByImagePlant(imagePlant, osResult, pageCursor);
+            List<TemplateOS> objectSegments = osResult.getResult(pageCursor);
+            return templateFactory.reconstituteTemplates(imagePlant, objectSegments);
         }
-        throw new UnsupportedOperationException(methodName);
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
+        if ("getAllTemplatesByImagePlant".equals(tag)) {
+            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
+            return osResult.isGetAllResultsSupported();
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Template> fetchAllResults(String tag, Object[] arguments) {
+        if ("getAllTemplatesByImagePlant".equals(tag)) {
+            ImagePlantRoot imagePlant = (ImagePlantRoot) arguments[0]; 
+            PaginatedResult<List<TemplateOS>> osResult = (PaginatedResult<List<TemplateOS>>) arguments[1];
+            List<TemplateOS> objectSegments = osResult.getAllResults();
+            return templateFactory.reconstituteTemplates(imagePlant, objectSegments);
+        }
+        throw new UnsupportedOperationException(tag);
     }
 
     @Override
@@ -108,6 +123,15 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
         if ("getAllTemplatesByImagePlant".equals(tag)) {
             PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
             return osResult.getNextPageCursor();
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public Object getFirstPageCursor(String tag, Object[] arguments) {
+        if ("getAllTemplatesByImagePlant".equals(tag)) {
+            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
+            return osResult.getFirstPageCursor();
         }
         throw new UnsupportedOperationException(tag);
     }

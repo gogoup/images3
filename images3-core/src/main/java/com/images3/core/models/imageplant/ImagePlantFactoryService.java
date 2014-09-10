@@ -15,13 +15,16 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
     private ImagePlantAccess imagePlantAccess;
     private TemplateFactoryService templateFactory;
     private ImageFactoryService imageFactory;
+    private ImageReporterFactoryService imageReporterFactory;
     
     public ImagePlantFactoryService(ImagePlantAccess imagePlantAccess,
             TemplateFactoryService templateFactory,
-            ImageFactoryService imageFactory) {
+            ImageFactoryService imageFactory,
+            ImageReporterFactoryService imageReporterFactory) {
         this.imagePlantAccess = imagePlantAccess;
         this.templateFactory = templateFactory;
         this.imageFactory = imageFactory;
+        this.imageReporterFactory = imageReporterFactory;
     }
 
     @Override
@@ -49,7 +52,7 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
             return null;
         }
         return new ImagePlantRoot(objectSegment,imagePlantAccess, imageFactory, 
-                imageRepository, templateFactory, templateRepository);
+                imageRepository, templateFactory, templateRepository, imageReporterFactory);
     }
 
 }

@@ -44,7 +44,7 @@ public abstract class MongoDBAccess<T> {
         }
     }
     
-    protected Object[] getNextPageCursor(String pageCursor) {
+    protected Object[] retrieveNextPageCursor(String pageCursor) {
         PageCursor cursor = null;
         String nextPageCursor = ShortUUID.randomUUID();
         if (null != pageCursor) {
@@ -86,6 +86,6 @@ public abstract class MongoDBAccess<T> {
                     || getPageSize() > result.size())) {
             return null;
         }
-        return getNextPageCursor((String) pageCursor)[0];
+        return retrieveNextPageCursor((String) pageCursor)[0];
     }
 }

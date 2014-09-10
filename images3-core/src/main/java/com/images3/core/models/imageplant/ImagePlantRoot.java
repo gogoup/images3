@@ -14,6 +14,7 @@ import com.images3.common.ResizingConfig;
 import com.images3.common.UnremovableTemplateException;
 import com.images3.core.Image;
 import com.images3.core.ImagePlant;
+import com.images3.core.ImageReporter;
 import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImagePlantOS;
@@ -32,12 +33,14 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     private Map<String, TemplateEntity> dirtyTemplates;
     private Map<String, ImageEntity> dirtyImages;
     private Template masterTemplate;
+    private ImageReporterFactoryService imageReporterFactory;
     
     public ImagePlantRoot() {}
     
     public ImagePlantRoot(ImagePlantOS objectSegment, ImagePlantAccess imagePlantAccess, 
             ImageFactoryService imageFactory, ImageRepositoryService imageRepository,
-            TemplateFactoryService templateFactory, TemplateRepositoryService templateRepository) {
+            TemplateFactoryService templateFactory, TemplateRepositoryService templateRepository,
+            ImageReporterFactoryService imageReporterFactory) {
         this.objectSegment = objectSegment;
         this.imagePlantAccess = imagePlantAccess;
         this.imageFactory = imageFactory;
@@ -47,6 +50,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
         this.dirtyTemplates = new HashMap<String, TemplateEntity>();
         this.dirtyImages = new HashMap<String, ImageEntity>();
         this.masterTemplate = null;
+        this.imageReporterFactory = imageReporterFactory;
     }
     
     public ImagePlantOS getObjectSegment() {
@@ -98,7 +102,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
 
     @Override
     public AmazonS3Bucket getAmazonS3Bucket() {
-        return getObjectSegment().getAmazonS3Bucket();
+        return new AmazonS3Bucket(null, null, getObjectSegment().getAmazonS3Bucket().getName());
     }
 
     @Override
@@ -257,6 +261,22 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
             pageCursor = result.getNextPageCursor(); //next page.
         }
         dirtyImages.put(entity.getId(), entity);
+    }
+
+    @Override
+    public int countTemplates() {
+        throw new RuntimeException("Unfinished Method");
+    }
+
+    @Override
+    public ImageReporter generateImageReporter() {
+        return imageReporterFactory.generateImageReporter(this);
+    }
+
+    @Override
+    public ImageReporter generateImageReporter(Template template) {
+        checkForInvalidTemplate(template);
+        return imageReporterFactory.generateImageReporter(template);
     }
 
 }

@@ -5,21 +5,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
 
 import com.images3.core.infrastructure.spi.ImageAccess;
+import com.images3.core.infrastructure.spi.ImageMetricsService;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
 import com.images3.core.infrastructure.spi.TemplateAccess;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
 
-public class MongoDBAccessProvider {
+public class ObjectSegmentAccessProvider {
     
     private static final String DBNAME = "images3";
     
@@ -27,7 +25,7 @@ public class MongoDBAccessProvider {
     private MongoClient mongoClient;
     private MongoDBObjectMapper objectMapper;
     
-    public MongoDBAccessProvider(String pathToConfig) {
+    public ObjectSegmentAccessProvider(String pathToConfig) {
         loadConfigProperties(pathToConfig);
         initMongoClient();
         objectMapper = new MongoDBObjectMapper();
@@ -58,15 +56,18 @@ public class MongoDBAccessProvider {
         return new TemplateAccessImplMongoDB(mongoClient, DBNAME, objectMapper, pageSize);
     }
     
+    public ImageMetricsService getImageMetricsService() {
+        int pageSize = Integer.valueOf(config.getProperty("imagemetricsservice.page.size"));
+        return new ImageMetricsServiceImplMongoDB(mongoClient, DBNAME, objectMapper, pageSize);
+    }
+    
     private void initMongoClient() {
         String url = config.getProperty("mongodb.url");
         int port = Integer.valueOf(config.getProperty("mongodb.port"));
-        String username = config.getProperty("mongodb.username");
-        String password = config.getProperty("mongodb.password");
-        MongoCredential credential = 
-                MongoCredential.createMongoCRCredential(username, DBNAME, password.toCharArray());
+        //String username = config.getProperty("mongodb.username");
+        //String password = config.getProperty("mongodb.password");
         try {
-            this.mongoClient = new MongoClient(new ServerAddress(url, port), Arrays.asList(credential));
+            this.mongoClient = new MongoClient(url, port);
             initCollections();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
@@ -87,12 +88,6 @@ public class MongoDBAccessProvider {
         }
         if (!collNames.contains("Image")) {
             initImage(images3DB);
-        }
-        if (!collNames.contains("ImageMetricsInTemplate")) {
-            initImageMetricsInTemplate(images3DB);
-        }
-        if (!collNames.contains("ImageMetricsInSecond")) {
-            initImageMetricsInSecond(images3DB);
         }
     }
     
@@ -128,22 +123,6 @@ public class MongoDBAccessProvider {
                     .append("imagePlantId", 1)
                     .append("version.templateName", 1)
                     .append("version.originalImageId", 1));
-    }
-    
-    private void initImageMetricsInTemplate(DB db) {
-        DBCollection coll = db.getCollection("ImageMetricsInTemplate");
-        coll.createIndex(
-                new BasicDBObject().append("imagePlantId", 1).append("templateName", 1), 
-                new BasicDBObject("unique", true));
-    }
-    
-    private void initImageMetricsInSecond(DB db) {
-        DBCollection coll = db.getCollection("ImageMetricsInTemplate");
-        coll.createIndex(
-                new BasicDBObject().append("imagePlantId", 1)
-                    .append("templateName", 1)
-                    .append("second", 1), 
-                new BasicDBObject("unique", true));
     }
     
 }

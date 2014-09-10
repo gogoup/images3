@@ -16,12 +16,14 @@ import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageContentAccess;
+import com.images3.core.infrastructure.spi.ImageMetricsService;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
 import com.images3.core.infrastructure.spi.ImageProcessor;
 import com.images3.core.infrastructure.spi.TemplateAccess;
 import com.images3.core.models.imageplant.ImageFactoryService;
 import com.images3.core.models.imageplant.ImagePlantFactoryService;
 import com.images3.core.models.imageplant.ImagePlantRepositoryService;
+import com.images3.core.models.imageplant.ImageReporterFactoryService;
 import com.images3.core.models.imageplant.ImageRepositoryService;
 import com.images3.core.models.imageplant.TemplateFactoryService;
 import com.images3.core.models.imageplant.TemplateRepositoryService;
@@ -273,6 +275,7 @@ public class ImageS3Server implements ImageS3 {
         private ImageContentAccess imageContentAccess;
         private ImageProcessor imageProcessor;
         private TemplateAccess templateAccess;
+        private ImageMetricsService imageMetricsServcie;
         
         public Builder() {
             
@@ -300,6 +303,11 @@ public class ImageS3Server implements ImageS3 {
 
         public Builder setTempalteAccess(TemplateAccess templateAccess) {
             this.templateAccess = templateAccess;
+            return this;
+        }
+        
+        public Builder setImageMetricsService(ImageMetricsService imageStatServcie) {
+            this.imageMetricsServcie = imageStatServcie;
             return this;
         }
         
@@ -338,12 +346,20 @@ public class ImageS3Server implements ImageS3 {
             return templateAccess;
         }
         
+        protected ImageMetricsService getImageMetricsService() {
+            if (null == imageMetricsServcie) {
+                throw new NullPointerException("ImageMetricsService");
+            }
+            return imageMetricsServcie;
+        }
+        
         private void checkForNecessaryParameters() {
             getImagePlantAccess();
             getImageAccess();
             getImageContentAccess();
             getImageProcessor();
             getTemplateAccess();
+            getImageMetricsService();
         }
 
         public ImageS3 build() {
@@ -352,10 +368,13 @@ public class ImageS3Server implements ImageS3 {
             ImageFactoryService imageFactory = new ImageFactoryService(
                     imageAccess, 
                     imageProcessor);
+            ImageReporterFactoryService imageReporterFactory = 
+                    new ImageReporterFactoryService(imageMetricsServcie);
             ImagePlantFactoryService imagePlantFactory = new ImagePlantFactoryService(
                     imagePlantAccess,
                     templateFactory,
-                    imageFactory);
+                    imageFactory,
+                    imageReporterFactory);
             TemplateRepositoryService templateRepository = new TemplateRepositoryService(
                     templateAccess,
                     templateFactory);
@@ -363,7 +382,8 @@ public class ImageS3Server implements ImageS3 {
                     imageAccess, 
                     imageContentAccess,
                     imageFactory, 
-                    templateRepository);
+                    templateRepository,
+                    imageMetricsServcie);
             ImagePlantRepositoryService imagePlantRepository = new ImagePlantRepositoryService(
                     imagePlantAccess,
                     imagePlantFactory,

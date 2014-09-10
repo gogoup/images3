@@ -13,6 +13,7 @@ import com.images3.core.Version;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageContentAccess;
+import com.images3.core.infrastructure.spi.ImageMetricsService;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
@@ -23,13 +24,16 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     private ImageContentAccess imageContentAccess;
     private ImageFactoryService imageFactory;
     private TemplateRepositoryService templateRepository;
+    private ImageMetricsService imageStatService;
     
     public ImageRepositoryService(ImageAccess imageAccess, ImageContentAccess imageContentAccess,
-            ImageFactoryService imageFactory, TemplateRepositoryService templateRepository) {
+            ImageFactoryService imageFactory, TemplateRepositoryService templateRepository,
+            ImageMetricsService imageStatService) {
         this.imageAccess = imageAccess;
         this.imageContentAccess = imageContentAccess;
         this.imageFactory = imageFactory;
         this.templateRepository = templateRepository;
+        this.imageStatService = imageStatService;
     }
 
     public ImageEntity storeImage(ImageEntity image) {
@@ -39,7 +43,10 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         if (image.isNew()) {
             imageAccess.insertImage(objectSegment); //insert image
             imageContentAccess.insertImageContent(
-                    objectSegment.getId(), imagePlant.getAmazonS3Bucket(), image.getContent()); //insert content
+                    objectSegment.getId(), 
+                    imagePlant.getObjectSegment().getAmazonS3Bucket(), 
+                    image.getContent()); //insert content
+            imageStatService.record(objectSegment); //record metrics of image.
         }
         image.cleanMarks();
         return imageFactory.reconstituteImage(
@@ -51,7 +58,8 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         ImagePlantRoot imagePlant = (ImagePlantRoot) image.getImagePlant();
         ImageOS objectSegment = image.getObjectSegment();
         imageContentAccess.deleteImageContent(
-                objectSegment.getId(), imagePlant.getAmazonS3Bucket()); //delete content
+                objectSegment.getId(), 
+                imagePlant.getObjectSegment().getAmazonS3Bucket()); //delete content
         imageAccess.deleteImage(objectSegment); //delete image
         image.markAsVoid();
     }
@@ -59,7 +67,8 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     public void removeImages(ImagePlantRoot imagePlant) {
         imageAccess.deleteImages(imagePlant.getId());
         imageContentAccess.deleteImageContentByImagePlantId(
-                imagePlant.getId(), imagePlant.getAmazonS3Bucket());
+                imagePlant.getId(), 
+                imagePlant.getObjectSegment().getAmazonS3Bucket());
     }
     
     public Image findImageById(ImagePlantRoot imagePlant, String id) {
@@ -113,9 +122,7 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
                 this, "getAllImages", new Object[] {imagePlant, osResult}) {};
     }
     
-    private List<Image> getAllImages(ImagePlantRoot imagePlant, 
-            PaginatedResult<List<ImageOS>> osResult, Object pageCursor) {
-        List<ImageOS> objectSegments = osResult.getResult(pageCursor);
+    private List<Image> getAllImages(ImagePlantRoot imagePlant, List<ImageOS> objectSegments) {
         List<Image> images = new ArrayList<Image>(objectSegments.size());
         for (ImageOS os: objectSegments) {
             images.add(
@@ -133,14 +140,36 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<Image> fetchResult(String methodName, Object[] arguments,
+    public List<Image> fetchResult(String tag, Object[] arguments,
             Object pageCursor) {
-        if ("getAllImages".equals(methodName)) {
+        if ("getAllImages".equals(tag)) {
             ImagePlantRoot imagePlant = (ImagePlantRoot) arguments[0];
             PaginatedResult<List<ImageOS>> osResult = (PaginatedResult<List<ImageOS>>) arguments[1];
-            return getAllImages(imagePlant, osResult, pageCursor);
+            List<ImageOS> objectSegments = osResult.getResult(pageCursor);
+            return getAllImages(imagePlant, objectSegments);
         }
-        throw new UnsupportedOperationException(methodName);
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
+        if ("getAllImages".equals(tag)) {
+            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
+            return osResult.isGetAllResultsSupported();
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Image> fetchAllResults(String tag, Object[] arguments) {
+        if ("getAllImages".equals(tag)) {
+            ImagePlantRoot imagePlant = (ImagePlantRoot) arguments[0];
+            PaginatedResult<List<ImageOS>> osResult = (PaginatedResult<List<ImageOS>>) arguments[1];
+            List<ImageOS> objectSegments = osResult.getAllResults();
+            return getAllImages(imagePlant, objectSegments);
+        }
+        throw new UnsupportedOperationException(tag);
     }
 
     @Override
@@ -156,6 +185,16 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     public File findImageContent(ImageEntity image) {
         ImagePlantRoot imagePlant = (ImagePlantRoot) image.getImagePlant();
         return imageContentAccess.selectImageContent(
-                image.getObjectSegment().getId(), imagePlant.getAmazonS3Bucket());
+                image.getObjectSegment().getId(),
+                imagePlant.getObjectSegment().getAmazonS3Bucket());
+    }
+
+    @Override
+    public Object getFirstPageCursor(String tag, Object[] arguments) {
+        if ("getAllImages".equals(tag)) {
+            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
+            return osResult.getFirstPageCursor();
+        }
+        throw new UnsupportedOperationException(tag);
     }
 }

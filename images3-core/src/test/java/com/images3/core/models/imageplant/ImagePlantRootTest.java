@@ -56,6 +56,7 @@ public class ImagePlantRootTest {
     private ImageRepositoryService imageRepository;
     private TemplateFactoryService templateFactory;
     private TemplateRepositoryService templateRepository;
+    private ImageReporterFactoryService imageReporterFactory;
     private TemplateOS templateOS;
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -73,7 +74,7 @@ public class ImagePlantRootTest {
         setupImageRepositoryService();
         setupTemplateFactoryService();
         setupTemplateRepositoryService();
-        
+        setupImageReporterFactoryService();
         templateOS = SetupHelper.setupTemplateOS(
                 new TemplateIdentity(IMAGE_PLANT_ID, TEMPLATE_NAME), 
                 TEMPLATE_ISARCHIVED, TEMPLATE_ISREMOVABLE, resizingConfig);
@@ -100,9 +101,13 @@ public class ImagePlantRootTest {
         templateRepository = Mockito.mock(TemplateRepositoryService.class);
     }
     
+    private void setupImageReporterFactoryService() {
+        imageReporterFactory = Mockito.mock(ImageReporterFactoryService.class);
+    }
+    
     private ImagePlantRoot createImagePlant() {
         ImagePlantRoot imagePlant = new ImagePlantRoot(objectSegment, imagePlantAccess, 
-                imageFactory, imageRepository, templateFactory, templateRepository);
+                imageFactory, imageRepository, templateFactory, templateRepository, imageReporterFactory);
         return imagePlant;
     }
     
@@ -115,7 +120,9 @@ public class ImagePlantRootTest {
         assertEquals(imagePlant.getId(), IMAGE_PLANT_ID);
         assertEquals(imagePlant.getName(), IMAGE_PLANT_NAME);
         assertEquals(imagePlant.getCreationTime(), IMAGE_PLANT_CREATION_TIME);
-        assertEquals(imagePlant.getAmazonS3Bucket(), amazonS3Bucket);
+        assertEquals(imagePlant.getAmazonS3Bucket().getAccessKey(), null);
+        assertEquals(imagePlant.getAmazonS3Bucket().getSecretKey(), null);
+        assertEquals(imagePlant.getAmazonS3Bucket().getName(), amazonS3Bucket.getName());
         assertTrue(!imagePlant.isNew());
         assertTrue(!imagePlant.isDirty());
         assertTrue(!imagePlant.isVoid());

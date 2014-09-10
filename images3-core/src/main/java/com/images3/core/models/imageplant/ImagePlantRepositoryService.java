@@ -99,9 +99,7 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
                 this, "getAllImagePlants", new Object[] {osResult}) {};
     }
     
-    private List<ImagePlant> getAllImagePlants(PaginatedResult<List<ImagePlantOS>> osResult,
-            Object pageCursor) {
-        List<ImagePlantOS> objectSegments = osResult.getResult(pageCursor);
+    private List<ImagePlant> getAllImagePlants(List<ImagePlantOS> objectSegments) {
         List<ImagePlant> imagePlants = new ArrayList<ImagePlant>(objectSegments.size());
         for (ImagePlantOS os: objectSegments) {
             imagePlants.add(imagePlantFactory.reconstituteImagePlant(
@@ -118,13 +116,34 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<ImagePlant> fetchResult(String methodName, Object[] arguments,
+    public List<ImagePlant> fetchResult(String tag, Object[] arguments,
             Object pageCursor) {
-        if ("getAllImagePlants".equals(methodName)) {
+        if ("getAllImagePlants".equals(tag)) {
             PaginatedResult<List<ImagePlantOS>> osResult = (PaginatedResult<List<ImagePlantOS>>) arguments[0];
-            return getAllImagePlants(osResult, pageCursor);
+            List<ImagePlantOS> objectSegments = osResult.getResult(pageCursor);
+            return getAllImagePlants(objectSegments);
         }
-        throw new UnsupportedOperationException(methodName);
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
+        if ("getAllImagePlants".equals(tag)) {
+            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
+            return osResult.isGetAllResultsSupported();
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ImagePlant> fetchAllResults(String tag, Object[] arguments) {
+        if ("getAllImagePlants".equals(tag)) {
+            PaginatedResult<List<ImagePlantOS>> osResult = (PaginatedResult<List<ImagePlantOS>>) arguments[0];
+            List<ImagePlantOS> objectSegments = osResult.getAllResults();
+            return getAllImagePlants(objectSegments);
+        }
+        throw new UnsupportedOperationException(tag);
     }
 
     @Override
@@ -133,6 +152,15 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
         if ("getAllImagePlants".equals(tag)) {
             PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];
             return osResult.getNextPageCursor();
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public Object getFirstPageCursor(String tag, Object[] arguments) {
+        if ("getAllImagePlants".equals(tag)) {
+            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];
+            return osResult.getFirstPageCursor();
         }
         throw new UnsupportedOperationException(tag);
     }

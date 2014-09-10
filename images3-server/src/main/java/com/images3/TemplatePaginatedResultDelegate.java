@@ -23,22 +23,55 @@ public class TemplatePaginatedResultDelegate implements
             Object pageCursor) {
         if ("getActiveTempaltes".equals(tag)) {
             PaginatedResult<List<Template>> result = (PaginatedResult<List<Template>>) arguments[0];
-            return getTempaltes(result, pageCursor);
+            List<Template> templates = result.getResult(pageCursor);
+            return getTempaltes(templates);
         }
         if ("getArchivedTemplates".equals(tag)) {
             PaginatedResult<List<Template>> result = (PaginatedResult<List<Template>>) arguments[0];
-            return getTempaltes(result, pageCursor);
+            List<Template> templates = result.getResult(pageCursor);
+            return getTempaltes(templates);
         }
         if ("getAllTemplates".equals(tag)) {
             PaginatedResult<List<Template>> result = (PaginatedResult<List<Template>>) arguments[0];
-            return getTempaltes(result, pageCursor);
+            List<Template> templates = result.getResult(pageCursor);
+            return getTempaltes(templates);
         }
         throw new UnsupportedOperationException(tag);
     }
     
-    private List<TemplateResponse> getTempaltes(
-            PaginatedResult<List<Template>> result, Object pageCursor) {
-        List<Template> templates = result.getResult(pageCursor);
+    @Override
+    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
+        if (!"getActiveTempaltes".equals(tag)
+                && !"getArchivedTemplates".equals(tag)
+                && !"getAllTemplates".equals(tag)) {
+            throw new UnsupportedOperationException(tag);
+        }
+        PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
+        return osResult.isGetAllResultsSupported();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<TemplateResponse> fetchAllResults(String tag, Object[] arguments) {
+        if ("getActiveTempaltes".equals(tag)) {
+            PaginatedResult<List<Template>> result = (PaginatedResult<List<Template>>) arguments[0];
+            List<Template> templates = result.getAllResults();
+            return getTempaltes(templates);
+        }
+        if ("getArchivedTemplates".equals(tag)) {
+            PaginatedResult<List<Template>> result = (PaginatedResult<List<Template>>) arguments[0];
+            List<Template> templates = result.getAllResults();
+            return getTempaltes(templates);
+        }
+        if ("getAllTemplates".equals(tag)) {
+            PaginatedResult<List<Template>> result = (PaginatedResult<List<Template>>) arguments[0];
+            List<Template> templates = result.getAllResults();
+            return getTempaltes(templates);
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    private List<TemplateResponse> getTempaltes(List<Template> templates) {
         List<TemplateResponse> responses = new ArrayList<TemplateResponse>(templates.size());
         for (Template template: templates) {
             responses.add(objectMapper.mapToResponse(template));
@@ -56,6 +89,12 @@ public class TemplatePaginatedResultDelegate implements
         }
         PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];
         return osResult.getNextPageCursor();
+    }
+
+    @Override
+    public Object getFirstPageCursor(String tag, Object[] arguments) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

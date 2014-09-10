@@ -79,16 +79,34 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
                 this, "getTemplatesByImagePlantId", new Object[]{imagePlantId, isArchived}) {};
     }
     
-    public List<TemplateOS> fetchResult(String methodName, Object[] arguments,
+    public List<TemplateOS> fetchResult(String tag, Object[] arguments,
             Object pageCursor) {
-        if ("getTemplatesByImagePlantId".equals(methodName)) {
+        if ("getTemplatesByImagePlantId".equals(tag)) {
             String imagePlantId = (String) arguments[0];
             Boolean isArchived = (Boolean) arguments[1];
-            Object[] pageResult = getNextPageCursor((String) pageCursor);
+            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
             PageCursor cursor = (PageCursor) pageResult[1];
             return getTemplatesByImagePlantId(imagePlantId, isArchived, cursor);
         }
-        throw new UnsupportedOperationException(methodName);
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
+        if ("getTemplatesByImagePlantId".equals(tag)) {
+            return true;
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public List<TemplateOS> fetchAllResults(String tag, Object[] arguments) {
+        if ("getTemplatesByImagePlantId".equals(tag)) {
+            String imagePlantId = (String) arguments[0];
+            Boolean isArchived = (Boolean) arguments[1];
+            return getTemplatesByImagePlantId(imagePlantId, isArchived);
+        }
+        throw new UnsupportedOperationException(tag);
     }
 
     private List<TemplateOS> getTemplatesByImagePlantId(String imagePlantId, 
@@ -107,6 +125,22 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
         }
         return templates;
     }
+    
+    private List<TemplateOS> getTemplatesByImagePlantId(String imagePlantId, 
+            Boolean isArchived) {
+        DBCollection coll = getDatabase().getCollection("Template");
+        BasicDBObject criteria = new BasicDBObject()
+                                        .append("imagePlantId", imagePlantId);
+        if (null != isArchived) {
+            criteria.append("isArchived", isArchived);  
+        }
+        List<DBObject> objects = coll.find(criteria).toArray();
+        List<TemplateOS> templates = new ArrayList<TemplateOS>(objects.size());
+        for (DBObject obj: objects) {
+            templates.add(getObjectMapper().mapToTemplateOS((BasicDBObject) obj));
+        }
+        return templates;
+    }
 
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
@@ -116,7 +150,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
 
     @Override
     public Object getFirstPageCursor(String tag, Object[] arguments) {
-        return getNextPageCursor(null)[0];
+        return retrieveNextPageCursor(null)[0];
     }
 
 }

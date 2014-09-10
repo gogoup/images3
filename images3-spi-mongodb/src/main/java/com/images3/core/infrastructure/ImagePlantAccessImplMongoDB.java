@@ -65,14 +65,27 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess<ImagePlantOS> imp
         return new PaginatedResult<List<ImagePlantOS>>(this, "getAllImagePlants", new Object[0]) {};
     }
     
-    public List<ImagePlantOS> fetchResult(String methodName,
+    public List<ImagePlantOS> fetchResult(String tag,
             Object[] arguments, Object pageCursor) {
-        if ("getAllImagePlants".equals(methodName)) {
-            Object[] pageResult = getNextPageCursor((String) pageCursor);
+        if ("getAllImagePlants".equals(tag)) {
+            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
             PageCursor cursor = (PageCursor) pageResult[1];
             return getAllImagePlants(cursor);
         }
-        throw new UnsupportedOperationException(methodName);
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
+        if ("getAllImagePlants".equals(tag)) {
+            return false;
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public List<ImagePlantOS> fetchAllResults(String tag, Object[] arguments) {
+        throw new UnsupportedOperationException(tag);
     }
 
     private List<ImagePlantOS> getAllImagePlants(PageCursor pageCursor) {
@@ -94,7 +107,7 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess<ImagePlantOS> imp
 
     @Override
     public Object getFirstPageCursor(String tag, Object[] arguments) {
-        return getNextPageCursor(null)[0];
+        return retrieveNextPageCursor(null)[0];
     }
 
 }
