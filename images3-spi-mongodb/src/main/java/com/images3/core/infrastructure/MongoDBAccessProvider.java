@@ -10,6 +10,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.images3.core.infrastructure.spi.ImageAccess;
+import com.images3.core.infrastructure.spi.ImageMetricsService;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
 import com.images3.core.infrastructure.spi.TemplateAccess;
 import com.mongodb.BasicDBObject;
@@ -30,6 +31,7 @@ public class MongoDBAccessProvider {
     public MongoDBAccessProvider(String pathToConfig) {
         loadConfigProperties(pathToConfig);
         initMongoClient();
+        initCollections();
         objectMapper = new MongoDBObjectMapper();
     }
     
@@ -58,16 +60,24 @@ public class MongoDBAccessProvider {
         return new TemplateAccessImplMongoDB(mongoClient, DBNAME, objectMapper, pageSize);
     }
     
+    public ImageMetricsService getImageMetricsService() {
+        int pageSize = Integer.valueOf(config.getProperty("imagemetricsservice.page.size"));
+        return new ImageMetricsServiceImplMongoDB(mongoClient, DBNAME, objectMapper, pageSize);
+    }
+    
     private void initMongoClient() {
         String url = config.getProperty("mongodb.url");
         int port = Integer.valueOf(config.getProperty("mongodb.port"));
         String username = config.getProperty("mongodb.username");
         String password = config.getProperty("mongodb.password");
-        MongoCredential credential = 
-                MongoCredential.createMongoCRCredential(username, DBNAME, password.toCharArray());
         try {
-            this.mongoClient = new MongoClient(new ServerAddress(url, port), Arrays.asList(credential));
-            initCollections();
+            if (username.trim().length() == 0) {
+                this.mongoClient = new MongoClient(new ServerAddress(url, port));
+            } else {
+                MongoCredential credential = 
+                        MongoCredential.createMongoCRCredential(username, DBNAME, password.toCharArray());
+                this.mongoClient = new MongoClient(new ServerAddress(url, port), Arrays.asList(credential));
+            }
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         } 
@@ -138,7 +148,7 @@ public class MongoDBAccessProvider {
     }
     
     private void initImageMetricsInSecond(DB db) {
-        DBCollection coll = db.getCollection("ImageMetricsInTemplate");
+        DBCollection coll = db.getCollection("ImageMetricsInSecond");
         coll.createIndex(
                 new BasicDBObject().append("imagePlantId", 1)
                     .append("templateName", 1)

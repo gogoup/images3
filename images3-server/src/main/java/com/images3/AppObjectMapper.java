@@ -17,7 +17,9 @@ public class AppObjectMapper {
                 source.getName(), 
                 source.getAmazonS3Bucket(), 
                 source.getCreationTime(),
-                mapToResponse(source.getMasterTemplate()));
+                mapToResponse(source.getMasterTemplate()),
+                source.countTemplates(),
+                source.generateImageReporter().countImages());
     }
     
     public TemplateResponse mapToResponse(Template source) {

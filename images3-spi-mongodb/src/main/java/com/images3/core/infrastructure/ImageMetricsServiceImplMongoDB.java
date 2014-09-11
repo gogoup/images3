@@ -1,14 +1,18 @@
 package com.images3.core.infrastructure;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
+import com.images3.common.NoSuchEntityFoundException;
 import com.images3.common.TemplateIdentity;
 import com.images3.common.TimeInterval;
 import com.images3.core.infrastructure.spi.ImageMetricsService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
 public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS> implements ImageMetricsService {
@@ -34,14 +38,11 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         BasicDBObject returnFields = new BasicDBObject();
         BasicDBObject sort = new BasicDBObject();
         boolean remove = false;
-        BasicDBObject numberOfImages = new BasicDBObject("numberOfImages", metrics.getNumberOfImages());
-        BasicDBObject sizeOfImages = new BasicDBObject("sizeOfImages", metrics.getSizeOfImages());
+        BasicDBObject increase = new BasicDBObject()
+            .append("numberOfImages", metrics.getNumberOfImages())
+            .append("sizeOfImages", metrics.getSizeOfImages());
         BasicDBObject update = new BasicDBObject()
-                .append("imagePlantId", metrics.getImagePlantId())
-                .append("templateName", metrics.getTemplateName())
-                .append("second", metrics.getSecond())
-                .append("$inc", numberOfImages)
-                .append("$inc", sizeOfImages);
+                .append("$inc", increase);
         boolean returnNew = true;
         boolean upsert = true;
         coll.findAndModify(criteria, returnFields, sort, remove, update, returnNew, upsert);
@@ -55,13 +56,11 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         BasicDBObject returnFields = new BasicDBObject();
         BasicDBObject sort = new BasicDBObject();
         boolean remove = false;
-        BasicDBObject numberOfImages = new BasicDBObject("numberOfImages", metrics.getNumberOfImages());
-        BasicDBObject sizeOfImages = new BasicDBObject("sizeOfImages", metrics.getSizeOfImages());
+        BasicDBObject increase = new BasicDBObject()
+            .append("numberOfImages", metrics.getNumberOfImages())
+            .append("sizeOfImages", metrics.getSizeOfImages());
         BasicDBObject update = new BasicDBObject()
-                .append("imagePlantId", metrics.getImagePlantId())
-                .append("templateName", metrics.getTemplateName())
-                .append("$inc", numberOfImages)
-                .append("$inc", sizeOfImages);
+            .append("$inc", increase);
         boolean returnNew = true;
         boolean upsert = true;
         coll.findAndModify(criteria, returnFields, sort, remove, update, returnNew, upsert);
@@ -69,26 +68,55 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
 
     @Override
     public long calculateNumberOfImages(String imagePlantId) {
-        // TODO Auto-generated method stub
-        return 0;
+        long counts = 0;
+        List<DBObject> objects = selectMetricsByImagePlantId(imagePlantId);
+        for (DBObject obj: objects) {
+            BasicDBObject object = (BasicDBObject) obj;
+            counts += object.getLong("numberOfImages");
+        }
+        return counts;
+    }
+    
+    private List<DBObject> selectMetricsByImagePlantId(String imagePlantId) {
+        DBCollection coll = getDatabase().getCollection("ImageMetricsInTemplate");
+        BasicDBObject criteria = new BasicDBObject()
+                                        .append("imagePlantId", imagePlantId);
+        return coll.find(criteria).toArray();
     }
 
     @Override
     public long calculateNumberOfImages(TemplateIdentity templateId) {
-        // TODO Auto-generated method stub
-        return 0;
+        BasicDBObject object = (BasicDBObject) selectMetricsByTempalteId(templateId);
+        return object.getLong("numberOfImages");
+    }
+    
+    private DBObject selectMetricsByTempalteId(TemplateIdentity templateId) {
+        DBCollection coll = getDatabase().getCollection("ImageMetricsInTemplate");
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("imagePlantId", templateId.getImagePlantId())
+                                    .append("templateName", templateId.getTemplateName());
+        DBObject object = coll.findOne(criteria);
+        if (null == object) {
+            throw new NoSuchEntityFoundException("NumberOfImages", templateId.toString());
+        }
+        return object;
     }
 
     @Override
     public long calculateSizeOfImages(String imagePlantId) {
-        // TODO Auto-generated method stub
-        return 0;
+        long size = 0;
+        List<DBObject> objects = selectMetricsByImagePlantId(imagePlantId);
+        for (DBObject obj: objects) {
+            BasicDBObject object = (BasicDBObject) obj;
+            size += object.getLong("sizeOfImages");
+        }
+        return size;
     }
 
     @Override
     public long calculateSizeOfImages(TemplateIdentity templateId) {
-        // TODO Auto-generated method stub
-        return 0;
+        BasicDBObject object = (BasicDBObject) selectMetricsByTempalteId(templateId);
+        return object.getLong("sizeOfImages");
     }
 
     @Override
@@ -120,7 +148,7 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         long restOfSecond = time % 1000;
         long second = time - (restOfSecond);
         if (restOfSecond > 0) {
-            second += 1; //move to next second.
+            second += 1000; //move to next second.
         }
         return second;
     }

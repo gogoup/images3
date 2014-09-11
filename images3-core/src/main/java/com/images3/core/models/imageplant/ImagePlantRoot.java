@@ -127,6 +127,14 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     @Override
     public Template createTemplate(String name, ResizingConfig resizingConfig) {
         TemplateEntity entity = templateFactory.generateTemplate(this, name, resizingConfig);
+        getObjectSegment().setNumberOfTemplates(getObjectSegment().getNumberOfTemplates() + 1);
+        addDirtyTemplate(entity);
+        return entity;
+    }
+    
+    public Template createMasterTemplate(ResizingConfig resizingConfig) {
+        TemplateEntity entity = templateFactory.generateMasterTemplate(this, resizingConfig);
+        getObjectSegment().setNumberOfTemplates(getObjectSegment().getNumberOfTemplates() + 1);
         addDirtyTemplate(entity);
         return entity;
     }
@@ -264,8 +272,8 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     }
 
     @Override
-    public int countTemplates() {
-        throw new RuntimeException("Unfinished Method");
+    public long countTemplates() {
+        return getObjectSegment().getNumberOfTemplates();
     }
 
     @Override

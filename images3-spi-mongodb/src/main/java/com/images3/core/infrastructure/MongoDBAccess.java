@@ -2,6 +2,8 @@ package com.images3.core.infrastructure;
 
 import java.util.List;
 
+import org.gogoup.dddutils.pagination.PaginatedResult;
+
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -46,11 +48,12 @@ public abstract class MongoDBAccess<T> {
     
     protected Object[] retrieveNextPageCursor(String pageCursor) {
         PageCursor cursor = null;
-        String nextPageCursor = ShortUUID.randomUUID();
         if (null != pageCursor) {
             cursor = getSavedPageCursorById(pageCursor);
+            return new Object[] {pageCursor, cursor};
         }
         cursor = generateNextPageCursor(cursor);
+        String nextPageCursor = ShortUUID.randomUUID();
         insertPageCursor(nextPageCursor, cursor);
         return new Object[] {nextPageCursor, cursor};
     }
@@ -84,7 +87,7 @@ public abstract class MongoDBAccess<T> {
         if (null != result 
                 && (result.size() == 0
                     || getPageSize() > result.size())) {
-            return null;
+            return PaginatedResult.NONE_PAGE_CURSOR;
         }
         return retrieveNextPageCursor((String) pageCursor)[0];
     }

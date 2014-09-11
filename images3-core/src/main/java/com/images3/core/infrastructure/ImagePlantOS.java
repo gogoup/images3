@@ -11,14 +11,17 @@ public class ImagePlantOS {
     private Date creationTime;
     private AmazonS3Bucket amazonS3Bucket;
     private String masterTemplateName;
+    private long numberOfTemplates;
     
     public ImagePlantOS(String id, String name, Date creationTime,
-            AmazonS3Bucket amazonS3Bucket, String masterTemplateName) {
+            AmazonS3Bucket amazonS3Bucket, String masterTemplateName,
+            long numberOfTemplates) {
         this.id = id;
         this.name = name;
         this.creationTime = creationTime;
         this.amazonS3Bucket = amazonS3Bucket;
         this.masterTemplateName = masterTemplateName;
+        setNumberOfTemplates(numberOfTemplates);
     }
     
     public String getName() {
@@ -42,6 +45,15 @@ public class ImagePlantOS {
     public String getMasterTemplateName() {
         return masterTemplateName;
     }
+
+    public long getNumberOfTemplates() {
+        return numberOfTemplates;
+    }
+
+    public void setNumberOfTemplates(long numberOfTemplates) {
+        this.numberOfTemplates = numberOfTemplates;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -56,9 +68,11 @@ public class ImagePlantOS {
                 + ((masterTemplateName == null) ? 0 : masterTemplateName
                         .hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result
+                + (int) (numberOfTemplates ^ (numberOfTemplates >>> 32));
         return result;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -93,7 +107,10 @@ public class ImagePlantOS {
                 return false;
         } else if (!name.equals(other.name))
             return false;
+        if (numberOfTemplates != other.numberOfTemplates)
+            return false;
         return true;
     }
+    
     
 }

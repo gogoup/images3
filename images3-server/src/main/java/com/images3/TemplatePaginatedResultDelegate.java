@@ -93,8 +93,13 @@ public class TemplatePaginatedResultDelegate implements
 
     @Override
     public Object getFirstPageCursor(String tag, Object[] arguments) {
-        // TODO Auto-generated method stub
-        return null;
+        if (!"getActiveTempaltes".equals(tag)
+                && !"getArchivedTemplates".equals(tag)
+                && !"getAllTemplates".equals(tag)) {
+            throw new UnsupportedOperationException(tag);
+        }
+        PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];
+        return osResult.getFirstPageCursor();
     }
 
 }

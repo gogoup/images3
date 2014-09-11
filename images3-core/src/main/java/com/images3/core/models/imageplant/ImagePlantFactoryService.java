@@ -32,18 +32,15 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
             AmazonS3Bucket amazonS3Bucket, ResizingConfig resizingConfig) {
         String id = imagePlantAccess.genertateImagePlantId();
         Date creationTime = new Date(System.currentTimeMillis());
+        long numberOfTemplates = 0;
         ImagePlantOS objectSegment =
-                new ImagePlantOS(id, "", creationTime, amazonS3Bucket, TemplateEntity.MASTER_TEMPLATE_NAME);
+                new ImagePlantOS(id, "", creationTime, amazonS3Bucket,
+                        TemplateEntity.MASTER_TEMPLATE_NAME, numberOfTemplates);
         ImagePlantRoot root = reconstituteImagePlant(objectSegment, null, null);
         root.markAsNew();
         root.updateName(name);
-        addMasterTemplate(root, resizingConfig);
+        root.createMasterTemplate(resizingConfig);
         return root;
-    }
-    
-    private void addMasterTemplate(ImagePlantRoot root, ResizingConfig resizingConfig) {
-        Template masterTemplate = templateFactory.generateMasterTemplate(root, resizingConfig);
-        root.updateTemplate(masterTemplate);
     }
     
     public ImagePlantRoot reconstituteImagePlant(ImagePlantOS objectSegment, 

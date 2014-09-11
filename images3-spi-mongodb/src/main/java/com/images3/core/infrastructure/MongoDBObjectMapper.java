@@ -35,7 +35,8 @@ public class MongoDBObjectMapper {
             .append("name", source.getName())
             .append("creationTime", source.getCreationTime().getTime())
             .append("bucket", mapToBasicDBObject(source.getAmazonS3Bucket()))
-            .append("masterTemplateName", source.getMasterTemplateName());
+            .append("masterTemplateName", source.getMasterTemplateName())
+            .append("numberOfTemplates", source.getNumberOfTemplates());
     }
     
     public ImagePlantOS mapToImagePlantOS(BasicDBObject source) {
@@ -44,7 +45,8 @@ public class MongoDBObjectMapper {
                 source.getString("name"),
                 new Date(source.getLong("creationTime")),
                 mapToAmazonS3Bucket((BasicDBObject) source.get("bucket")),
-                source.getString("masterTemplateName"));
+                source.getString("masterTemplateName"),
+                source.getLong("numberOfTemplates"));
     }
     
     public BasicDBObject mapToBasicDBObject(AmazonS3Bucket source) {

@@ -31,7 +31,7 @@ public interface ImagePlant {
     
     public Template fetchTemplate(String name);
     
-    public int countTemplates();
+    public long countTemplates();
     
     public PaginatedResult<List<Template>> listAllTemplates();
     

@@ -10,17 +10,22 @@ public class ImagePlantResponse {
     private String name;
     private AmazonS3Bucket bucket;
     private Date creationTime;
-    private TemplateResponse masterTemplate; 
+    private TemplateResponse masterTemplate;
+    private long numberOfTemplates;
+    private long numberOfImages;
     
     public ImagePlantResponse() {}
 
     public ImagePlantResponse(String id, String name, AmazonS3Bucket bucket,
-            Date creationTime, TemplateResponse masterTemplate) {
+            Date creationTime, TemplateResponse masterTemplate,
+            long numberOfTemplates, long numberOfImages) {
         this.id = id;
         this.name = name;
         this.bucket = bucket;
         this.creationTime = creationTime;
         this.masterTemplate = masterTemplate;
+        this.numberOfTemplates = numberOfTemplates;
+        this.numberOfImages = numberOfImages;
     }
 
     public String getId() {
@@ -43,6 +48,14 @@ public class ImagePlantResponse {
         return masterTemplate;
     }
 
+    public long getNumberOfTemplates() {
+        return numberOfTemplates;
+    }
+
+    public long getNumberOfImages() {
+        return numberOfImages;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -54,6 +67,10 @@ public class ImagePlantResponse {
         result = prime * result
                 + ((masterTemplate == null) ? 0 : masterTemplate.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result
+                + (int) (numberOfImages ^ (numberOfImages >>> 32));
+        result = prime * result
+                + (int) (numberOfTemplates ^ (numberOfTemplates >>> 32));
         return result;
     }
 
@@ -90,6 +107,10 @@ public class ImagePlantResponse {
             if (other.name != null)
                 return false;
         } else if (!name.equals(other.name))
+            return false;
+        if (numberOfImages != other.numberOfImages)
+            return false;
+        if (numberOfTemplates != other.numberOfTemplates)
             return false;
         return true;
     }
