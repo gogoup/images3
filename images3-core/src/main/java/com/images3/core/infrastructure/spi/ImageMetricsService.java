@@ -3,13 +3,14 @@ package com.images3.core.infrastructure.spi;
 import java.util.List;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
+import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 import com.images3.common.TemplateIdentity;
 import com.images3.common.TimeInterval;
 import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.ImageMetricsOS;
 
-public interface ImageMetricsService {
+public interface ImageMetricsService extends PaginatedResultDelegate<List<ImageMetricsOS>> {
 
     public void record(ImageOS image);
     

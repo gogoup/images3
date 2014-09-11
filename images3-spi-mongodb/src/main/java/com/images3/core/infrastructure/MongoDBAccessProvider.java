@@ -98,11 +98,8 @@ public class MongoDBAccessProvider {
         if (!collNames.contains("Image")) {
             initImage(images3DB);
         }
-        if (!collNames.contains("ImageMetricsInTemplate")) {
-            initImageMetricsInTemplate(images3DB);
-        }
-        if (!collNames.contains("ImageMetricsInSecond")) {
-            initImageMetricsInSecond(images3DB);
+        if (!collNames.contains("ImageMetrics")) {
+            initImageMetrics(images3DB);
         }
     }
     
@@ -140,15 +137,8 @@ public class MongoDBAccessProvider {
                     .append("version.originalImageId", 1));
     }
     
-    private void initImageMetricsInTemplate(DB db) {
-        DBCollection coll = db.getCollection("ImageMetricsInTemplate");
-        coll.createIndex(
-                new BasicDBObject().append("imagePlantId", 1).append("templateName", 1), 
-                new BasicDBObject("unique", true));
-    }
-    
-    private void initImageMetricsInSecond(DB db) {
-        DBCollection coll = db.getCollection("ImageMetricsInSecond");
+    private void initImageMetrics(DB db) {
+        DBCollection coll = db.getCollection("ImageMetrics");
         coll.createIndex(
                 new BasicDBObject().append("imagePlantId", 1)
                     .append("templateName", 1)

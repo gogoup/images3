@@ -156,4 +156,13 @@ public class MongoDBObjectMapper {
                 source.getString("originalImageId"));
     }
     
+    public ImageMetricsOS mapToImageMetricsOS(BasicDBObject source) {
+        return new ImageMetricsOS(
+                source.getString("imagePlantId"),
+                source.getString("templateName"),
+                source.getLong("second"),
+                source.getLong("numberOfImages"),
+                source.getLong("sizeOfImages"));
+    }
+    
 }

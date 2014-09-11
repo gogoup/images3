@@ -1,5 +1,6 @@
 package com.images3.core;
 
+import com.images3.common.ImageReportType;
 import com.images3.common.TimeInterval;
 
 public interface ImageReporter {
@@ -12,6 +13,6 @@ public interface ImageReporter {
     
     public long calculateSizeOfImages(TimeInterval interval);
     
-    public ImageReport fetchReport(TimeInterval interval);
+    public ImageReport fetchReport(ImageReportType type, TimeInterval interval);
     
 }

@@ -46,12 +46,14 @@ public interface ImageS3 {
     
     public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId);
     
-    public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId, String templateName);
+    public PaginatedResult<List<SimpleImageResponse>> getImages(TemplateIdentity id);
 
     public PaginatedResult<List<SimpleImageResponse>> getVersioningImages(ImageIdentity originalImageId);
 
     public File getImageContent(ImageIdentity id);
     
     public File getImageContent(ImageIdentity id, String templateName);
+    
+    public ImageReportResponse getImageReport(ImageReportQueryRequest request);
     
 }

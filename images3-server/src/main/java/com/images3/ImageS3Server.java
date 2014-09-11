@@ -12,6 +12,8 @@ import com.images3.core.Image;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantFactory;
 import com.images3.core.ImagePlantRepository;
+import com.images3.core.ImageReport;
+import com.images3.core.ImageReporter;
 import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.spi.ImageAccess;
@@ -83,7 +85,7 @@ public class ImageS3Server implements ImageS3 {
     public PaginatedResult<List<ImagePlantResponse>> getAllImagePlants() {
         PaginatedResult<List<ImagePlant>> result = imagePlantRepository.findAllImagePlants();
         return new PaginatedResult<List<ImagePlantResponse>>(
-                imagePlantDelegate, "getAllImagePlants", new Object[]{result}) {};
+                imagePlantDelegate, "getAllImagePlants", new Object[]{result});
     }
     
     @Override
@@ -129,7 +131,7 @@ public class ImageS3Server implements ImageS3 {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
         PaginatedResult<List<Template>> result = imagePlant.listAllTemplates();
         return new PaginatedResult<List<TemplateResponse>>(
-                templateDelegate, "getAllTemplates", new Object[]{result}) {};
+                templateDelegate, "getAllTemplates", new Object[]{result});
     }
 
     @Override
@@ -138,7 +140,7 @@ public class ImageS3Server implements ImageS3 {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
         PaginatedResult<List<Template>> result = imagePlant.listActiveTemplates();
         return new PaginatedResult<List<TemplateResponse>>(
-                templateDelegate, "getActiveTempaltes", new Object[]{result}) {};
+                templateDelegate, "getActiveTempaltes", new Object[]{result});
     }
 
     @Override
@@ -147,7 +149,7 @@ public class ImageS3Server implements ImageS3 {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
         PaginatedResult<List<Template>> result = imagePlant.listArchivedTemplates();
         return new PaginatedResult<List<TemplateResponse>>(
-                templateDelegate, "getArchivedTemplates", new Object[]{result}) {};
+                templateDelegate, "getArchivedTemplates", new Object[]{result});
     }
 
     @Override
@@ -215,7 +217,7 @@ public class ImageS3Server implements ImageS3 {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
         PaginatedResult<List<Image>> result = imagePlant.listAllImages();
         return new PaginatedResult<List<SimpleImageResponse>>(
-                imageDelegate, "getImages", new Object[]{result}) {};
+                imageDelegate, "getImages", new Object[]{result});
     }
 
     @Override
@@ -225,17 +227,16 @@ public class ImageS3Server implements ImageS3 {
         Image originalImage = imagePlant.fetchImageById(originalImageId.getImageId());
         PaginatedResult<List<Image>> result = imagePlant.fetchVersioningImages(originalImage);
         return new PaginatedResult<List<SimpleImageResponse>>(
-                imageDelegate, "getImages", new Object[]{result}) {};
+                imageDelegate, "getImages", new Object[]{result});
     }
 
     @Override
-    public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId,
-            String templateName) {
-        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(imagePlantId);
-        Template template = imagePlant.fetchTemplate(templateName);
+    public PaginatedResult<List<SimpleImageResponse>> getImages(TemplateIdentity id) {
+        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImagePlantId());
+        Template template = imagePlant.fetchTemplate(id.getTemplateName());
         PaginatedResult<List<Image>> result = imagePlant.fetchImagesByTemplate(template);
         return new PaginatedResult<List<SimpleImageResponse>>(
-                imageDelegate, "getImages", new Object[]{result}) {};
+                imageDelegate, "getImages", new Object[]{result});
     }
 
     @Override
@@ -266,6 +267,31 @@ public class ImageS3Server implements ImageS3 {
                 imagePlantRepository.findImagePlantById(id.getImagePlantId());
         Image image = imagePlant.fetchImageById(id.getImageId());
         return image.getContent();
+    }
+
+    @Override
+    public ImageReportResponse getImageReport(ImageReportQueryRequest request) {
+        ImageReporter reporter = getImageReporter(request);
+        ImageReport report = reporter.fetchReport(request.getType(), request.getInterval());
+        return new ImageReportResponse(
+                report.getImagePlant().getId(), 
+                (report.getTemplate() == null ? null : report.getTemplate().getName()),
+                report.getTimes(), 
+                report.getValues(), 
+                report.getScale(),
+                report.getType());
+    }
+    
+    private ImageReporter getImageReporter(ImageReportQueryRequest request) {
+        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(request.getImagePlantId());
+        ImageReporter reporter = null;
+        if (null == request.getTemplateName()) {
+            reporter = imagePlant.generateImageReporter();
+        } else {
+            Template template = imagePlant.fetchTemplate(request.getTemplateName());
+            reporter = imagePlant.generateImageReporter(template);
+        }
+        return reporter;
     }
 
     public static class Builder {

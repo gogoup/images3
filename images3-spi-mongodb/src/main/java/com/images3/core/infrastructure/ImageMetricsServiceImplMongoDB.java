@@ -1,7 +1,9 @@
 package com.images3.core.infrastructure;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
@@ -11,7 +13,6 @@ import com.images3.common.TimeInterval;
 import com.images3.core.infrastructure.spi.ImageMetricsService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
@@ -30,7 +31,7 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
     }
     
     private void updateSecondMetrics(ImageMetricsOS metrics) {
-        DBCollection coll = getDatabase().getCollection("ImageMetricsInSecond");
+        DBCollection coll = getDatabase().getCollection("ImageMetrics");
         BasicDBObject criteria = new BasicDBObject()
                 .append("imagePlantId", metrics.getImagePlantId())
                 .append("templateName", metrics.getTemplateName())
@@ -49,10 +50,11 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
     }
     
     private void updateTemplateMetrics(ImageMetricsOS metrics) {
-        DBCollection coll = getDatabase().getCollection("ImageMetricsInTemplate");
+        DBCollection coll = getDatabase().getCollection("ImageMetrics");
         BasicDBObject criteria = new BasicDBObject()
                 .append("imagePlantId", metrics.getImagePlantId())
-                .append("templateName", metrics.getTemplateName());
+                .append("templateName", metrics.getTemplateName())
+                .append("second", 0);
         BasicDBObject returnFields = new BasicDBObject();
         BasicDBObject sort = new BasicDBObject();
         boolean remove = false;
@@ -77,31 +79,12 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         return counts;
     }
     
-    private List<DBObject> selectMetricsByImagePlantId(String imagePlantId) {
-        DBCollection coll = getDatabase().getCollection("ImageMetricsInTemplate");
-        BasicDBObject criteria = new BasicDBObject()
-                                        .append("imagePlantId", imagePlantId);
-        return coll.find(criteria).toArray();
-    }
-
     @Override
     public long calculateNumberOfImages(TemplateIdentity templateId) {
         BasicDBObject object = (BasicDBObject) selectMetricsByTempalteId(templateId);
         return object.getLong("numberOfImages");
     }
     
-    private DBObject selectMetricsByTempalteId(TemplateIdentity templateId) {
-        DBCollection coll = getDatabase().getCollection("ImageMetricsInTemplate");
-        BasicDBObject criteria = new BasicDBObject()
-                                    .append("imagePlantId", templateId.getImagePlantId())
-                                    .append("templateName", templateId.getTemplateName());
-        DBObject object = coll.findOne(criteria);
-        if (null == object) {
-            throw new NoSuchEntityFoundException("NumberOfImages", templateId.toString());
-        }
-        return object;
-    }
-
     @Override
     public long calculateSizeOfImages(String imagePlantId) {
         long size = 0;
@@ -119,22 +102,43 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         return object.getLong("sizeOfImages");
     }
 
+    private List<DBObject> selectMetricsByImagePlantId(String imagePlantId) {
+        DBCollection coll = getDatabase().getCollection("ImageMetrics");
+        BasicDBObject criteria = new BasicDBObject()
+                                        .append("imagePlantId", imagePlantId)
+                                        .append("second", 0);
+        return coll.find(criteria).toArray();
+    }
+
+    private DBObject selectMetricsByTempalteId(TemplateIdentity templateId) {
+        DBCollection coll = getDatabase().getCollection("ImageMetrics");
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("imagePlantId", templateId.getImagePlantId())
+                                    .append("templateName", templateId.getTemplateName())
+                                    .append("second", 0);
+        DBObject object = coll.findOne(criteria);
+        if (null == object) {
+            throw new NoSuchEntityFoundException("NumberOfImages", templateId.toString());
+        }
+        return object;
+    }
+
     @Override
     public PaginatedResult<List<ImageMetricsOS>> retrieveStats(
             String imagePlantId, TimeInterval interval) {
-        // TODO Auto-generated method stub
-        return null;
+        return new PaginatedResult<List<ImageMetricsOS>>(
+                this, "retrieveStatsByImagePlantId", new Object[] {imagePlantId, interval});
     }
 
     @Override
     public PaginatedResult<List<ImageMetricsOS>> retrieveStats(
             TemplateIdentity templateId, TimeInterval interval) {
-        // TODO Auto-generated method stub
-        return null;
+        return new PaginatedResult<List<ImageMetricsOS>>(
+                this, "retrieveStatsByTemplateId", new Object[] {templateId, interval});
     }
     
     private ImageMetricsOS createMetrics(ImageOS image) {
-        long second = getSecond(image);
+        long second = getSecond(image.getDateTime());
         return new ImageMetricsOS(
                 image.getId().getImagePlantId(), 
                 image.getVersion().getTemplateName(),
@@ -143,14 +147,95 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
                 image.getMetadata().getSize());
     }
 
-    private long getSecond(ImageOS image) {
-        long time = image.getDateTime().getTime();
+    private long getSecond(Date dateTime) {
+        long time = dateTime.getTime();
         long restOfSecond = time % 1000;
         long second = time - (restOfSecond);
-        if (restOfSecond > 0) {
-            second += 1000; //move to next second.
-        }
+        second /= 1000;
         return second;
+    }
+
+    @Override
+    public List<ImageMetricsOS> fetchResult(String tag, Object[] arguments,
+            Object pageCursor) {
+        if ("retrieveStatsByImagePlantId".equals(tag)) {
+            String imagePlantId = (String) arguments[0];
+            TimeInterval interval = (TimeInterval) arguments[1];
+            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
+            PageCursor cursor = (PageCursor) pageResult[1];
+            return getStatsByImagePlantId(imagePlantId, interval, cursor);
+        }
+        if ("retrieveStatsByTemplateId".equals(tag)) {
+            TemplateIdentity templateIdentity = (TemplateIdentity) arguments[0];
+            TimeInterval interval = (TimeInterval) arguments[1];
+            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
+            PageCursor cursor = (PageCursor) pageResult[1];
+            return getStatsByTemplateId(templateIdentity, interval, cursor);
+        }
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
+        return false;
+    }
+
+    @Override
+    public List<ImageMetricsOS> fetchAllResults(String tag, Object[] arguments) {
+        throw new UnsupportedOperationException(tag);
+    }
+
+    @Override
+    public Object getNextPageCursor(String tag, Object[] arguments,
+            Object pageCursor, List<ImageMetricsOS> result) {
+        return nextPageCursor(tag, arguments, pageCursor, result);
+    }
+    
+    private List<ImageMetricsOS> getStatsByImagePlantId(String imagePlantId,
+            TimeInterval interval, PageCursor cursor) {
+        long[] timeBounds = getTimeBounds(interval);
+        BasicDBObject secondRange = new BasicDBObject()
+                                    .append("$gte", timeBounds[0])
+                                    .append("$lte", timeBounds[1]);
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("imagePlantId", imagePlantId)
+                                    .append("second", secondRange);
+        return getImageStats(criteria, cursor);
+    }
+    
+    private List<ImageMetricsOS> getStatsByTemplateId(TemplateIdentity templateId,
+            TimeInterval interval, PageCursor cursor) {
+        long[] timeBounds = getTimeBounds(interval);
+        BasicDBObject secondRange = new BasicDBObject()
+                                    .append("$gte", timeBounds[0])
+                                    .append("$lte", timeBounds[1]);
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("imagePlantId", templateId.getImagePlantId())
+                                    .append("templateName", templateId.getTemplateName())
+                                    .append("second", secondRange);
+        return getImageStats(criteria, cursor);
+    }
+    
+    private long[] getTimeBounds(TimeInterval interval) {
+        long startSecond = getSecond(interval.getStart());
+        long endSecond = getSecond(interval.getEnd());
+        return new long[] {startSecond * 1000, endSecond * 1000};
+    }
+    
+    private List<ImageMetricsOS> getImageStats(BasicDBObject criteria, PageCursor pageCursor) {
+        DBCollection coll = getDatabase().getCollection("ImageMetrics");
+        int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
+        List<DBObject> objects = coll.find(criteria).skip(skipRecords).limit(pageCursor.getSize()).toArray();
+        List<ImageMetricsOS> metrics = new ArrayList<ImageMetricsOS>(objects.size());
+        for (DBObject obj: objects) {
+            metrics.add(getObjectMapper().mapToImageMetricsOS((BasicDBObject) obj));
+        }
+        return metrics;
+    }
+
+    @Override
+    public Object getFirstPageCursor(String tag, Object[] arguments) {
+        return retrieveNextPageCursor(null)[0];
     }
 
 }
