@@ -272,14 +272,13 @@ public class ImageS3Server implements ImageS3 {
     @Override
     public ImageReportResponse getImageReport(ImageReportQueryRequest request) {
         ImageReporter reporter = getImageReporter(request);
-        ImageReport report = reporter.fetchReport(request.getType(), request.getInterval());
+        ImageReport report = reporter.fetchReport(request.getTypes(), request.getInterval());
         return new ImageReportResponse(
                 report.getImagePlant().getId(), 
                 (report.getTemplate() == null ? null : report.getTemplate().getName()),
                 report.getTimes(), 
                 report.getValues(), 
-                report.getScale(),
-                report.getType());
+                report.getScale());
     }
     
     private ImageReporter getImageReporter(ImageReportQueryRequest request) {

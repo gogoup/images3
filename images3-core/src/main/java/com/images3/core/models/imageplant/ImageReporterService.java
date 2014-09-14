@@ -76,44 +76,63 @@ public class ImageReporterService implements ImageReporter {
     }
 
     @Override
-    public ImageReport fetchReport(ImageReportType type, TimeInterval interval) {
+    public ImageReport fetchReport(ImageReportType[] types, TimeInterval interval) {
         PaginatedResult<List<ImageMetricsOS>> osResult = getImageMetricsPages(interval);
-        Object pageCursor = osResult.getFirstPageCursor();
-        Map<Date, Long> values = generateImageReportValueMap(interval);
-        while(null != pageCursor) {
-            List<ImageMetricsOS> osList = osResult.getResult(pageCursor);
-            for (Iterator<ImageMetricsOS> iter = osList.iterator(); iter.hasNext();) {
-                ImageMetricsOS os = iter.next();
-                updateReportValue(values, os, type, interval);
-            }
-            pageCursor = osResult.getNextPageCursor();
-        }
+        List<Date> intervals = interval.getIntervals();
+        Map<ImageReportType, Map<Date, Long>> stats = 
+                generateImageReportValueMap(types, intervals, interval.getUnit());
+        stats = processImageReportMetrics(stats, osResult, types, interval);
         return new ImageReport(
                 imagePlant,
                 template,
-                new LinkedList<Date>(values.keySet()),
-                new LinkedList<Long>(values.values()), 
-                interval.getUnit(), 
-                type);
+                new LinkedList<Date>(intervals),
+                convertToValues(stats), 
+                interval.getUnit());
     }
     
-    private Map<Date, Long> generateImageReportValueMap(TimeInterval interval) {
+    private Map<ImageReportType, Map<Date, Long>> generateImageReportValueMap(
+            ImageReportType[] types, List<Date> intervals, TimeUnit unit) {
+        Map<ImageReportType, Map<Date, Long>> stats = new LinkedHashMap<ImageReportType, Map<Date, Long>>();
+        for (ImageReportType type: types) {
+            stats.put(type, generateImageReportValues(intervals, unit));
+        }
+        return stats;
+    }
+    
+    private Map<Date, Long> generateImageReportValues(List<Date> intervals, TimeUnit unit) {
         Map<Date, Long> values = new LinkedHashMap<Date, Long>();
-        List<Date> intervals = interval.getIntervals();
         for (Date time: intervals) {
+            long timestamp = getTimeScale(time.getTime(), unit);
+            time = new Date(timestamp * 1000);
             values.put(time, 0L);
         }
         return values;
     }
     
+    private Map<ImageReportType, Map<Date, Long>> processImageReportMetrics(
+            Map<ImageReportType, Map<Date, Long>> stats, 
+            PaginatedResult<List<ImageMetricsOS>> osResult, 
+            ImageReportType[] types, TimeInterval interval) {
+        Object pageCursor = osResult.getFirstPageCursor();
+        while(null != pageCursor) {
+            List<ImageMetricsOS> osList = osResult.getResult(pageCursor);
+            for (Iterator<ImageMetricsOS> iter = osList.iterator(); iter.hasNext();) {
+                ImageMetricsOS os = iter.next();
+                for (ImageReportType type: types) {
+                    Map<Date, Long> values = stats.get(type);
+                    updateReportValue(values, os, type, interval);
+                }
+            }
+            pageCursor = osResult.getNextPageCursor();
+        }
+        return stats;
+    }
+    
     private void updateReportValue(Map<Date, Long> values, ImageMetricsOS os,
             ImageReportType type, TimeInterval interval) {
-        Date time = new Date(getTimeScale(os.getSecond() * 1000, interval.getUnit()));
+        long timestamp = getTimeScale(os.getSecond() * 1000, interval.getUnit());
+        Date time = new Date(timestamp * 1000);
         Long value = values.get(time);
-        if (null == value) {
-            values.put(time, 0l);
-            value = values.get(time);
-        }
         value = calculateReportValue(value, os, type);
         values.put(time, value);
     }
@@ -125,6 +144,16 @@ public class ImageReporterService implements ImageReporter {
             value += os.getSizeOfImages();
         }
         return value;
+    }
+    
+    private Map<ImageReportType, List<Long>> convertToValues(Map<ImageReportType, Map<Date, Long>> stats) {
+        Map<ImageReportType, List<Long>> values = new LinkedHashMap<ImageReportType, List<Long>>();
+        for (Iterator<ImageReportType> iter = stats.keySet().iterator(); iter.hasNext();) {
+            ImageReportType type = iter.next();
+            Map<Date, Long> numbers = stats.get(type);
+            values.put(type, new LinkedList<Long>(numbers.values()));
+        }
+        return values;
     }
     
     private PaginatedResult<List<ImageMetricsOS>> getImageMetricsPages(TimeInterval interval) {

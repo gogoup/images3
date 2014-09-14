@@ -3,7 +3,6 @@ package com.images3.core.infrastructure;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
@@ -219,7 +218,7 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
     private long[] getTimeBounds(TimeInterval interval) {
         long startSecond = getSecond(interval.getStart());
         long endSecond = getSecond(interval.getEnd());
-        return new long[] {startSecond * 1000, endSecond * 1000};
+        return new long[] {startSecond, endSecond};
     }
     
     private List<ImageMetricsOS> getImageStats(BasicDBObject criteria, PageCursor pageCursor) {

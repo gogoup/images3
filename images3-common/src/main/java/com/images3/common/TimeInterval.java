@@ -44,7 +44,7 @@ public class TimeInterval {
         intervals.add(getStart());
         long nextTime = getStart().getTime();
         for (int i=0; i<getLength(); i++) {
-            nextTime = getNextTime(nextTime, getLength());
+            nextTime = getNextTime(nextTime, 1);
             intervals.add(new Date(nextTime));
         }
         return intervals;

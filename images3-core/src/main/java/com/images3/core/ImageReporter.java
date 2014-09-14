@@ -13,6 +13,6 @@ public interface ImageReporter {
     
     public long calculateSizeOfImages(TimeInterval interval);
     
-    public ImageReport fetchReport(ImageReportType type, TimeInterval interval);
+    public ImageReport fetchReport(ImageReportType[] types, TimeInterval interval);
     
 }

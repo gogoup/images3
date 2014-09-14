@@ -8,19 +8,19 @@ public class ImageReportQueryRequest {
     private String imagePlantId;
     private String templateName;
     private TimeInterval interval;
-    private ImageReportType type;
+    private ImageReportType[] types;
     
     public ImageReportQueryRequest(String imagePlantId,
-            TimeInterval interval, ImageReportType type) {
-        this(imagePlantId, null, interval, type);
+            TimeInterval interval, ImageReportType[] types) {
+        this(imagePlantId, null, interval, types);
     }
-    
+
     public ImageReportQueryRequest(String imagePlantId, String templateName,
-            TimeInterval interval, ImageReportType type) {
+            TimeInterval interval, ImageReportType[] types) {
         this.imagePlantId = imagePlantId;
         this.templateName = templateName;
         this.interval = interval;
-        this.type = type;
+        this.types = types;
     }
 
     public String getImagePlantId() {
@@ -35,10 +35,9 @@ public class ImageReportQueryRequest {
         return interval;
     }
 
-    public ImageReportType getType() {
-        return type;
+    public ImageReportType[] getTypes() {
+        return types;
     }
-    
     
     
 }
