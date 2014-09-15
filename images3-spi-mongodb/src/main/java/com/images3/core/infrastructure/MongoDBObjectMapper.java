@@ -15,18 +15,25 @@ import com.mongodb.BasicDBObject;
 
 public class MongoDBObjectMapper {
     
-    public BasicDBObject mapToBasicDBObject(String id, PageCursor source) {
+    public BasicDBObject mapToBasicDBObject(PageCursor cursor) {
         return new BasicDBObject()
-            .append("id", id)
-            .append("start", source.getStart())
-            .append("size", source.getSize())
-            .append("creationTime", System.currentTimeMillis());
+            .append("id", cursor.getId())
+            .append("previousPageCursorId", cursor.getPreviousPageCursorId())
+            .append("start", cursor.getPage().getStart())
+            .append("size", cursor.getPage().getSize())
+            .append("creationTime", cursor.getCreationTime().getTime());
     }
     
     public PageCursor mapToPageCursor(BasicDBObject source) {
-        return new PageCursor(
+        Page page = new Page(
                 source.getInt("start"),
                 source.getInt("size"));
+        return new PageCursor(
+                source.getString("id"),
+                source.getString("previousPageCursorId"),
+                page,
+                new Date(source.getLong("creationTime"))
+                );
     }
 
     public BasicDBObject mapToBasicDBObject(ImagePlantOS source) {

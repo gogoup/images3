@@ -1,5 +1,6 @@
 package com.images3.core.infrastructure;
 
+import java.util.Date;
 import java.util.List;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
@@ -46,32 +47,53 @@ public abstract class MongoDBAccess<T> {
         }
     }
     
-    protected Object[] retrieveNextPageCursor(String pageCursor) {
+    protected Object nextPageCursorId(String tag, Object[] arguments,
+            Object pageCursor, List<T> result) {
+        if (foundTheLastRecord(result)) {
+            return PaginatedResult.NONE_PAGE_CURSOR;
+        }
+        return nextPageCursor((String) pageCursor).getId();
+    }
+
+    protected PageCursor nextPageCursor(String pageCursorId) {
         PageCursor cursor = null;
-        if (null != pageCursor) {
-            cursor = getSavedPageCursorById(pageCursor);
-            return new Object[] {pageCursor, cursor};
+        if (null != pageCursorId) {
+            cursor = selectPageCursorById(pageCursorId);
         }
-        cursor = generateNextPageCursor(cursor);
-        String nextPageCursor = ShortUUID.randomUUID();
-        insertPageCursor(nextPageCursor, cursor);
-        return new Object[] {nextPageCursor, cursor};
+        Page page = createNextPage(cursor.getPage());
+        PageCursor nextPageCursor = createPageCursor(page, cursor);
+        insertPageCursor(nextPageCursor);
+        return nextPageCursor;
     }
     
-    private PageCursor generateNextPageCursor(PageCursor cursor) {
-        if (null == cursor) {
-            return new PageCursor().startAtPage(1).withSize(pageSize); //first page
+    private Page createNextPage(Page page) {
+        if (null == page) {
+            return createFirstPage();
         } else {
-            return new PageCursor().startAtPage(cursor.getStart() + 1).withSize(pageSize);
+            return new Page().startAtPage(page.getStart() + 1).withSize(pageSize);
         }
     }
     
-    private void insertPageCursor(String id, PageCursor pageCursor) {
-        DBCollection coll = getDatabase().getCollection("PageCursor");
-        coll.insert(getObjectMapper().mapToBasicDBObject(id, pageCursor));
+    private Page createFirstPage() {
+        return new Page().startAtPage(1).withSize(pageSize); //first page
     }
     
-    private PageCursor getSavedPageCursorById(String id) {
+    private PageCursor createPageCursor(Page page, PageCursor prevPageCursor) {
+        String id = ShortUUID.randomUUID();
+        Date createdTime = new Date(System.currentTimeMillis());
+        return new PageCursor(
+                id, 
+                (prevPageCursor == null ? null : prevPageCursor.getId()), 
+                page, 
+                createdTime);
+    }
+    
+    private void insertPageCursor(PageCursor cursor) {
+        DBCollection coll = getDatabase().getCollection("PageCursor");
+        coll.insert(getObjectMapper().mapToBasicDBObject(cursor));
+    }
+    
+    private PageCursor selectPageCursorById(String id) {
         DBCollection coll = getDatabase().getCollection("PageCursor");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("id", id);
@@ -82,13 +104,9 @@ public abstract class MongoDBAccess<T> {
         return getObjectMapper().mapToPageCursor((BasicDBObject) cursor.next());
     }
     
-    public Object nextPageCursor(String tag, Object[] arguments,
-            Object pageCursor, List<T> result) {
-        if (null != result 
+    private boolean foundTheLastRecord(List<T> result) {
+        return (null != result 
                 && (result.size() == 0
-                    || getPageSize() > result.size())) {
-            return PaginatedResult.NONE_PAGE_CURSOR;
-        }
-        return retrieveNextPageCursor((String) pageCursor)[0];
+                    || getPageSize() > result.size()));
     }
 }

@@ -68,9 +68,8 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess<ImagePlantOS> imp
     public List<ImagePlantOS> fetchResult(String tag,
             Object[] arguments, Object pageCursor) {
         if ("getAllImagePlants".equals(tag)) {
-            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
-            PageCursor cursor = (PageCursor) pageResult[1];
-            return getAllImagePlants(cursor);
+            PageCursor cursor = nextPageCursor((String) pageCursor);
+            return getAllImagePlants(cursor.getPage());
         }
         throw new UnsupportedOperationException(tag);
     }
@@ -88,7 +87,7 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess<ImagePlantOS> imp
         throw new UnsupportedOperationException(tag);
     }
 
-    private List<ImagePlantOS> getAllImagePlants(PageCursor pageCursor) {
+    private List<ImagePlantOS> getAllImagePlants(Page pageCursor) {
         DBCollection coll = getDatabase().getCollection("ImagePlant");
         int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
         List<DBObject> objects = coll.find().skip(skipRecords).limit(pageCursor.getSize()).toArray();
@@ -102,12 +101,12 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess<ImagePlantOS> imp
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor, List<ImagePlantOS> result) {
-        return nextPageCursor(tag, arguments, pageCursor, result);
+        return nextPageCursorId(tag, arguments, pageCursor, result);
     }
 
     @Override
     public Object getFirstPageCursor(String tag, Object[] arguments) {
-        return retrieveNextPageCursor(null)[0];
+        return nextPageCursor(null).getId();
     }
 
     @Override

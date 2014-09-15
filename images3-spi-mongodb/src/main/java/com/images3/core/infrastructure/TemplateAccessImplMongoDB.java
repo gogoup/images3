@@ -84,9 +84,8 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
         if ("getTemplatesByImagePlantId".equals(tag)) {
             String imagePlantId = (String) arguments[0];
             Boolean isArchived = (Boolean) arguments[1];
-            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
-            PageCursor cursor = (PageCursor) pageResult[1];
-            return getTemplatesByImagePlantId(imagePlantId, isArchived, cursor);
+            PageCursor cursor = nextPageCursor((String) pageCursor);
+            return getTemplatesByImagePlantId(imagePlantId, isArchived, cursor.getPage());
         }
         throw new UnsupportedOperationException(tag);
     }
@@ -110,7 +109,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
     }
 
     private List<TemplateOS> getTemplatesByImagePlantId(String imagePlantId, 
-            Boolean isArchived, PageCursor pageCursor) {
+            Boolean isArchived, Page pageCursor) {
         DBCollection coll = getDatabase().getCollection("Template");
         int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
         BasicDBObject criteria = new BasicDBObject()
@@ -145,12 +144,12 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor, List<TemplateOS> result) {
-        return nextPageCursor(tag, arguments, pageCursor, result);
+        return nextPageCursorId(tag, arguments, pageCursor, result);
     }
 
     @Override
     public Object getFirstPageCursor(String tag, Object[] arguments) {
-        return retrieveNextPageCursor(null)[0];
+        return nextPageCursor(null).getId();
     }
 
     @Override

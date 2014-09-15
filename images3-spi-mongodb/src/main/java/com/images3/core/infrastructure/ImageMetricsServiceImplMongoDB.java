@@ -160,16 +160,14 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         if ("retrieveStatsByImagePlantId".equals(tag)) {
             String imagePlantId = (String) arguments[0];
             TimeInterval interval = (TimeInterval) arguments[1];
-            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
-            PageCursor cursor = (PageCursor) pageResult[1];
-            return getStatsByImagePlantId(imagePlantId, interval, cursor);
+            PageCursor cursor = nextPageCursor((String) pageCursor);
+            return getStatsByImagePlantId(imagePlantId, interval, cursor.getPage());
         }
         if ("retrieveStatsByTemplateId".equals(tag)) {
             TemplateIdentity templateIdentity = (TemplateIdentity) arguments[0];
             TimeInterval interval = (TimeInterval) arguments[1];
-            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
-            PageCursor cursor = (PageCursor) pageResult[1];
-            return getStatsByTemplateId(templateIdentity, interval, cursor);
+            PageCursor cursor = nextPageCursor((String) pageCursor);
+            return getStatsByTemplateId(templateIdentity, interval, cursor.getPage());
         }
         throw new UnsupportedOperationException(tag);
     }
@@ -187,11 +185,11 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor, List<ImageMetricsOS> result) {
-        return nextPageCursor(tag, arguments, pageCursor, result);
+        return nextPageCursorId(tag, arguments, pageCursor, result);
     }
     
     private List<ImageMetricsOS> getStatsByImagePlantId(String imagePlantId,
-            TimeInterval interval, PageCursor cursor) {
+            TimeInterval interval, Page cursor) {
         long[] timeBounds = getTimeBounds(interval);
         BasicDBObject secondRange = new BasicDBObject()
                                     .append("$gte", timeBounds[0])
@@ -203,7 +201,7 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
     }
     
     private List<ImageMetricsOS> getStatsByTemplateId(TemplateIdentity templateId,
-            TimeInterval interval, PageCursor cursor) {
+            TimeInterval interval, Page cursor) {
         long[] timeBounds = getTimeBounds(interval);
         BasicDBObject secondRange = new BasicDBObject()
                                     .append("$gte", timeBounds[0])
@@ -221,7 +219,7 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         return new long[] {startSecond, endSecond};
     }
     
-    private List<ImageMetricsOS> getImageStats(BasicDBObject criteria, PageCursor pageCursor) {
+    private List<ImageMetricsOS> getImageStats(BasicDBObject criteria, Page pageCursor) {
         DBCollection coll = getDatabase().getCollection("ImageMetrics");
         int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
         List<DBObject> objects = coll.find(criteria).skip(skipRecords).limit(pageCursor.getSize()).toArray();
@@ -234,7 +232,7 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
 
     @Override
     public Object getFirstPageCursor(String tag, Object[] arguments) {
-        return retrieveNextPageCursor(null)[0];
+        return nextPageCursor(null).getId();
     }
 
     @Override

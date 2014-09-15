@@ -111,22 +111,19 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
         if ("getImagesByOriginalImageId".equals(tag)) {
             String imagePlantId = (String) arguments[0];
             String originalImageId = (String) arguments[1];
-            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
-            PageCursor cursor = (PageCursor) pageResult[1];
-            return getImagesByOriginalImageId(imagePlantId, originalImageId, cursor);
+            PageCursor cursor = nextPageCursor((String) pageCursor);
+            return getImagesByOriginalImageId(imagePlantId, originalImageId, cursor.getPage());
         }
         if ("getImagesByImagePlantId".equals(tag)) {
             String imagePlantId = (String) arguments[0];
-            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
-            PageCursor cursor = (PageCursor) pageResult[1];
-            return getImagesByImagePlantId(imagePlantId, cursor);
+            PageCursor cursor = nextPageCursor((String) pageCursor);
+            return getImagesByImagePlantId(imagePlantId, cursor.getPage());
         }
         if ("getImagesByTemplateName".equals(tag)) {
             String imagePlantId = (String) arguments[0];
             String templateName = (String) arguments[1];
-            Object[] pageResult = retrieveNextPageCursor((String) pageCursor);
-            PageCursor cursor = (PageCursor) pageResult[1];
-            return getImagesByTemplateName(imagePlantId, templateName, cursor);
+            PageCursor cursor = nextPageCursor((String) pageCursor);
+            return getImagesByTemplateName(imagePlantId, templateName, cursor.getPage());
         }
         throw new UnsupportedOperationException(tag);
     }
@@ -151,7 +148,7 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
     }
 
     private List<ImageOS> getImagesByOriginalImageId(String imagePlantId, 
-            String originalImageId, PageCursor pageCursor) {
+            String originalImageId, Page pageCursor) {
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", imagePlantId)
                                     .append("version.originalImageId", originalImageId);
@@ -159,21 +156,21 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
     }
 
     private List<ImageOS> getImagesByImagePlantId(String imagePlantId, 
-            PageCursor pageCursor) {
+            Page pageCursor) {
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", imagePlantId);
         return getImages(criteria, pageCursor);
     }
     
     private List<ImageOS> getImagesByTemplateName(String imagePlantId, 
-            String templateName, PageCursor pageCursor) {
+            String templateName, Page pageCursor) {
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", imagePlantId)
                                     .append("version.templateName", templateName);
         return getImages(criteria, pageCursor);
     }
     
-    private List<ImageOS> getImages(BasicDBObject criteria, PageCursor pageCursor) {
+    private List<ImageOS> getImages(BasicDBObject criteria, Page pageCursor) {
         DBCollection coll = getDatabase().getCollection("Image");
         int skipRecords = (pageCursor.getStart() - 1) * pageCursor.getSize();
         List<DBObject> objects = coll.find(criteria).skip(skipRecords).limit(pageCursor.getSize()).toArray();
@@ -187,12 +184,12 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
     @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor, List<ImageOS> result) {
-        return nextPageCursor(tag, arguments, pageCursor, result);
+        return nextPageCursorId(tag, arguments, pageCursor, result);
     }
 
     @Override
     public Object getFirstPageCursor(String tag, Object[] arguments) {
-        return retrieveNextPageCursor(null)[0];
+        return nextPageCursor(null).getId();
     }
 
     @Override
