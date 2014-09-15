@@ -153,4 +153,11 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
         return retrieveNextPageCursor(null)[0];
     }
 
+    @Override
+    public Object getPrevPageCursor(String arg0, Object[] arg1, Object arg2,
+            List<TemplateOS> arg3) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

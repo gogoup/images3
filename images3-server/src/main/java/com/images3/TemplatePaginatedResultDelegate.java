@@ -3,17 +3,17 @@ package com.images3;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gogoup.dddutils.pagination.AutoPaginatedResultDelegate;
 import org.gogoup.dddutils.pagination.PaginatedResult;
-import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
 import com.images3.core.Template;
 
-public class TemplatePaginatedResultDelegate implements
-        PaginatedResultDelegate<List<TemplateResponse>> {
+public class TemplatePaginatedResultDelegate extends AutoPaginatedResultDelegate<List<TemplateResponse>> {
 
     private AppObjectMapper objectMapper;
     
     public TemplatePaginatedResultDelegate(AppObjectMapper objectMapper) {
+        super(0, "getActiveTempaltes", "getArchivedTemplates", "getAllTemplates");
         this.objectMapper = objectMapper;
     }
     

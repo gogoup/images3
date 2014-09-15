@@ -9,10 +9,10 @@ import com.images3.core.ImagePlantRepository;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
 
+import org.gogoup.dddutils.pagination.AutoPaginatedResultDelegate;
 import org.gogoup.dddutils.pagination.PaginatedResult;
-import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
-public class ImagePlantRepositoryService implements ImagePlantRepository, PaginatedResultDelegate<List<ImagePlant>> {
+public class ImagePlantRepositoryService extends AutoPaginatedResultDelegate<List<ImagePlant>> implements ImagePlantRepository  {
     
     private ImagePlantAccess imagePlantAccess;
     private ImagePlantFactoryService imagePlantFactory;
@@ -23,6 +23,7 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
             ImagePlantFactoryService imagePlantFactory,
             ImageRepositoryService imageRepository,
             TemplateRepositoryService templateRepository) {
+        super(0, "getAllImagePlants");
         this.imagePlantAccess = imagePlantAccess;
         this.imagePlantFactory = imagePlantFactory;
         this.imageRepository = imageRepository;
@@ -96,7 +97,7 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
     public PaginatedResult<List<ImagePlant>> findAllImagePlants() {
         PaginatedResult<List<ImagePlantOS>> osResult = imagePlantAccess.selectAllImagePlants();
         return new PaginatedResult<List<ImagePlant>>(
-                this, "getAllImagePlants", new Object[] {osResult}) {};
+                this, "getAllImagePlants", new Object[] {osResult});
     }
     
     private List<ImagePlant> getAllImagePlants(List<ImagePlantOS> objectSegments) {
@@ -126,15 +127,6 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
         throw new UnsupportedOperationException(tag);
     }
 
-    @Override
-    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
-        if ("getAllImagePlants".equals(tag)) {
-            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
-            return osResult.isGetAllResultsSupported();
-        }
-        throw new UnsupportedOperationException(tag);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public List<ImagePlant> fetchAllResults(String tag, Object[] arguments) {
@@ -142,25 +134,6 @@ public class ImagePlantRepositoryService implements ImagePlantRepository, Pagina
             PaginatedResult<List<ImagePlantOS>> osResult = (PaginatedResult<List<ImagePlantOS>>) arguments[0];
             List<ImagePlantOS> objectSegments = osResult.getAllResults();
             return getAllImagePlants(objectSegments);
-        }
-        throw new UnsupportedOperationException(tag);
-    }
-
-    @Override
-    public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor, List<ImagePlant> result) {
-        if ("getAllImagePlants".equals(tag)) {
-            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];
-            return osResult.getNextPageCursor();
-        }
-        throw new UnsupportedOperationException(tag);
-    }
-
-    @Override
-    public Object getFirstPageCursor(String tag, Object[] arguments) {
-        if ("getAllImagePlants".equals(tag)) {
-            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];
-            return osResult.getFirstPageCursor();
         }
         throw new UnsupportedOperationException(tag);
     }

@@ -15,10 +15,10 @@ import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageContentAccess;
 import com.images3.core.infrastructure.spi.ImageMetricsService;
 
+import org.gogoup.dddutils.pagination.AutoPaginatedResultDelegate;
 import org.gogoup.dddutils.pagination.PaginatedResult;
-import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
-public class ImageRepositoryService implements PaginatedResultDelegate<List<Image>> {
+public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Image>> {
     
     private ImageAccess imageAccess;
     private ImageContentAccess imageContentAccess;
@@ -29,6 +29,7 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
     public ImageRepositoryService(ImageAccess imageAccess, ImageContentAccess imageContentAccess,
             ImageFactoryService imageFactory, TemplateRepositoryService templateRepository,
             ImageMetricsService imageStatService) {
+        super(1, "getAllImages");
         this.imageAccess = imageAccess;
         this.imageContentAccess = imageContentAccess;
         this.imageFactory = imageFactory;
@@ -104,14 +105,14 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         PaginatedResult<List<ImageOS>> osResult = 
                 imageAccess.selectImagesByOriginalImageId(imagePlant.getId(), originalImage.getId());
         return new PaginatedResult<List<Image>>(
-                this, "getAllImages", new Object[] {imagePlant, osResult}) {};
+                this, "getAllImages", new Object[] {imagePlant, osResult});
     }
     
     public PaginatedResult<List<Image>> findAllImages(ImagePlantRoot imagePlant) {
         PaginatedResult<List<ImageOS>> osResult = 
                 imageAccess.selectImagesByImagePlantId(imagePlant.getId());
         return new PaginatedResult<List<Image>>(
-                this, "getAllImages", new Object[] {imagePlant, osResult}) {};
+                this, "getAllImages", new Object[] {imagePlant, osResult});
     }
     
     public PaginatedResult<List<Image>> findImagesByTemplate(ImagePlantRoot imagePlant,
@@ -119,7 +120,7 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         PaginatedResult<List<ImageOS>> osResult = 
                 imageAccess.selectImagesByTemplateName(imagePlant.getId(), template.getName());
         return new PaginatedResult<List<Image>>(
-                this, "getAllImages", new Object[] {imagePlant, osResult}) {};
+                this, "getAllImages", new Object[] {imagePlant, osResult});
     }
     
     private List<Image> getAllImages(ImagePlantRoot imagePlant, List<ImageOS> objectSegments) {
@@ -151,15 +152,6 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         throw new UnsupportedOperationException(tag);
     }
 
-    @Override
-    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
-        if ("getAllImages".equals(tag)) {
-            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
-            return osResult.isGetAllResultsSupported();
-        }
-        throw new UnsupportedOperationException(tag);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public List<Image> fetchAllResults(String tag, Object[] arguments) {
@@ -172,29 +164,10 @@ public class ImageRepositoryService implements PaginatedResultDelegate<List<Imag
         throw new UnsupportedOperationException(tag);
     }
 
-    @Override
-    public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor, List<Image> result) {
-        if ("getAllImages".equals(tag)) {
-            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
-            return osResult.getNextPageCursor();
-        }
-        throw new UnsupportedOperationException(tag);
-    }
-
     public File findImageContent(ImageEntity image) {
         ImagePlantRoot imagePlant = (ImagePlantRoot) image.getImagePlant();
         return imageContentAccess.selectImageContent(
                 image.getObjectSegment().getId(),
                 imagePlant.getObjectSegment().getAmazonS3Bucket());
-    }
-
-    @Override
-    public Object getFirstPageCursor(String tag, Object[] arguments) {
-        if ("getAllImages".equals(tag)) {
-            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
-            return osResult.getFirstPageCursor();
-        }
-        throw new UnsupportedOperationException(tag);
     }
 }

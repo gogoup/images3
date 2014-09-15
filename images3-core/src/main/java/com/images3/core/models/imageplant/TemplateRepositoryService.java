@@ -8,16 +8,17 @@ import com.images3.core.Template;
 import com.images3.core.infrastructure.TemplateOS;
 import com.images3.core.infrastructure.spi.TemplateAccess;
 
+import org.gogoup.dddutils.pagination.AutoPaginatedResultDelegate;
 import org.gogoup.dddutils.pagination.PaginatedResult;
-import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
-public class TemplateRepositoryService implements PaginatedResultDelegate<List<Template>> {
+public class TemplateRepositoryService extends AutoPaginatedResultDelegate<List<Template>> {
     
     private TemplateAccess templateAccess;
     private TemplateFactoryService templateFactory;
     
     public TemplateRepositoryService(TemplateAccess templateAccess,
             TemplateFactoryService templateFactory) {
+        super(1, "getAllTemplatesByImagePlant");
         this.templateAccess = templateAccess;
         this.templateFactory = templateFactory;
     }
@@ -60,21 +61,21 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
         PaginatedResult<List<TemplateOS>> osResult =
                 templateAccess.selectTemplatesByImagePlantId(imagePlant.getId(), null);
         return new PaginatedResult<List<Template>>(
-                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, osResult}){};
+                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, osResult});
     }
     
     public PaginatedResult<List<Template>> findActiveTemplatesByImagePlant(ImagePlantRoot imagePlant) {
         PaginatedResult<List<TemplateOS>> osResult =
                 templateAccess.selectTemplatesByImagePlantId(imagePlant.getId(), false);
         return new PaginatedResult<List<Template>>(
-                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, osResult}){};
+                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, osResult});
     }
     
     public PaginatedResult<List<Template>> findArchivedTemplatesByImagePlant(ImagePlantRoot imagePlant) {
         PaginatedResult<List<TemplateOS>> osResult =
                 templateAccess.selectTemplatesByImagePlantId(imagePlant.getId(), true);
         return new PaginatedResult<List<Template>>(
-                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, osResult}){};
+                this, "getAllTemplatesByImagePlant", new Object[]{imagePlant, osResult});
     }
    
     private void checkIfVoid(TemplateEntity template) {
@@ -96,15 +97,6 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
         throw new UnsupportedOperationException(tag);
     }
 
-    @Override
-    public boolean isFetchAllResultsSupported(String tag, Object[] arguments) {
-        if ("getAllTemplatesByImagePlant".equals(tag)) {
-            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
-            return osResult.isGetAllResultsSupported();
-        }
-        throw new UnsupportedOperationException(tag);
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public List<Template> fetchAllResults(String tag, Object[] arguments) {
@@ -113,25 +105,6 @@ public class TemplateRepositoryService implements PaginatedResultDelegate<List<T
             PaginatedResult<List<TemplateOS>> osResult = (PaginatedResult<List<TemplateOS>>) arguments[1];
             List<TemplateOS> objectSegments = osResult.getAllResults();
             return templateFactory.reconstituteTemplates(imagePlant, objectSegments);
-        }
-        throw new UnsupportedOperationException(tag);
-    }
-
-    @Override
-    public Object getNextPageCursor(String tag, Object[] arguments,
-            Object pageCursor, List<Template> result) {
-        if ("getAllTemplatesByImagePlant".equals(tag)) {
-            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
-            return osResult.getNextPageCursor();
-        }
-        throw new UnsupportedOperationException(tag);
-    }
-
-    @Override
-    public Object getFirstPageCursor(String tag, Object[] arguments) {
-        if ("getAllTemplatesByImagePlant".equals(tag)) {
-            PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
-            return osResult.getFirstPageCursor();
         }
         throw new UnsupportedOperationException(tag);
     }

@@ -237,4 +237,11 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         return retrieveNextPageCursor(null)[0];
     }
 
+    @Override
+    public Object getPrevPageCursor(String arg0, Object[] arg1, Object arg2,
+            List<ImageMetricsOS> arg3) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

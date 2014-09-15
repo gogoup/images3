@@ -194,4 +194,11 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
     public Object getFirstPageCursor(String tag, Object[] arguments) {
         return retrieveNextPageCursor(null)[0];
     }
+
+    @Override
+    public Object getPrevPageCursor(String arg0, Object[] arg1, Object arg2,
+            List<ImageOS> arg3) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
