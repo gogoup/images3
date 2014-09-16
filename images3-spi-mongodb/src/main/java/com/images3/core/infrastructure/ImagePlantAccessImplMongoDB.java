@@ -68,7 +68,7 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess<ImagePlantOS> imp
     public List<ImagePlantOS> fetchResult(String tag,
             Object[] arguments, Object pageCursor) {
         if ("getAllImagePlants".equals(tag)) {
-            PageCursor cursor = nextPageCursor((String) pageCursor);
+            PageCursor cursor = selectPageCursorById((String) pageCursor);
             return getAllImagePlants(cursor.getPage());
         }
         throw new UnsupportedOperationException(tag);
@@ -99,21 +99,20 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess<ImagePlantOS> imp
     }
     
     @Override
+    public Object getFirstPageCursor(String tag, Object[] arguments) {
+        return nextPageCursor(null).getId();
+    }
+
+    @Override
     public Object getNextPageCursor(String tag, Object[] arguments,
             Object pageCursor, List<ImagePlantOS> result) {
         return nextPageCursorId(tag, arguments, pageCursor, result);
     }
 
     @Override
-    public Object getFirstPageCursor(String tag, Object[] arguments) {
-        return nextPageCursor(null).getId();
-    }
-
-    @Override
-    public Object getPrevPageCursor(String arg0, Object[] arg1, Object arg2,
-            List<ImagePlantOS> arg3) {
-        // TODO Auto-generated method stub
-        return null;
+    public Object getPrevPageCursor(String tag, Object[] arguments, Object pageCursor,
+            List<ImagePlantOS> result) {
+        return previousPageCursorId(tag, arguments, pageCursor, result);
     }
 
 }

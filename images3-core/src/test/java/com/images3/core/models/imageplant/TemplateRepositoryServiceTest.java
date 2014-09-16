@@ -159,13 +159,13 @@ public class TemplateRepositoryServiceTest {
         List<TemplateOS> objectSegments = new ArrayList<TemplateOS>();
         objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
-        Mockito.when(osResult.getNextPageCursor()).thenReturn(1);
+        Mockito.when(osResult.getFirstPageCursor()).thenReturn(1);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, null)).thenReturn(osResult);
         Mockito.when(osResult.getResult(Mockito.eq(1))).thenReturn(objectSegments);
         
         TemplateRepositoryService repository = new TemplateRepositoryService(templateAccess, templateFactory);
         PaginatedResult<List<Template>> result = repository.findAllTemplatesByImagePlant(imagePlant);
-        Object pageCursor = result.getNextPageCursor();
+        Object pageCursor = result.getFirstPageCursor();
         result.getResult(pageCursor);
         
         assertEquals(pageCursor, 1);
@@ -239,13 +239,13 @@ public class TemplateRepositoryServiceTest {
         List<TemplateOS> objectSegments = new ArrayList<TemplateOS>();
         objectSegments.add(objectSegment);
         PaginatedResult<List<TemplateOS>> osResult = Mockito.mock(PaginatedResult.class);
-        Mockito.when(osResult.getNextPageCursor()).thenReturn(1);
+        Mockito.when(osResult.getFirstPageCursor()).thenReturn(1);
         Mockito.when(templateAccess.selectTemplatesByImagePlantId(IMAGE_PLANT_ID, true)).thenReturn(osResult);
         Mockito.when(osResult.getResult(Mockito.eq(1))).thenReturn(objectSegments);
         
         TemplateRepositoryService repository = new TemplateRepositoryService(templateAccess, templateFactory);
         PaginatedResult<List<Template>> result = repository.findArchivedTemplatesByImagePlant(imagePlant);
-        Object pageCursor = result.getNextPageCursor();
+        Object pageCursor = result.getFirstPageCursor();
         result.getResult(pageCursor);
         
         assertEquals(pageCursor, 1);

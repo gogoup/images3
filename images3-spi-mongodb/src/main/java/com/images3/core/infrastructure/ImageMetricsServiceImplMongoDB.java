@@ -160,13 +160,13 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         if ("retrieveStatsByImagePlantId".equals(tag)) {
             String imagePlantId = (String) arguments[0];
             TimeInterval interval = (TimeInterval) arguments[1];
-            PageCursor cursor = nextPageCursor((String) pageCursor);
+            PageCursor cursor = selectPageCursorById((String) pageCursor);
             return getStatsByImagePlantId(imagePlantId, interval, cursor.getPage());
         }
         if ("retrieveStatsByTemplateId".equals(tag)) {
             TemplateIdentity templateIdentity = (TemplateIdentity) arguments[0];
             TimeInterval interval = (TimeInterval) arguments[1];
-            PageCursor cursor = nextPageCursor((String) pageCursor);
+            PageCursor cursor = selectPageCursorById((String) pageCursor);
             return getStatsByTemplateId(templateIdentity, interval, cursor.getPage());
         }
         throw new UnsupportedOperationException(tag);
@@ -236,10 +236,9 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
     }
 
     @Override
-    public Object getPrevPageCursor(String arg0, Object[] arg1, Object arg2,
-            List<ImageMetricsOS> arg3) {
-        // TODO Auto-generated method stub
-        return null;
+    public Object getPrevPageCursor(String tag, Object[] arguments, Object pageCursor,
+            List<ImageMetricsOS> result) {
+        return previousPageCursorId(tag, arguments, pageCursor, result);
     }
 
 }

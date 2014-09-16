@@ -90,20 +90,20 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
     public PaginatedResult<List<ImageOS>> selectImagesByOriginalImageId(
             String imagePlantId, String originalImageId) {
         return new PaginatedResult<List<ImageOS>>(
-                this, "getImagesByOriginalImageId", new Object[] {imagePlantId, originalImageId}) {};
+                this, "getImagesByOriginalImageId", new Object[] {imagePlantId, originalImageId});
     }
 
     @Override
     public PaginatedResult<List<ImageOS>> selectImagesByTemplateName(
             String imagePlantId, String templateName) {
         return new PaginatedResult<List<ImageOS>>(
-                this, "getImagesByTemplateName", new Object[] {imagePlantId, templateName}) {};
+                this, "getImagesByTemplateName", new Object[] {imagePlantId, templateName});
     }
 
     public PaginatedResult<List<ImageOS>> selectImagesByImagePlantId(
             String imagePlantId) {
         return new PaginatedResult<List<ImageOS>>(
-                this, "getImagesByImagePlantId", new Object[] {imagePlantId}) {};
+                this, "getImagesByImagePlantId", new Object[] {imagePlantId});
     }
     
     public List<ImageOS> fetchResult(String tag, Object[] arguments,
@@ -111,18 +111,18 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
         if ("getImagesByOriginalImageId".equals(tag)) {
             String imagePlantId = (String) arguments[0];
             String originalImageId = (String) arguments[1];
-            PageCursor cursor = nextPageCursor((String) pageCursor);
+            PageCursor cursor = selectPageCursorById((String) pageCursor);
             return getImagesByOriginalImageId(imagePlantId, originalImageId, cursor.getPage());
         }
         if ("getImagesByImagePlantId".equals(tag)) {
             String imagePlantId = (String) arguments[0];
-            PageCursor cursor = nextPageCursor((String) pageCursor);
+            PageCursor cursor = selectPageCursorById((String) pageCursor);
             return getImagesByImagePlantId(imagePlantId, cursor.getPage());
         }
         if ("getImagesByTemplateName".equals(tag)) {
             String imagePlantId = (String) arguments[0];
             String templateName = (String) arguments[1];
-            PageCursor cursor = nextPageCursor((String) pageCursor);
+            PageCursor cursor = selectPageCursorById((String) pageCursor);
             return getImagesByTemplateName(imagePlantId, templateName, cursor.getPage());
         }
         throw new UnsupportedOperationException(tag);
@@ -193,9 +193,8 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
     }
 
     @Override
-    public Object getPrevPageCursor(String arg0, Object[] arg1, Object arg2,
-            List<ImageOS> arg3) {
-        // TODO Auto-generated method stub
-        return null;
+    public Object getPrevPageCursor(String tag, Object[] arguments, Object pageCursor,
+            List<ImageOS> result) {
+        return previousPageCursorId(tag, arguments, pageCursor, result);
     }
 }

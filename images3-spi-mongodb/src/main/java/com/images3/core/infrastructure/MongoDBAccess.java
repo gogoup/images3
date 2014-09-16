@@ -54,23 +54,35 @@ public abstract class MongoDBAccess<T> {
         }
         return nextPageCursor((String) pageCursor).getId();
     }
+    
+    protected Object previousPageCursorId(String tag, Object[] arguments,
+            Object pageCursor, List<T> result) {
+        PageCursor cursor = selectPageCursorById((String) pageCursor);
+        return cursor.getPreviousPageCursorId();
+    }
 
     protected PageCursor nextPageCursor(String pageCursorId) {
         PageCursor cursor = null;
         if (null != pageCursorId) {
+            
+            //try to find exsiting next page cursor.
+            cursor = selectPageCursorByPreviousId(pageCursorId); 
+            if (null != cursor) {
+                return cursor;
+            }
             cursor = selectPageCursorById(pageCursorId);
         }
-        Page page = createNextPage(cursor.getPage());
+        Page page = createNextPage(cursor);
         PageCursor nextPageCursor = createPageCursor(page, cursor);
         insertPageCursor(nextPageCursor);
         return nextPageCursor;
     }
     
-    private Page createNextPage(Page page) {
-        if (null == page) {
+    private Page createNextPage(PageCursor cursor) {
+        if (null == cursor) {
             return createFirstPage();
         } else {
-            return new Page().startAtPage(page.getStart() + 1).withSize(pageSize);
+            return new Page().startAtPage(cursor.getPage().getStart() + 1).withSize(pageSize);
         }
     }
     
@@ -93,10 +105,21 @@ public abstract class MongoDBAccess<T> {
         coll.insert(getObjectMapper().mapToBasicDBObject(cursor));
     }
     
-    private PageCursor selectPageCursorById(String id) {
+    protected PageCursor selectPageCursorById(String id) {
         DBCollection coll = getDatabase().getCollection("PageCursor");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("id", id);
+        DBCursor cursor = coll.find(criteria);
+        if (!cursor.hasNext()) {
+            return null;
+        }
+        return getObjectMapper().mapToPageCursor((BasicDBObject) cursor.next());
+    }
+    
+    private PageCursor selectPageCursorByPreviousId(String id) {
+        DBCollection coll = getDatabase().getCollection("PageCursor");
+        BasicDBObject criteria = new BasicDBObject()
+                                    .append("previousPageCursorId", id);
         DBCursor cursor = coll.find(criteria);
         if (!cursor.hasNext()) {
             return null;

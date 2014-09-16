@@ -76,7 +76,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
     public PaginatedResult<List<TemplateOS>> selectTemplatesByImagePlantId(
             String imagePlantId, Boolean isArchived) {
         return new PaginatedResult<List<TemplateOS>>(
-                this, "getTemplatesByImagePlantId", new Object[]{imagePlantId, isArchived}) {};
+                this, "getTemplatesByImagePlantId", new Object[]{imagePlantId, isArchived});
     }
     
     public List<TemplateOS> fetchResult(String tag, Object[] arguments,
@@ -84,7 +84,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
         if ("getTemplatesByImagePlantId".equals(tag)) {
             String imagePlantId = (String) arguments[0];
             Boolean isArchived = (Boolean) arguments[1];
-            PageCursor cursor = nextPageCursor((String) pageCursor);
+            PageCursor cursor = selectPageCursorById((String) pageCursor);
             return getTemplatesByImagePlantId(imagePlantId, isArchived, cursor.getPage());
         }
         throw new UnsupportedOperationException(tag);
@@ -153,10 +153,9 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
     }
 
     @Override
-    public Object getPrevPageCursor(String arg0, Object[] arg1, Object arg2,
-            List<TemplateOS> arg3) {
-        // TODO Auto-generated method stub
-        return null;
+    public Object getPrevPageCursor(String tag, Object[] arguments, Object pageCursor,
+            List<TemplateOS> result) {
+        return previousPageCursorId(tag, arguments, pageCursor, result);
     }
 
 }
