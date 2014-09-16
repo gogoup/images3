@@ -12,7 +12,8 @@
   	<module>images3-spi-imgprocessor</module>
   	<module>images3-spi-mongodb</module>
   	<module>images3-spi-imgcontent</module>
-  	
+
+  	<module>images3-base</module>
   </modules>
   <dependencies>
     <dependency>
