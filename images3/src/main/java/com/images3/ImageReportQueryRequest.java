@@ -1,6 +1,6 @@
 package com.images3;
 
-import com.images3.common.ImageReportType;
+import com.images3.common.ImageMetricsType;
 import com.images3.common.TimeInterval;
 
 public class ImageReportQueryRequest {
@@ -8,15 +8,15 @@ public class ImageReportQueryRequest {
     private String imagePlantId;
     private String templateName;
     private TimeInterval interval;
-    private ImageReportType[] types;
+    private ImageMetricsType[] types;
     
     public ImageReportQueryRequest(String imagePlantId,
-            TimeInterval interval, ImageReportType[] types) {
+            TimeInterval interval, ImageMetricsType[] types) {
         this(imagePlantId, null, interval, types);
     }
 
     public ImageReportQueryRequest(String imagePlantId, String templateName,
-            TimeInterval interval, ImageReportType[] types) {
+            TimeInterval interval, ImageMetricsType[] types) {
         this.imagePlantId = imagePlantId;
         this.templateName = templateName;
         this.interval = interval;
@@ -35,7 +35,7 @@ public class ImageReportQueryRequest {
         return interval;
     }
 
-    public ImageReportType[] getTypes() {
+    public ImageMetricsType[] getTypes() {
         return types;
     }
     

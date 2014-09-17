@@ -9,7 +9,7 @@
   <dependencies>
     <dependency>
         <groupId>com.images3</groupId>
-        <artifactId>images3-base</artifactId>
+        <artifactId>images3-core-base</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>

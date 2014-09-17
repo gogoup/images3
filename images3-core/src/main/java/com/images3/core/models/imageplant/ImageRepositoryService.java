@@ -24,17 +24,17 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
     private ImageContentAccess imageContentAccess;
     private ImageFactoryService imageFactory;
     private TemplateRepositoryService templateRepository;
-    private ImageMetricsService imageStatService;
+    private ImageMetricsService imageMetricsService;
     
     public ImageRepositoryService(ImageAccess imageAccess, ImageContentAccess imageContentAccess,
             ImageFactoryService imageFactory, TemplateRepositoryService templateRepository,
-            ImageMetricsService imageStatService) {
+            ImageMetricsService imageMetricsService) {
         super(1, "getAllImages");
         this.imageAccess = imageAccess;
         this.imageContentAccess = imageContentAccess;
         this.imageFactory = imageFactory;
         this.templateRepository = templateRepository;
-        this.imageStatService = imageStatService;
+        this.imageMetricsService = imageMetricsService;
     }
 
     public ImageEntity storeImage(ImageEntity image) {
@@ -47,7 +47,7 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
                     objectSegment.getId(), 
                     imagePlant.getObjectSegment().getAmazonS3Bucket(), 
                     image.getContent()); //insert content
-            imageStatService.record(objectSegment); //record metrics of image.
+            imageMetricsService.recordInbound(objectSegment); //record metrics of image.
         }
         image.cleanMarks();
         return imageFactory.reconstituteImage(
@@ -166,8 +166,11 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
 
     public File findImageContent(ImageEntity image) {
         ImagePlantRoot imagePlant = (ImagePlantRoot) image.getImagePlant();
-        return imageContentAccess.selectImageContent(
-                image.getObjectSegment().getId(),
+        ImageOS imageOS = image.getObjectSegment();
+        File content = imageContentAccess.selectImageContent(
+                imageOS.getId(),
                 imagePlant.getObjectSegment().getAmazonS3Bucket());
+        imageMetricsService.recordOutbound(imageOS); //record image metrics
+        return content;
     }
 }

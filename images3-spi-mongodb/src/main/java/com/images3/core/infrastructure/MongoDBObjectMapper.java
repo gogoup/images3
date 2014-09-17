@@ -1,12 +1,15 @@
 package com.images3.core.infrastructure;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.images3.common.AmazonS3Bucket;
 import com.images3.common.ImageDimension;
 import com.images3.common.ImageFormat;
 import com.images3.common.ImageIdentity;
 import com.images3.common.ImageMetadata;
+import com.images3.common.ImageMetricsType;
 import com.images3.common.ImageVersion;
 import com.images3.common.ResizingConfig;
 import com.images3.common.ResizingUnit;
@@ -164,12 +167,25 @@ public class MongoDBObjectMapper {
     }
     
     public ImageMetricsOS mapToImageMetricsOS(BasicDBObject source) {
+        Map<ImageMetricsType, Long> numbers = new HashMap<ImageMetricsType, Long>();
+        numbers.put(
+                ImageMetricsType.COUNTS_INBOUND, 
+                source.getLong(ImageMetricsType.COUNTS_INBOUND.toString()));
+        numbers.put(
+                ImageMetricsType.COUNTS_OUTBOUND, 
+                source.getLong(ImageMetricsType.COUNTS_OUTBOUND.toString()));
+        numbers.put(
+                ImageMetricsType.SIZE_INBOUND, 
+                source.getLong(ImageMetricsType.SIZE_INBOUND.toString()));
+        numbers.put(
+                ImageMetricsType.SIZE_OUTBOUND, 
+                source.getLong(ImageMetricsType.SIZE_OUTBOUND.toString()));
+        
         return new ImageMetricsOS(
                 source.getString("imagePlantId"),
                 source.getString("templateName"),
                 source.getLong("second"),
-                source.getLong("numberOfImages"),
-                source.getLong("sizeOfImages"));
+                numbers);
     }
     
 }

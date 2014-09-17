@@ -2,10 +2,14 @@ package com.images3.core.infrastructure;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
+import com.images3.common.ImageMetricsType;
 import com.images3.common.NoSuchEntityFoundException;
 import com.images3.common.TemplateIdentity;
 import com.images3.common.TimeInterval;
@@ -23,12 +27,19 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
     }
 
     @Override
-    public void record(ImageOS image) {
-        ImageMetricsOS metrics = createMetrics(image);
+    public void recordInbound(ImageOS image) {
+        ImageMetricsOS metrics = createMetrics(image, true);
         updateSecondMetrics(metrics);
         updateTemplateMetrics(metrics);
     }
     
+    @Override
+    public void recordOutbound(ImageOS image) {
+        ImageMetricsOS metrics = createMetrics(image, false);
+        updateSecondMetrics(metrics);
+        updateTemplateMetrics(metrics);
+    }
+
     private void updateSecondMetrics(ImageMetricsOS metrics) {
         DBCollection coll = getDatabase().getCollection("ImageMetrics");
         BasicDBObject criteria = new BasicDBObject()
@@ -38,9 +49,7 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         BasicDBObject returnFields = new BasicDBObject();
         BasicDBObject sort = new BasicDBObject();
         boolean remove = false;
-        BasicDBObject increase = new BasicDBObject()
-            .append("numberOfImages", metrics.getNumberOfImages())
-            .append("sizeOfImages", metrics.getSizeOfImages());
+        BasicDBObject increase = getImageIncrements(metrics);
         BasicDBObject update = new BasicDBObject()
                 .append("$inc", increase);
         boolean returnNew = true;
@@ -57,48 +66,40 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
         BasicDBObject returnFields = new BasicDBObject();
         BasicDBObject sort = new BasicDBObject();
         boolean remove = false;
-        BasicDBObject increase = new BasicDBObject()
-            .append("numberOfImages", metrics.getNumberOfImages())
-            .append("sizeOfImages", metrics.getSizeOfImages());
+        BasicDBObject increase = getImageIncrements(metrics);
         BasicDBObject update = new BasicDBObject()
             .append("$inc", increase);
         boolean returnNew = true;
         boolean upsert = true;
         coll.findAndModify(criteria, returnFields, sort, remove, update, returnNew, upsert);
     }
+    
+    private BasicDBObject getImageIncrements(ImageMetricsOS metrics) {
+        BasicDBObject increase = new BasicDBObject();
+        Map<ImageMetricsType, Long> numbers = metrics.getNumbers();
+        for (Iterator<ImageMetricsType> iter=numbers.keySet().iterator(); iter.hasNext();) {
+            ImageMetricsType type = iter.next();
+            Long number = metrics.getNumbers().get(type);
+            increase.append(type.toString(), number);
+        }
+        return increase;
+    }
 
     @Override
-    public long calculateNumberOfImages(String imagePlantId) {
+    public long calculateNumber(String imagePlantId, ImageMetricsType type) {
         long counts = 0;
         List<DBObject> objects = selectMetricsByImagePlantId(imagePlantId);
         for (DBObject obj: objects) {
             BasicDBObject object = (BasicDBObject) obj;
-            counts += object.getLong("numberOfImages");
+            counts += object.getLong(type.toString());
         }
         return counts;
     }
     
     @Override
-    public long calculateNumberOfImages(TemplateIdentity templateId) {
+    public long calculateNumber(TemplateIdentity templateId, ImageMetricsType type) {
         BasicDBObject object = (BasicDBObject) selectMetricsByTempalteId(templateId);
-        return object.getLong("numberOfImages");
-    }
-    
-    @Override
-    public long calculateSizeOfImages(String imagePlantId) {
-        long size = 0;
-        List<DBObject> objects = selectMetricsByImagePlantId(imagePlantId);
-        for (DBObject obj: objects) {
-            BasicDBObject object = (BasicDBObject) obj;
-            size += object.getLong("sizeOfImages");
-        }
-        return size;
-    }
-
-    @Override
-    public long calculateSizeOfImages(TemplateIdentity templateId) {
-        BasicDBObject object = (BasicDBObject) selectMetricsByTempalteId(templateId);
-        return object.getLong("sizeOfImages");
+        return object.getLong(type.toString());
     }
 
     private List<DBObject> selectMetricsByImagePlantId(String imagePlantId) {
@@ -117,7 +118,7 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
                                     .append("second", 0);
         DBObject object = coll.findOne(criteria);
         if (null == object) {
-            throw new NoSuchEntityFoundException("NumberOfImages", templateId.toString());
+            throw new NoSuchEntityFoundException(ImageMetricsOS.class.getName(), templateId.toString());
         }
         return object;
     }
@@ -136,14 +137,21 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
                 this, "retrieveStatsByTemplateId", new Object[] {templateId, interval});
     }
     
-    private ImageMetricsOS createMetrics(ImageOS image) {
+    private ImageMetricsOS createMetrics(ImageOS image, boolean isInbound) {
         long second = getSecond(image.getDateTime());
+        Map<ImageMetricsType, Long> stats = new HashMap<ImageMetricsType, Long>();
+        if (isInbound) {
+            stats.put(ImageMetricsType.COUNTS_INBOUND, 1L);
+            stats.put(ImageMetricsType.SIZE_INBOUND, image.getMetadata().getSize());
+        } else {
+            stats.put(ImageMetricsType.COUNTS_OUTBOUND, 1L);
+            stats.put(ImageMetricsType.SIZE_OUTBOUND, image.getMetadata().getSize());
+        }
         return new ImageMetricsOS(
                 image.getId().getImagePlantId(), 
                 image.getVersion().getTemplateName(),
                 second,
-                1, 
-                image.getMetadata().getSize());
+                stats);
     }
 
     private long getSecond(Date dateTime) {

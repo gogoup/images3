@@ -5,6 +5,7 @@ import java.util.List;
 import org.gogoup.dddutils.pagination.PaginatedResult;
 import org.gogoup.dddutils.pagination.PaginatedResultDelegate;
 
+import com.images3.common.ImageMetricsType;
 import com.images3.common.TemplateIdentity;
 import com.images3.common.TimeInterval;
 import com.images3.core.infrastructure.ImageOS;
@@ -12,15 +13,13 @@ import com.images3.core.infrastructure.ImageMetricsOS;
 
 public interface ImageMetricsService extends PaginatedResultDelegate<List<ImageMetricsOS>> {
 
-    public void record(ImageOS image);
+    public void recordInbound(ImageOS image);
     
-    public long calculateNumberOfImages(String imagePlantId);
+    public void recordOutbound(ImageOS image);
     
-    public long calculateNumberOfImages(TemplateIdentity templateId);
-   
-    public long calculateSizeOfImages(String imagePlantId);
+    public long calculateNumber(String imagePlantId, ImageMetricsType type);
     
-    public long calculateSizeOfImages(TemplateIdentity templateId);
+    public long calculateNumber(TemplateIdentity templateId, ImageMetricsType type);
     
     public PaginatedResult<List<ImageMetricsOS>> retrieveStats(
             String imagePlantId, TimeInterval interval);

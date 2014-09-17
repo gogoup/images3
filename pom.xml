@@ -13,7 +13,8 @@
   	<module>images3-spi-mongodb</module>
   	<module>images3-spi-imgcontent</module>
 
-  	<module>images3-base</module>
+  	
+  	<module>images3-core-base</module>
   </modules>
   <dependencies>
     <dependency>

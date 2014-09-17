@@ -5,7 +5,7 @@
     <artifactId>images3-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>images3-base</artifactId>
+  <artifactId>images3-core-base</artifactId>
   <dependencies>
        <dependency>
            <groupId>com.images3</groupId>

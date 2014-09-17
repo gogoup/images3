@@ -3,6 +3,7 @@ package com.images3;
 import java.util.List;
 
 import com.images3.common.ImageIdentity;
+import com.images3.common.ImageMetricsType;
 import com.images3.common.ImageVersion;
 import com.images3.common.TemplateIdentity;
 import com.images3.core.Image;
@@ -19,7 +20,7 @@ public class AppObjectMapper {
                 source.getCreationTime(),
                 mapToResponse(source.getMasterTemplate()),
                 source.countTemplates(),
-                source.generateImageReporter().countImages());
+                source.generateImageReporter().calculate(ImageMetricsType.COUNTS_INBOUND));
     }
     
     public TemplateResponse mapToResponse(Template source) {
