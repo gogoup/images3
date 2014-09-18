@@ -170,17 +170,24 @@ public class MongoDBObjectMapper {
         Map<ImageMetricsType, Long> numbers = new HashMap<ImageMetricsType, Long>();
         numbers.put(
                 ImageMetricsType.COUNTS_INBOUND, 
-                source.getLong(ImageMetricsType.COUNTS_INBOUND.toString()));
+                (source.containsField(ImageMetricsType.COUNTS_INBOUND.toString()) ? 
+                        source.getLong(ImageMetricsType.COUNTS_INBOUND.toString()) : 0L)
+                        );
         numbers.put(
                 ImageMetricsType.COUNTS_OUTBOUND, 
-                source.getLong(ImageMetricsType.COUNTS_OUTBOUND.toString()));
+                (source.containsField(ImageMetricsType.COUNTS_OUTBOUND.toString()) ? 
+                        source.getLong(ImageMetricsType.COUNTS_OUTBOUND.toString()) : 0L)
+                        );
         numbers.put(
                 ImageMetricsType.SIZE_INBOUND, 
-                source.getLong(ImageMetricsType.SIZE_INBOUND.toString()));
+                (source.containsField(ImageMetricsType.SIZE_INBOUND.toString()) ? 
+                        source.getLong(ImageMetricsType.SIZE_INBOUND.toString()) : 0L)
+                        );
         numbers.put(
                 ImageMetricsType.SIZE_OUTBOUND, 
-                source.getLong(ImageMetricsType.SIZE_OUTBOUND.toString()));
-        
+                (source.containsField(ImageMetricsType.SIZE_OUTBOUND.toString()) ? 
+                        source.getLong(ImageMetricsType.SIZE_OUTBOUND.toString()) : 0L)
+                        );
         return new ImageMetricsOS(
                 source.getString("imagePlantId"),
                 source.getString("templateName"),

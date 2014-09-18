@@ -1,7 +1,6 @@
 package com.images3.core.infrastructure;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -138,12 +137,16 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
     }
     
     private ImageMetricsOS createMetrics(ImageOS image, boolean isInbound) {
-        long second = getSecond(image.getDateTime());
+        long second = getSecond(System.currentTimeMillis());
         Map<ImageMetricsType, Long> stats = new HashMap<ImageMetricsType, Long>();
         if (isInbound) {
             stats.put(ImageMetricsType.COUNTS_INBOUND, 1L);
             stats.put(ImageMetricsType.SIZE_INBOUND, image.getMetadata().getSize());
+            stats.put(ImageMetricsType.COUNTS_OUTBOUND, 0L);
+            stats.put(ImageMetricsType.SIZE_OUTBOUND, 0L);
         } else {
+            stats.put(ImageMetricsType.COUNTS_INBOUND, 0L);
+            stats.put(ImageMetricsType.SIZE_INBOUND, 0L);
             stats.put(ImageMetricsType.COUNTS_OUTBOUND, 1L);
             stats.put(ImageMetricsType.SIZE_OUTBOUND, image.getMetadata().getSize());
         }
@@ -154,8 +157,7 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
                 stats);
     }
 
-    private long getSecond(Date dateTime) {
-        long time = dateTime.getTime();
+    private long getSecond(long time) {
         long restOfSecond = time % 1000;
         long second = time - (restOfSecond);
         second /= 1000;
@@ -222,8 +224,8 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
     }
     
     private long[] getTimeBounds(TimeInterval interval) {
-        long startSecond = getSecond(interval.getStart());
-        long endSecond = getSecond(interval.getEnd());
+        long startSecond = getSecond(interval.getStart().getTime());
+        long endSecond = getSecond(interval.getEnd().getTime());
         return new long[] {startSecond, endSecond};
     }
     
