@@ -102,7 +102,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
 
     @Override
     public AmazonS3Bucket getAmazonS3Bucket() {
-        return new AmazonS3Bucket(null, null, getObjectSegment().getAmazonS3Bucket().getName());
+        return getObjectSegment().getAmazonS3Bucket();
     }
 
     @Override

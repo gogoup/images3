@@ -120,8 +120,8 @@ public class ImagePlantRootTest {
         assertEquals(imagePlant.getId(), IMAGE_PLANT_ID);
         assertEquals(imagePlant.getName(), IMAGE_PLANT_NAME);
         assertEquals(imagePlant.getCreationTime(), IMAGE_PLANT_CREATION_TIME);
-        assertEquals(imagePlant.getAmazonS3Bucket().getAccessKey(), null);
-        assertEquals(imagePlant.getAmazonS3Bucket().getSecretKey(), null);
+        assertEquals(imagePlant.getAmazonS3Bucket().getAccessKey(), amazonS3Bucket.getAccessKey());
+        assertEquals(imagePlant.getAmazonS3Bucket().getSecretKey(), amazonS3Bucket.getSecretKey());
         assertEquals(imagePlant.getAmazonS3Bucket().getName(), amazonS3Bucket.getName());
         assertTrue(!imagePlant.isNew());
         assertTrue(!imagePlant.isDirty());

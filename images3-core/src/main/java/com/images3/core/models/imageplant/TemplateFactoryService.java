@@ -34,9 +34,7 @@ public class TemplateFactoryService {
 
     public TemplateEntity generateTemplate(ImagePlantRoot imagePlant, String name, 
             ResizingConfig resizingConfig) {
-        if (templateAccess.isDuplicatedTemplateName(imagePlant.getId(), name)) {
-            throw new DuplicateTemplateNameException(name);
-        }
+        checkForDuplicateTemplateName(imagePlant.getId(), name);
         TemplateOS objectSegment = new TemplateOS(
                 new TemplateIdentity(imagePlant.getId(), name), 
                 DEFAULT_ISARCHIVED, 
@@ -45,6 +43,12 @@ public class TemplateFactoryService {
         TemplateEntity template = reconstituteTemplate(imagePlant, objectSegment);
         template.markAsNew();
         return template;
+    }
+    
+    private void checkForDuplicateTemplateName(String imagePlantId, String name) {
+        if (templateAccess.isDuplicatedTemplateName(imagePlantId, name)) {
+            throw new DuplicateTemplateNameException(name);
+        }
     }
     
     public TemplateEntity reconstituteTemplate(ImagePlantRoot imagePlant, 

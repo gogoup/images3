@@ -50,6 +50,7 @@ public class ImageFactoryService {
     public ImageEntity generateImage(ImagePlantRoot imagePlant, ImageEntity originalImage, 
             TemplateEntity template, ImageRepositoryService imageRepository,
             TemplateRepositoryService templateRepository) {
+        checkForArchivedTemplate(template);
         Version version = new Version(template, originalImage);
         checkForMasterVersionGeneration(originalImage, template);
         checkForDuplicateVersion(imagePlant, originalImage, template);
@@ -63,6 +64,12 @@ public class ImageFactoryService {
                 version,
                 imageRepository,
                 templateRepository);
+    }
+    
+    private void checkForArchivedTemplate(TemplateEntity template) {
+        if (template.isArchived()) {
+            throw new IllegalArgumentException("Template " + template.getName() + " has been archived.");
+        }
     }
     
     private void checkForMasterVersionGeneration(ImageEntity originalImage,
