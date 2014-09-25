@@ -15,7 +15,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import com.images3.common.AmazonS3Bucket;
-import com.images3.common.DuplicatedImagePlantNameException;
+import com.images3.common.DuplicateImagePlantNameException;
 import com.images3.common.ImageDimension;
 import com.images3.common.ImageFormat;
 import com.images3.common.ImageIdentity;
@@ -143,7 +143,7 @@ public class ImagePlantRootTest {
     
     @Test
     public void testUpdateName_DuplicateName() {
-        expectedException.expect(DuplicatedImagePlantNameException.class);
+        expectedException.expect(DuplicateImagePlantNameException.class);
         Mockito.when(imagePlantAccess.isDuplicatedImagePlantName("ImagePlantName2")).thenReturn(true);
         ImagePlantRoot imagePlant = createImagePlant();
         imagePlant.updateName("ImagePlantName2");

@@ -9,7 +9,8 @@ import java.util.Map;
 
 import com.images3.common.AmazonS3Bucket;
 import com.images3.common.DirtyMark;
-import com.images3.common.DuplicatedImagePlantNameException;
+import com.images3.common.DuplicateImagePlantNameException;
+import com.images3.common.IllegalImagePlantNameLengthException;
 import com.images3.common.ResizingConfig;
 import com.images3.common.UnremovableTemplateException;
 import com.images3.core.Image;
@@ -23,6 +24,9 @@ import com.images3.core.infrastructure.spi.ImagePlantAccess;
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
 public class ImagePlantRoot extends DirtyMark implements ImagePlant {
+    
+    private static final int IMAGEPLANT_NAME_MIN_LENGTH = 1;
+    private static final int IMAGEPLANT_NAME_MAX_LENGTH = 100;
     
     private ImagePlantOS objectSegment;
     private ImagePlantAccess imagePlantAccess;
@@ -85,14 +89,27 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
 
     @Override
     public void updateName(String name) {
+        validateImagePlantName(name);
         if (getObjectSegment().getName().equals(name)) {
             return;
         }
         if (imagePlantAccess.isDuplicatedImagePlantName(name)) {
-            throw new DuplicatedImagePlantNameException(name);
+            throw new DuplicateImagePlantNameException(name);
         }
         getObjectSegment().setName(name);
         markAsDirty();
+    }
+    
+    private void validateImagePlantName(String name) {
+        if (null == name) {
+            throw new NullPointerException("ImagePlant name");
+        }
+        int length = name.trim().length();
+        if (length < IMAGEPLANT_NAME_MIN_LENGTH
+                || length > IMAGEPLANT_NAME_MAX_LENGTH) {
+            throw new IllegalImagePlantNameLengthException(
+                    name, IMAGEPLANT_NAME_MIN_LENGTH, IMAGEPLANT_NAME_MAX_LENGTH);
+        }
     }
 
     @Override

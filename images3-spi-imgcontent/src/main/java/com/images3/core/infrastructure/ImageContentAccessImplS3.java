@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -26,6 +27,16 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     public ImageContentAccessImplS3(String imageContentDownloadDir, AmazonS3ClientPool clients) {
         this.imageContentDownloadDir = imageContentDownloadDir;
         this.clients = clients;
+    }
+
+    @Override
+    public boolean testBucketAccessibility(AmazonS3Bucket bucket) {
+        try {
+            clients.getClient(bucket);
+        } catch (AmazonClientException e) {
+            return false;
+        }
+        return true;
     }
 
     @Override

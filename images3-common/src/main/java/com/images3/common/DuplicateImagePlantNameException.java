@@ -1,6 +1,6 @@
 package com.images3.common;
 
-public class DuplicatedImagePlantNameException extends RuntimeException {
+public class DuplicateImagePlantNameException extends RuntimeException {
 
     /**
      * 
@@ -9,7 +9,7 @@ public class DuplicatedImagePlantNameException extends RuntimeException {
 
     private String name;
     
-    public DuplicatedImagePlantNameException(String name) {
+    public DuplicateImagePlantNameException(String name) {
         super(name);
         this.name = name;
     }
@@ -19,3 +19,4 @@ public class DuplicatedImagePlantNameException extends RuntimeException {
     }
     
 }
+

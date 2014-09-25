@@ -7,17 +7,17 @@ public class NoSuchEntityFoundException extends RuntimeException {
      */
     private static final long serialVersionUID = 4197063718380029491L;
 
-    private String entityClass;
+    private String entity;
     private String id;
     
-    public NoSuchEntityFoundException(String entityClass, String id) {
-        super(entityClass + " {" + id + "}");
-        this.entityClass = entityClass;
+    public NoSuchEntityFoundException(String entity, String id) {
+        super(entity + " {" + id + "}");
+        this.entity = entity;
         this.id = id;
     }
 
-    public String getName() {
-        return entityClass;
+    public String getEntity() {
+        return entity;
     }
 
     public String getId() {
