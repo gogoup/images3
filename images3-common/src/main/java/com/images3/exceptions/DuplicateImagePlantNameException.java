@@ -1,4 +1,4 @@
-package com.images3.common;
+package com.images3.exceptions;
 
 public class DuplicateImagePlantNameException extends RuntimeException {
 

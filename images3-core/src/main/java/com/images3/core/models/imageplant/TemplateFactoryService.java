@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.images3.common.DuplicateTemplateNameException;
-import com.images3.common.IllegalTemplateNameException;
-import com.images3.common.IllegalTemplateNameLengthException;
 import com.images3.common.ResizingConfig;
+import com.images3.common.ResizingUnit;
 import com.images3.common.TemplateIdentity;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.TemplateOS;
 import com.images3.core.infrastructure.spi.TemplateAccess;
+import com.images3.exceptions.DuplicateTemplateNameException;
+import com.images3.exceptions.IllegalResizingDimensionsException;
+import com.images3.exceptions.IllegalTemplateNameException;
+import com.images3.exceptions.IllegalTemplateNameLengthException;
 
 public class TemplateFactoryService {
     
@@ -29,6 +31,7 @@ public class TemplateFactoryService {
     
     public TemplateEntity generateMasterTemplate(ImagePlantRoot imagePlant, 
             ResizingConfig resizingConfig) {
+        checkForPercentResizing(resizingConfig);
         TemplateEntity entity = generateTemplate(
                 imagePlant, 
                 TemplateEntity.MASTER_TEMPLATE_NAME,
@@ -41,6 +44,7 @@ public class TemplateFactoryService {
     public TemplateEntity generateTemplate(ImagePlantRoot imagePlant, String name, 
             ResizingConfig resizingConfig) {
         validateTempalteName(name);
+        checkForPercentResizing(resizingConfig);
         checkForDuplicateTemplateName(imagePlant.getId(), name);
         TemplateOS objectSegment = new TemplateOS(
                 new TemplateIdentity(imagePlant.getId(), name), 
@@ -52,8 +56,22 @@ public class TemplateFactoryService {
         return template;
     }
     
+    private void checkForPercentResizing(ResizingConfig resizingConfig) {
+        int width = resizingConfig.getWidth();
+        int height = resizingConfig.getHeight();
+        if (resizingConfig.getUnit() == ResizingUnit.PERCENT) {
+            if (width <= 0 || width > 100) {
+                throw new IllegalResizingDimensionsException(
+                        width, height, "Percent of width need to be 1 to 100.");
+            }
+            if (height <= 0 || height > 100) {
+                throw new IllegalResizingDimensionsException(
+                        width, height, "Percent of height need to be 1 to 100.");
+            }
+        }
+    }
+    
     private void validateTempalteName(String name) {
-        System.out.println("HERE======>TempalteName: " + name);
         if (null == name) {
             throw new NullPointerException("Template name");
         }

@@ -9,10 +9,10 @@ import java.util.Map;
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
 import com.images3.common.ImageMetricsType;
-import com.images3.common.NoSuchEntityFoundException;
 import com.images3.common.TemplateIdentity;
 import com.images3.common.TimeInterval;
 import com.images3.core.infrastructure.spi.ImageMetricsService;
+import com.images3.exceptions.NoSuchEntityFoundException;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;

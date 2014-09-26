@@ -16,8 +16,8 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.images3.common.AmazonS3Bucket;
 import com.images3.common.ImageIdentity;
-import com.images3.common.NoSuchEntityFoundException;
 import com.images3.core.infrastructure.spi.ImageContentAccess;
+import com.images3.exceptions.NoSuchEntityFoundException;
 
 public class ImageContentAccessImplS3 implements ImageContentAccess {
     

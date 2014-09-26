@@ -1,4 +1,6 @@
-package com.images3.common;
+package com.images3.exceptions;
+
+import com.images3.common.TemplateIdentity;
 
 public class UnremovableTemplateException extends RuntimeException {
 

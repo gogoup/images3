@@ -1,5 +1,7 @@
 package com.images3.common;
 
+import com.images3.exceptions.IllegalResizingDimensionsException;
+
 public class ResizingConfig {
     
     private ResizingUnit unit;
@@ -15,22 +17,8 @@ public class ResizingConfig {
         this.width = width;
         this.height = height;
         this.isKeepProportions = isKeepProportions;
-        checkForPercentResizing();
     }
     
-    private void checkForPercentResizing() {
-        if (unit == ResizingUnit.PERCENT) {
-            if (width <= 0 || width > 100) {
-                throw new IllegalResizingDimensionsException(
-                        width, height, "Percent of width need to be 1 to 100.");
-            }
-            if (height <= 0 || height > 100) {
-                throw new IllegalResizingDimensionsException(
-                        width, height, "Percent of height need to be 1 to 100.");
-            }
-        }
-    }
-
     public ResizingUnit getUnit() {
         return unit;
     }

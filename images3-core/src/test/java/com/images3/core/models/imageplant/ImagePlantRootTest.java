@@ -15,7 +15,6 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import com.images3.common.AmazonS3Bucket;
-import com.images3.common.DuplicateImagePlantNameException;
 import com.images3.common.ImageDimension;
 import com.images3.common.ImageFormat;
 import com.images3.common.ImageIdentity;
@@ -23,7 +22,6 @@ import com.images3.common.ImageMetadata;
 import com.images3.common.ResizingConfig;
 import com.images3.common.ResizingUnit;
 import com.images3.common.TemplateIdentity;
-import com.images3.common.UnremovableTemplateException;
 import com.images3.core.Image;
 import com.images3.core.Template;
 import com.images3.core.Version;
@@ -31,6 +29,8 @@ import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.TemplateOS;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
+import com.images3.exceptions.DuplicateImagePlantNameException;
+import com.images3.exceptions.UnremovableTemplateException;
 
 public class ImagePlantRootTest {
     

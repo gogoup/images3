@@ -2,11 +2,11 @@ package com.images3.core.models.imageplant;
 
 import java.util.List;
 
-import com.images3.common.NoSuchEntityFoundException;
 import com.images3.common.TemplateIdentity;
 import com.images3.core.Template;
 import com.images3.core.infrastructure.TemplateOS;
 import com.images3.core.infrastructure.spi.TemplateAccess;
+import com.images3.exceptions.NoSuchEntityFoundException;
 
 import org.gogoup.dddutils.pagination.AutoPaginatedResultDelegate;
 import org.gogoup.dddutils.pagination.PaginatedResult;

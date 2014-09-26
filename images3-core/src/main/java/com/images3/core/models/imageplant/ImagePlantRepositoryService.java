@@ -3,11 +3,11 @@ package com.images3.core.models.imageplant;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.images3.common.NoSuchEntityFoundException;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantRepository;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
+import com.images3.exceptions.NoSuchEntityFoundException;
 
 import org.gogoup.dddutils.pagination.AutoPaginatedResultDelegate;
 import org.gogoup.dddutils.pagination.PaginatedResult;

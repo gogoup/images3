@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.images3.common.ImageIdentity;
 import com.images3.common.ImageVersion;
-import com.images3.common.NoSuchEntityFoundException;
 import com.images3.core.Image;
 import com.images3.core.Template;
 import com.images3.core.Version;
@@ -14,6 +13,7 @@ import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageContentAccess;
 import com.images3.core.infrastructure.spi.ImageMetricsService;
+import com.images3.exceptions.NoSuchEntityFoundException;
 
 import org.gogoup.dddutils.pagination.AutoPaginatedResultDelegate;
 import org.gogoup.dddutils.pagination.PaginatedResult;

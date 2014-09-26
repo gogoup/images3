@@ -3,11 +3,9 @@ package com.images3.core.models.imageplant;
 import java.io.File;
 import java.util.Date;
 
-import com.images3.common.DuplicateImageVersionException;
 import com.images3.common.ImageIdentity;
 import com.images3.common.ImageMetadata;
 import com.images3.common.ImageVersion;
-import com.images3.common.UnknownImageFormatException;
 import com.images3.core.Image;
 import com.images3.core.Template;
 import com.images3.core.Version;
@@ -15,6 +13,8 @@ import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageProcessor;
+import com.images3.exceptions.DuplicateImageVersionException;
+import com.images3.exceptions.UnknownImageFormatException;
 
 public class ImageFactoryService {
     

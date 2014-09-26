@@ -9,10 +9,7 @@ import java.util.Map;
 
 import com.images3.common.AmazonS3Bucket;
 import com.images3.common.DirtyMark;
-import com.images3.common.DuplicateImagePlantNameException;
-import com.images3.common.IllegalImagePlantNameLengthException;
 import com.images3.common.ResizingConfig;
-import com.images3.common.UnremovableTemplateException;
 import com.images3.core.Image;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImageReporter;
@@ -20,6 +17,9 @@ import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
+import com.images3.exceptions.DuplicateImagePlantNameException;
+import com.images3.exceptions.IllegalImagePlantNameLengthException;
+import com.images3.exceptions.UnremovableTemplateException;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 

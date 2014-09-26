@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-import com.images3.common.DuplicateTemplateNameException;
 import com.images3.common.ResizingConfig;
 import com.images3.common.ResizingUnit;
 import com.images3.common.TemplateIdentity;
@@ -23,6 +22,7 @@ import com.images3.core.infrastructure.spi.TemplateAccess;
 import com.images3.core.models.imageplant.ImagePlantRoot;
 import com.images3.core.models.imageplant.TemplateEntity;
 import com.images3.core.models.imageplant.TemplateFactoryService;
+import com.images3.exceptions.DuplicateTemplateNameException;
 
 public class TemplateFactoryServiceTest {
 
