@@ -32,7 +32,8 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     @Override
     public boolean testBucketAccessibility(AmazonS3Bucket bucket) {
         try {
-            clients.getClient(bucket);
+            AmazonS3 client = clients.getClient(bucket);
+            client.getBucketLocation(bucket.getName());
         } catch (AmazonClientException e) {
             return false;
         }

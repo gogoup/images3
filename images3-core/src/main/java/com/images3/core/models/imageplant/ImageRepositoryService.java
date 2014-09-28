@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.images3.common.AmazonS3Bucket;
 import com.images3.common.ImageIdentity;
 import com.images3.common.ImageVersion;
 import com.images3.core.Image;
@@ -35,6 +36,10 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
         this.imageFactory = imageFactory;
         this.templateRepository = templateRepository;
         this.imageMetricsService = imageMetricsService;
+    }
+    
+    public boolean validateBucket(AmazonS3Bucket bucket) {
+        return imageContentAccess.testBucketAccessibility(bucket);
     }
 
     public ImageEntity storeImage(ImageEntity image) {

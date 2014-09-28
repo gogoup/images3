@@ -17,6 +17,7 @@ import com.images3.core.Template;
 import com.images3.core.Version;
 import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImagePlantAccess;
+import com.images3.exceptions.AmazonS3BucketAccessFailedException;
 import com.images3.exceptions.DuplicateImagePlantNameException;
 import com.images3.exceptions.IllegalImagePlantNameLengthException;
 import com.images3.exceptions.UnremovableTemplateException;
@@ -124,11 +125,16 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
 
     @Override
     public void setAmazonS3Bucket(AmazonS3Bucket amazonS3Bucket) {
-        if (getObjectSegment().getAmazonS3Bucket().equals(amazonS3Bucket)) {
-            return;
-        }
+        checkForAmazonS3BucketAccessibility(amazonS3Bucket);
         getObjectSegment().setAmazonS3Bucket(amazonS3Bucket);
         markAsDirty();
+    }
+    
+    private void checkForAmazonS3BucketAccessibility(AmazonS3Bucket amazonS3Bucket) {
+        if (!imageRepository.validateBucket(amazonS3Bucket)) {
+            throw new AmazonS3BucketAccessFailedException(
+                    amazonS3Bucket, "Provided key and secret is invalid for accessing the giving bucket.");
+        }
     }
 
     @Override

@@ -14,16 +14,22 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
     private ImagePlantAccess imagePlantAccess;
     private TemplateFactoryService templateFactory;
     private ImageFactoryService imageFactory;
+    private ImageRepositoryService imageRepository;
     private ImageReporterFactoryService imageReporterFactory;
+    private TemplateRepositoryService templateRepository;
     
     public ImagePlantFactoryService(ImagePlantAccess imagePlantAccess,
             TemplateFactoryService templateFactory,
+            TemplateRepositoryService templateRepository,
             ImageFactoryService imageFactory,
+            ImageRepositoryService imageRepository,
             ImageReporterFactoryService imageReporterFactory) {
         this.imagePlantAccess = imagePlantAccess;
         this.templateFactory = templateFactory;
         this.imageFactory = imageFactory;
+        this.imageRepository = imageRepository;
         this.imageReporterFactory = imageReporterFactory;
+        this.templateRepository = templateRepository;
     }
 
     @Override
@@ -33,12 +39,13 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
         Date creationTime = new Date(System.currentTimeMillis());
         long numberOfTemplates = 0;
         ImagePlantOS objectSegment =
-                new ImagePlantOS(id, "", creationTime, amazonS3Bucket,
+                new ImagePlantOS(id, "", creationTime, null,
                         TemplateEntity.MASTER_TEMPLATE_NAME, numberOfTemplates);
-        ImagePlantRoot root = reconstituteImagePlant(objectSegment, null, null);
+        ImagePlantRoot root = reconstituteImagePlant(objectSegment, imageRepository, templateRepository);
         root.markAsNew();
         root.updateName(name);
         root.createMasterTemplate(resizingConfig);
+        root.setAmazonS3Bucket(amazonS3Bucket);
         return root;
     }
     

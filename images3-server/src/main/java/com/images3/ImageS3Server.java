@@ -390,25 +390,27 @@ public class ImageS3Server implements ImageS3 {
         public ImageS3 build() {
             checkForNecessaryParameters();
             TemplateFactoryService templateFactory = new TemplateFactoryService(templateAccess);
-            ImageFactoryService imageFactory = new ImageFactoryService(
-                    imageAccess, 
-                    imageProcessor);
-            ImageReporterFactoryService imageReporterFactory = 
-                    new ImageReporterFactoryService(imageMetricsServcie);
-            ImagePlantFactoryService imagePlantFactory = new ImagePlantFactoryService(
-                    imagePlantAccess,
-                    templateFactory,
-                    imageFactory,
-                    imageReporterFactory);
             TemplateRepositoryService templateRepository = new TemplateRepositoryService(
                     templateAccess,
                     templateFactory);
+            ImageFactoryService imageFactory = new ImageFactoryService(
+                    imageAccess, 
+                    imageProcessor);
             ImageRepositoryService imageRepository = new ImageRepositoryService(
                     imageAccess, 
                     imageContentAccess,
                     imageFactory, 
                     templateRepository,
                     imageMetricsServcie);
+            ImageReporterFactoryService imageReporterFactory = 
+                    new ImageReporterFactoryService(imageMetricsServcie);
+            ImagePlantFactoryService imagePlantFactory = new ImagePlantFactoryService(
+                    imagePlantAccess,
+                    templateFactory,
+                    templateRepository,
+                    imageFactory,
+                    imageRepository,
+                    imageReporterFactory);
             ImagePlantRepositoryService imagePlantRepository = new ImagePlantRepositoryService(
                     imagePlantAccess,
                     imagePlantFactory,
