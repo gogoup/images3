@@ -64,15 +64,31 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
             AmazonS3Bucket bucket) {
         AmazonS3 client = clients.getClient(bucket);
         ObjectListing objList = client.listObjects(bucket.getName(), imagePlantId);
-        DeleteObjectsRequest request = new DeleteObjectsRequest(bucket.getName());
-        List<KeyVersion> keys = new ArrayList<KeyVersion>(objList.getMaxKeys());
-        for (S3ObjectSummary sum: objList.getObjectSummaries()) {
-            keys.add(new KeyVersion(sum.getKey()));
+        if (objList.getObjectSummaries().size() > 0) {
+            deleteAllImageContent(client, bucket, objList);
+        } else {
+            client.deleteObject(new DeleteObjectRequest(bucket.getName(), imagePlantId));
         }
-        request.setKeys(keys);
-        client.deleteObjects(request);
     }
-
+    
+    private void deleteAllImageContent(AmazonS3 client, AmazonS3Bucket bucket, ObjectListing objList) {
+        boolean isFinished = false;
+        while (!isFinished) {
+            DeleteObjectsRequest request = new DeleteObjectsRequest(bucket.getName());
+            List<KeyVersion> keys = new ArrayList<KeyVersion>(objList.getMaxKeys());
+            for (S3ObjectSummary sum: objList.getObjectSummaries()) {
+                keys.add(new KeyVersion(sum.getKey()));
+            }
+            request.setKeys(keys);
+            client.deleteObjects(request);
+            if (objList.isTruncated()) {
+                objList = client.listNextBatchOfObjects(objList);
+            } else {
+                isFinished = true;
+            }
+        }
+    }
+    
     @Override
     public File selectImageContent(ImageIdentity id, AmazonS3Bucket bucket) {
         File imageContent = new File(generateFilePath(id));
