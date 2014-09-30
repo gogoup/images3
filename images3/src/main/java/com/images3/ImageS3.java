@@ -22,7 +22,7 @@ public interface ImageS3 {
     
     public TemplateResponse addTemplate(TemplateAddRequest request);
     
-    public TemplateResponse updateTemplate(TemplateUpdateRequest request);
+    public TemplateResponse archiveTemplate(TemplateIdentity id, boolean isArchived);
     
     public void deleteTemplate(TemplateIdentity id);
    
@@ -44,11 +44,11 @@ public interface ImageS3 {
     
     public ImageResponse getImage(ImageIdentity id, String templateName);
     
-    public PaginatedResult<List<SimpleImageResponse>> getImages(String imagePlantId);
+    public PaginatedResult<List<ImageResponse>> getImages(String imagePlantId);
     
-    public PaginatedResult<List<SimpleImageResponse>> getImages(TemplateIdentity id);
+    public PaginatedResult<List<ImageResponse>> getImages(TemplateIdentity id);
 
-    public PaginatedResult<List<SimpleImageResponse>> getVersioningImages(ImageIdentity originalImageId);
+    public PaginatedResult<List<ImageResponse>> getVersioningImages(ImageIdentity originalImageId);
 
     public File getImageContent(ImageIdentity id);
     

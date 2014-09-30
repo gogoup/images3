@@ -8,7 +8,7 @@ import org.gogoup.dddutils.pagination.PaginatedResult;
 
 import com.images3.core.Image;
 
-public class ImagePaginatedResultDelegate extends AutoPaginatedResultDelegate<List<SimpleImageResponse>> {
+public class ImagePaginatedResultDelegate extends AutoPaginatedResultDelegate<List<ImageResponse>> {
 
     private AppObjectMapper objectMapper;
     
@@ -19,7 +19,7 @@ public class ImagePaginatedResultDelegate extends AutoPaginatedResultDelegate<Li
     
     @SuppressWarnings("unchecked")
     @Override
-    public List<SimpleImageResponse> fetchResult(String tag, Object[] arguments,
+    public List<ImageResponse> fetchResult(String tag, Object[] arguments,
             Object pageCursor) {
         if ("getImages".equals(tag)) {
             PaginatedResult<List<Image>> result = (PaginatedResult<List<Image>>) arguments[0];
@@ -31,7 +31,7 @@ public class ImagePaginatedResultDelegate extends AutoPaginatedResultDelegate<Li
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<SimpleImageResponse> fetchAllResults(String tag,
+    public List<ImageResponse> fetchAllResults(String tag,
             Object[] arguments) {
         if ("getImages".equals(tag)) {
             PaginatedResult<List<Image>> result = (PaginatedResult<List<Image>>) arguments[0];
@@ -41,8 +41,8 @@ public class ImagePaginatedResultDelegate extends AutoPaginatedResultDelegate<Li
         throw new UnsupportedOperationException(tag);
     }
 
-    private List<SimpleImageResponse> getImages(List<Image> images) {
-        List<SimpleImageResponse> responses = new ArrayList<SimpleImageResponse>(images.size());
+    private List<ImageResponse> getImages(List<Image> images) {
+        List<ImageResponse> responses = new ArrayList<ImageResponse>(images.size());
         for (Image image: images) {
             responses.add(objectMapper.mapToResponse(image));
         }

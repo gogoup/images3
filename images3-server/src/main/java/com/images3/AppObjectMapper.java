@@ -1,7 +1,5 @@
 package com.images3;
 
-import java.util.List;
-
 import com.images3.common.ImageIdentity;
 import com.images3.common.ImageMetricsType;
 import com.images3.common.ImageVersion;
@@ -33,9 +31,9 @@ public class AppObjectMapper {
                 source.getResizingConfig());
     }
     
-    public SimpleImageResponse mapToResponse(Image source) {
+    public ImageResponse mapToResponse(Image source) {
         Image originalImage = source.getVersion().getOriginalImage();
-        return new SimpleImageResponse(
+        return new ImageResponse(
                 new ImageIdentity(
                         source.getImagePlant().getId(), 
                         source.getId()),
@@ -46,9 +44,4 @@ public class AppObjectMapper {
                 source.getMetadata());
     }
     
-    public ImageResponse mapToResponse(Image source, List<String> templateNames) {
-        return new ImageResponse(
-                mapToResponse(source),
-                templateNames);
-    }
 }

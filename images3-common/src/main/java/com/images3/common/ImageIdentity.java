@@ -5,8 +5,6 @@ public class ImageIdentity {
     private String imagePlantId;
     private String imageId;
     
-    public ImageIdentity() {}
-    
     public ImageIdentity(String imagePlantId, String imageId) {
         this.imagePlantId = imagePlantId;
         this.imageId = imageId;

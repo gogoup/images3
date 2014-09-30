@@ -14,8 +14,6 @@ public class ImagePlantResponse {
     private long numberOfTemplates;
     private long numberOfImages;
     
-    public ImagePlantResponse() {}
-
     public ImagePlantResponse(String id, String name, AmazonS3Bucket bucket,
             Date creationTime, TemplateResponse masterTemplate,
             long numberOfTemplates, long numberOfImages) {

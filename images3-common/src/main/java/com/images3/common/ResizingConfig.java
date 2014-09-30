@@ -1,15 +1,11 @@
 package com.images3.common;
 
-import com.images3.exceptions.IllegalResizingDimensionsException;
-
 public class ResizingConfig {
     
     private ResizingUnit unit;
     private int width;
     private int height;
     private boolean isKeepProportions;
-    
-    public ResizingConfig() {}
     
     public ResizingConfig(ResizingUnit unit, int width, int height,
             boolean isKeepProportions) {
@@ -35,36 +31,5 @@ public class ResizingConfig {
         return isKeepProportions;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + height;
-        result = prime * result + (isKeepProportions ? 1231 : 1237);
-        result = prime * result + ((unit == null) ? 0 : unit.hashCode());
-        result = prime * result + width;
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ResizingConfig other = (ResizingConfig) obj;
-        if (height != other.height)
-            return false;
-        if (isKeepProportions != other.isKeepProportions)
-            return false;
-        if (unit != other.unit)
-            return false;
-        if (width != other.width)
-            return false;
-        return true;
-    }
-    
-    
+   
 }

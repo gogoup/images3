@@ -6,8 +6,6 @@ public class ImageMetadata {
     private ImageFormat format;
     private long size;
     
-    public ImageMetadata() {}
-    
     public ImageMetadata(ImageDimension dimension, ImageFormat format, long size) {
         this.dimension = dimension;
         this.format = format;
