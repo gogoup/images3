@@ -62,7 +62,11 @@ public class AmazonS3Bucket {
             return false;
         return true;
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return "AmazonS3Bucket [accessKey=" + accessKey + ", secretKey="
+                + secretKey + ", name=" + name + "]";
+    }
     
 }
