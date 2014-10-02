@@ -29,20 +29,25 @@ public class MongoDBAccessProvider {
     private MongoDBObjectMapper objectMapper;
     
     public MongoDBAccessProvider(String pathToConfig) {
-        loadConfigProperties(pathToConfig);
+        this(readConfigProperties(pathToConfig));
+    }
+    
+    public MongoDBAccessProvider(Properties config) {
+        this.config = config;
         initMongoClient();
         initCollections();
         objectMapper = new MongoDBObjectMapper();
     }
     
-    private void loadConfigProperties(String pathToConfig) {
-        config = new Properties();
+    private static Properties readConfigProperties(String pathToConfig) {
+        Properties config = new Properties();
         try {
             InputStream in = new FileInputStream(new File(pathToConfig));
             config.load(in);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return config;
     }
 
     public ImagePlantAccess getImagePlantAccess() {

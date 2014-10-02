@@ -13,17 +13,22 @@ public class ImageProcessorProvider {
     private Properties config;
     
     public ImageProcessorProvider(String pathToConfig) {
-        loadConfigProperties(pathToConfig);
+        this(readConfigProperties(pathToConfig));
     }
     
-    private void loadConfigProperties(String pathToConfig) {
-        config = new Properties();
+    public ImageProcessorProvider(Properties config) {
+        this.config = config;
+    }
+    
+    private static Properties readConfigProperties(String pathToConfig) {
+        Properties config = new Properties();
         try {
             InputStream in = new FileInputStream(new File(pathToConfig));
             config.load(in);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        return config;
     }
 
     public ImageProcessor getImageProcessor() {
