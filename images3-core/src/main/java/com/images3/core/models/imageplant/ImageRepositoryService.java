@@ -107,6 +107,10 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
     
     public PaginatedResult<List<Image>> findVersioningImages(ImagePlantRoot imagePlant, 
             Image originalImage) {
+        if (originalImage.getVersion().getOriginalImage() != null) {
+            return new PaginatedResult<List<Image>>(
+                    this, "getAllImages_Empty", new Object[] {}); 
+        }
         PaginatedResult<List<ImageOS>> osResult = 
                 imageAccess.selectImagesByOriginalImageId(imagePlant.getId(), originalImage.getId());
         return new PaginatedResult<List<Image>>(
@@ -148,6 +152,9 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
     @Override
     public List<Image> fetchResult(String tag, Object[] arguments,
             Object pageCursor) {
+        if ("getAllImages_Empty".equals(tag)) {
+            return new ArrayList<Image>(0);
+        }
         if ("getAllImages".equals(tag)) {
             ImagePlantRoot imagePlant = (ImagePlantRoot) arguments[0];
             PaginatedResult<List<ImageOS>> osResult = (PaginatedResult<List<ImageOS>>) arguments[1];

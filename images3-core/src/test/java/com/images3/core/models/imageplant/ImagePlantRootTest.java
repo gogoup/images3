@@ -312,15 +312,15 @@ public class ImagePlantRootTest {
         ImagePlantRoot imagePlant = (ImagePlantRoot) originalImage.getImagePlant();
         TemplateEntity template = SetupHelper.setupTemplateEntity(imagePlant, templateOS);
         ImageEntity image = setupImageEntity();
+        Version version = new Version(template, image);
         Mockito.when(
                 imageFactory.generateImage(
-                        imagePlant, originalImage, template, imageRepository, 
-                        templateRepository)).thenReturn(image);
-        Image newImage = imagePlant.createImage(new Version(template, originalImage));
+                        imagePlant, version, imageRepository, templateRepository)).thenReturn(image);
+        Image newImage = imagePlant.createImage(version);
         assertTrue(newImage.equals(image));
         
         Mockito.verify(imageFactory).generateImage(
-                imagePlant, originalImage, template, imageRepository, templateRepository);
+                imagePlant, version, imageRepository, templateRepository);
     }
     
     

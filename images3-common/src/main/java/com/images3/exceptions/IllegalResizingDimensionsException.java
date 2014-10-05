@@ -1,5 +1,7 @@
 package com.images3.exceptions;
 
+import com.images3.common.ResizingUnit;
+
 public class IllegalResizingDimensionsException extends RuntimeException {
     
     /**
@@ -9,11 +11,14 @@ public class IllegalResizingDimensionsException extends RuntimeException {
     
     private int width;
     private int height;
+    private ResizingUnit unit;
     
-    public IllegalResizingDimensionsException(int width, int height, String msg) {
+    public IllegalResizingDimensionsException(int width, int height,
+            ResizingUnit unit, String msg) {
         super(msg);
         this.width = width;
         this.height = height;
+        this.unit = unit;
     }
 
     public int getWidth() {
@@ -22,6 +27,10 @@ public class IllegalResizingDimensionsException extends RuntimeException {
 
     public int getHeight() {
         return height;
+    }
+
+    public ResizingUnit getUnit() {
+        return unit;
     }
 
 }

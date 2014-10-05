@@ -19,7 +19,7 @@ public class TemplateFactoryService {
     
     private static final boolean DEFAULT_ISARCHIVED = true;
     private static final boolean DEFAULT_ISREMOVABLE = true;
-    private static final int TEMPLATE_NAME_MIN_LENGTH = 1;
+    private static final int TEMPLATE_NAME_MIN_LENGTH = 3;
     private static final int TEMPLATE_NAME_MAX_LENGTH = 100;
     private static final Pattern TEMPLATE_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9]+[a-zA-Z0-9_-]+[a-zA-Z0-9]$");
     
@@ -62,11 +62,11 @@ public class TemplateFactoryService {
         if (resizingConfig.getUnit() == ResizingUnit.PERCENT) {
             if (width <= 0 || width > 100) {
                 throw new IllegalResizingDimensionsException(
-                        width, height, "Percent of width need to be 1 to 100.");
+                        width, height, resizingConfig.getUnit(), "");
             }
             if (height <= 0 || height > 100) {
                 throw new IllegalResizingDimensionsException(
-                        width, height, "Percent of height need to be 1 to 100.");
+                        width, height, resizingConfig.getUnit(), "");
             }
         }
     }

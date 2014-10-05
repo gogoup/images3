@@ -47,13 +47,13 @@ public class ImageFactoryService {
                 templateRepository);
     }
     
-    public ImageEntity generateImage(ImagePlantRoot imagePlant, ImageEntity originalImage, 
-            TemplateEntity template, ImageRepositoryService imageRepository,
-            TemplateRepositoryService templateRepository) {
-        checkForArchivedTemplate(template);
-        Version version = new Version(template, originalImage);
-        checkForMasterVersionGeneration(originalImage, template);
-        checkForDuplicateVersion(imagePlant, originalImage, template);
+    public ImageEntity generateImage(ImagePlantRoot imagePlant, Version version, 
+            ImageRepositoryService imageRepository, TemplateRepositoryService templateRepository) {
+        checkForOriginalImage(version);
+        checkForArchivedTemplate(version.getTemplate());
+        checkForMasterVersionGeneration(version);
+        checkForDuplicateVersion(imagePlant, version);
+        ImageEntity originalImage = (ImageEntity) version.getOriginalImage();
         File resizedContent = imageProcessor.resizeImage(
                 originalImage.getObjectSegment().getMetadata(), 
                 originalImage.getContent(), 
@@ -66,28 +66,33 @@ public class ImageFactoryService {
                 templateRepository);
     }
     
-    private void checkForArchivedTemplate(TemplateEntity template) {
+    private void checkForArchivedTemplate(Template template) {
         if (template.isArchived()) {
             throw new IllegalArgumentException("Template " + template.getName() + " has been archived.");
         }
     }
     
-    private void checkForMasterVersionGeneration(ImageEntity originalImage,
-            TemplateEntity template) {
-        if (template.getName().equalsIgnoreCase(TemplateEntity.MASTER_TEMPLATE_NAME)) {
-            throw new UnsupportedOperationException(
-                    "Generate a " + TemplateEntity.MASTER_TEMPLATE_NAME 
-                            + " version of image from another image {"
-                            + originalImage.getId() + "} is not supported");
+    private void checkForOriginalImage(Version version) {
+        if (null == version.getOriginalImage()) {
+            throw new NullPointerException("Original image.");
         }
     }
     
-    private void checkForDuplicateVersion(ImagePlantRoot imagePlant, 
-            ImageEntity originalImage, TemplateEntity template) {
+    private void checkForMasterVersionGeneration(Version version) {
+        if (version.getTemplate().getName().equalsIgnoreCase(TemplateEntity.MASTER_TEMPLATE_NAME)) {
+            throw new UnsupportedOperationException(
+                    "Generate a " + TemplateEntity.MASTER_TEMPLATE_NAME 
+                            + " version of image from another image {"
+                            + version.getOriginalImage().getId() + "} is not supported");
+        }
+    }
+    
+    private void checkForDuplicateVersion(ImagePlantRoot imagePlant, Version version) {
         if (imageAccess.isDuplicateVersion(
-                imagePlant.getId(), new ImageVersion(template.getName(), originalImage.getId()))) {
+                imagePlant.getId(), new ImageVersion(
+                        version.getTemplate().getName(), version.getOriginalImage().getId()))) {
             throw new DuplicateImageVersionException(
-                    template.getName(), originalImage.getId());
+                    version.getTemplate().getName(), version.getOriginalImage().getId());
         }
     }
     

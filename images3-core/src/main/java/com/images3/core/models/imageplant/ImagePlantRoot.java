@@ -228,11 +228,11 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     
     @Override
     public ImageEntity createImage(Version version) {
-        TemplateEntity templateEntity = (TemplateEntity) version.getTemplate();
         ImageEntity entity = imageFactory.generateImage(
-                this, (ImageEntity) version.getOriginalImage(), templateEntity,
-                imageRepository, templateRepository);
+                this, version, imageRepository,
+                templateRepository);
         addDirtyImage(entity);
+        TemplateEntity templateEntity = (TemplateEntity) version.getTemplate();
         if (templateEntity.isRemovable()) {
             templateEntity.setNotRemovable();
             dirtyTemplates.put(templateEntity.getName(), templateEntity);
