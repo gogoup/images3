@@ -17,7 +17,7 @@ import com.images3.exceptions.IllegalTemplateNameLengthException;
 
 public class TemplateFactoryService {
     
-    private static final boolean DEFAULT_ISARCHIVED = true;
+    private static final boolean DEFAULT_ISARCHIVED = false;
     private static final boolean DEFAULT_ISREMOVABLE = true;
     private static final int TEMPLATE_NAME_MIN_LENGTH = 3;
     private static final int TEMPLATE_NAME_MAX_LENGTH = 100;
@@ -51,9 +51,9 @@ public class TemplateFactoryService {
                 DEFAULT_ISARCHIVED, 
                 DEFAULT_ISREMOVABLE, 
                 resizingConfig);
-        TemplateEntity template = reconstituteTemplate(imagePlant, objectSegment);
-        template.markAsNew();
-        return template;
+        TemplateEntity entity = reconstituteTemplate(imagePlant, objectSegment);
+        entity.markAsNew();
+        return entity;
     }
     
     private void checkForPercentResizing(ResizingConfig resizingConfig) {
