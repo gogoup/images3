@@ -1,6 +1,7 @@
 package com.images3.core.models.imageplant;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class TemplateFactoryServiceTest {
         
         assertTrue(null!=template);
         assertTrue(template.isNew());
-        assertTrue(template.isArchived());
+        assertFalse(template.isArchived());
         assertTrue(template.isRemovable());
     }
     
