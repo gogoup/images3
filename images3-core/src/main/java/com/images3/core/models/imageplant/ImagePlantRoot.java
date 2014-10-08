@@ -62,7 +62,16 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
         return objectSegment;
     }
     
-    void addDirtyTemplate(TemplateEntity template) {
+    private void addNewTemplate(TemplateEntity template) {
+        getObjectSegment().setNumberOfTemplates(getObjectSegment().getNumberOfTemplates() + 1);
+        this.markAsDirty();
+        dirtyTemplates.put(template.getName(), template);
+    }
+    
+    private void addRemovedTemplate(TemplateEntity template) {
+        template.markAsVoid();
+        getObjectSegment().setNumberOfTemplates(getObjectSegment().getNumberOfTemplates() - 1);
+        this.markAsDirty();
         dirtyTemplates.put(template.getName(), template);
     }
     
@@ -150,15 +159,13 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     @Override
     public Template createTemplate(String name, ResizingConfig resizingConfig) {
         TemplateEntity entity = templateFactory.generateTemplate(this, name, resizingConfig);
-        getObjectSegment().setNumberOfTemplates(getObjectSegment().getNumberOfTemplates() + 1);
-        addDirtyTemplate(entity);
+        addNewTemplate(entity);
         return entity;
     }
     
     public Template createMasterTemplate(ResizingConfig resizingConfig) {
         TemplateEntity entity = templateFactory.generateMasterTemplate(this, resizingConfig);
-        getObjectSegment().setNumberOfTemplates(getObjectSegment().getNumberOfTemplates() + 1);
-        addDirtyTemplate(entity);
+        addNewTemplate(entity);
         return entity;
     }
 
@@ -167,7 +174,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
         checkForInvalidTemplate(template);
         checkForArchivedMasterTemplate(template);
         TemplateEntity entity = (TemplateEntity) template;
-        addDirtyTemplate(entity);
+        dirtyTemplates.put(entity.getName(), entity);
     }
     
     private void checkForArchivedMasterTemplate(Template template) {
@@ -182,8 +189,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
         checkForInvalidTemplate(template);
         TemplateEntity entity = (TemplateEntity) template;
         checkForUnremoveTemplate(entity);
-        entity.markAsVoid();
-        addDirtyTemplate(entity);
+        addRemovedTemplate(entity);
     }
     
     private void checkForUnremoveTemplate(TemplateEntity template) {
