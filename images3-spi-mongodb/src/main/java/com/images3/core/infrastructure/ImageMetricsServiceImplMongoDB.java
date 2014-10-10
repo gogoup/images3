@@ -117,7 +117,8 @@ public class ImageMetricsServiceImplMongoDB extends MongoDBAccess<ImageMetricsOS
                                     .append("second", 0);
         DBObject object = coll.findOne(criteria);
         if (null == object) {
-            throw new NoSuchEntityFoundException(ImageMetricsOS.class.getName(), templateId.toString());
+            throw new NoSuchEntityFoundException(
+                    "ImageMetrics", templateId.toString(), "No such metrics found.");
         }
         return object;
     }
