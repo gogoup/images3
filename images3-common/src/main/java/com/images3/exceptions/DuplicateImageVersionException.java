@@ -1,5 +1,7 @@
 package com.images3.exceptions;
 
+import com.images3.common.ImageVersion;
+
 public class DuplicateImageVersionException extends RuntimeException {
 
     /**
@@ -7,22 +9,15 @@ public class DuplicateImageVersionException extends RuntimeException {
      */
     private static final long serialVersionUID = -2406908279068349252L;
     
-    private String templateName;
-    private String originalImageId;
+    private ImageVersion version;
     
-    public DuplicateImageVersionException(String templateName,
-            String originalImageId) {
-        super("Template Name: " + templateName 
-                + ", Original Image Id: " + originalImageId);
-        this.templateName = templateName;
-        this.originalImageId = originalImageId;
+    public DuplicateImageVersionException(ImageVersion version, String message) {
+        super(message);
+        this.version = version;
     }
-    
-    public String getTemplateName() {
-        return templateName;
-    }
-    public String getOriginalImageId() {
-        return originalImageId;
+
+    public ImageVersion getVersion() {
+        return version;
     }
     
 }

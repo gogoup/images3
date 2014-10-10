@@ -9,24 +9,25 @@ public class IllegalResizingDimensionsException extends RuntimeException {
      */
     private static final long serialVersionUID = -9093407154876964467L;
     
-    private int width;
-    private int height;
+    private int minimum;
+    private int maximum;
     private ResizingUnit unit;
     
-    public IllegalResizingDimensionsException(int width, int height,
+    public IllegalResizingDimensionsException(int minimum, int maximum,
             ResizingUnit unit, String msg) {
         super(msg);
-        this.width = width;
-        this.height = height;
+        this.minimum = minimum;
+        this.maximum = maximum;
         this.unit = unit;
     }
 
-    public int getWidth() {
-        return width;
+    public int getMinimum() {
+        return minimum;
     }
 
-    public int getHeight() {
-        return height;
+
+    public int getMaximum() {
+        return maximum;
     }
 
     public ResizingUnit getUnit() {

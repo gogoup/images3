@@ -10,8 +10,8 @@ public class NoSuchEntityFoundException extends RuntimeException {
     private String entity;
     private String id;
     
-    public NoSuchEntityFoundException(String entity, String id) {
-        super(entity + " {" + id + "}");
+    public NoSuchEntityFoundException(String entity, String id, String message) {
+        super(message);
         this.entity = entity;
         this.id = id;
     }

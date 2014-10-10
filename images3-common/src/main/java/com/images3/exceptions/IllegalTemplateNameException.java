@@ -10,8 +10,8 @@ public class IllegalTemplateNameException extends RuntimeException {
     private String name;
     private String pattern;
     
-    public IllegalTemplateNameException(String name, String pattern) {
-        super("Template name need to be  " + pattern);
+    public IllegalTemplateNameException(String name, String pattern, String message) {
+        super(message);
         this.name = name;
         this.pattern = pattern;
     }
