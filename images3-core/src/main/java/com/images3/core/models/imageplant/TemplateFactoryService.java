@@ -64,17 +64,21 @@ public class TemplateFactoryService {
         if (resizingConfig.getUnit() == ResizingUnit.PERCENT) {
             if (width < RESIZING_DIMENSION_PERCENT_MIN 
                     || width > RESIZING_DIMENSION_PERCENT_MAX) {
+                String message = "Set width between " + RESIZING_DIMENSION_PERCENT_MIN
+                        + " and " + RESIZING_DIMENSION_PERCENT_MAX + " percent.";
                 throw new IllegalResizingDimensionsException(
                         RESIZING_DIMENSION_PERCENT_MIN, 
                         RESIZING_DIMENSION_PERCENT_MAX, 
-                        resizingConfig.getUnit(), "");
+                        resizingConfig.getUnit(), message);
             }
             if (height < RESIZING_DIMENSION_PERCENT_MIN 
                     || height > RESIZING_DIMENSION_PERCENT_MAX) {
+                String message = "Set height between " + RESIZING_DIMENSION_PERCENT_MIN
+                        + " and " + RESIZING_DIMENSION_PERCENT_MAX + " percent.";
                 throw new IllegalResizingDimensionsException(
                         RESIZING_DIMENSION_PERCENT_MIN, 
                         RESIZING_DIMENSION_PERCENT_MAX, 
-                        resizingConfig.getUnit(), "");
+                        resizingConfig.getUnit(), message);
             }
         }
     }

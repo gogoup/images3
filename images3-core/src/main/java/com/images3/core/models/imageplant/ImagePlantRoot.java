@@ -27,7 +27,7 @@ import org.gogoup.dddutils.pagination.PaginatedResult;
 
 public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     
-    private static final int IMAGEPLANT_NAME_MIN_LENGTH = 1;
+    private static final int IMAGEPLANT_NAME_MIN_LENGTH = 3;
     private static final int IMAGEPLANT_NAME_MAX_LENGTH = 100;
     
     private ImagePlantOS objectSegment;
