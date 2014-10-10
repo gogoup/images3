@@ -22,6 +22,8 @@ public class TemplateFactoryService {
     private static final int TEMPLATE_NAME_MIN_LENGTH = 3;
     private static final int TEMPLATE_NAME_MAX_LENGTH = 100;
     private static final Pattern TEMPLATE_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9]+[a-zA-Z0-9_-]+[a-zA-Z0-9]$");
+    private static final int RESIZING_DIMENSION_PERCENT_MIN = 1;
+    private static final int RESIZING_DIMENSION_PERCENT_MAX = 100;
     
     private TemplateAccess templateAccess;
     
@@ -60,13 +62,19 @@ public class TemplateFactoryService {
         int width = resizingConfig.getWidth();
         int height = resizingConfig.getHeight();
         if (resizingConfig.getUnit() == ResizingUnit.PERCENT) {
-            if (width <= 0 || width > 100) {
+            if (width < RESIZING_DIMENSION_PERCENT_MIN 
+                    || width > RESIZING_DIMENSION_PERCENT_MAX) {
                 throw new IllegalResizingDimensionsException(
-                        width, height, resizingConfig.getUnit(), "");
+                        RESIZING_DIMENSION_PERCENT_MIN, 
+                        RESIZING_DIMENSION_PERCENT_MAX, 
+                        resizingConfig.getUnit(), "");
             }
-            if (height <= 0 || height > 100) {
+            if (height < RESIZING_DIMENSION_PERCENT_MIN 
+                    || height > RESIZING_DIMENSION_PERCENT_MAX) {
                 throw new IllegalResizingDimensionsException(
-                        width, height, resizingConfig.getUnit(), "");
+                        RESIZING_DIMENSION_PERCENT_MIN, 
+                        RESIZING_DIMENSION_PERCENT_MAX, 
+                        resizingConfig.getUnit(), "");
             }
         }
     }
@@ -78,17 +86,23 @@ public class TemplateFactoryService {
         int length = name.trim().length();
         if (length < TEMPLATE_NAME_MIN_LENGTH
                 || length > TEMPLATE_NAME_MAX_LENGTH) {
+            String message = "Use " + TEMPLATE_NAME_MIN_LENGTH
+                    + " to " + TEMPLATE_NAME_MAX_LENGTH + " characters";
             throw new IllegalTemplateNameLengthException(
-                    name, TEMPLATE_NAME_MIN_LENGTH, TEMPLATE_NAME_MAX_LENGTH);
+                    name, TEMPLATE_NAME_MIN_LENGTH, TEMPLATE_NAME_MAX_LENGTH, message);
         }
         if (!TEMPLATE_NAME_PATTERN.matcher(name).matches()) {
-            throw new IllegalTemplateNameException(name, "0-9, a-z, dash (-) and underscore (_).");
+            String message = "Template name may only contain numbers (0-9), "
+                    + "letters (a-z), dash (-) and underscore (_).";
+            throw new IllegalTemplateNameException(
+                    name, "^[a-zA-Z0-9]+[a-zA-Z0-9_-]+[a-zA-Z0-9]$", message);
         }
     }
     
     private void checkForDuplicateTemplateName(String imagePlantId, String name) {
         if (templateAccess.isDuplicatedTemplateName(imagePlantId, name)) {
-            throw new DuplicateTemplateNameException(name);
+            String message = "This Template name, " + name + " has been taken.";
+            throw new DuplicateTemplateNameException(name, message);
         }
     }
     

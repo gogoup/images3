@@ -14,7 +14,7 @@ import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageProcessor;
 import com.images3.exceptions.DuplicateImageVersionException;
-import com.images3.exceptions.UnknownImageFormatException;
+import com.images3.exceptions.UnsupportedImageFormatException;
 
 public class ImageFactoryService {
     
@@ -28,9 +28,8 @@ public class ImageFactoryService {
 
     public ImageEntity generateImage(ImagePlantRoot imagePlant, File imageContent, 
             ImageRepositoryService imageRepository, TemplateRepositoryService templateRepository) {
-        String id = imageAccess.generateImageId(imagePlant.getObjectSegment());
         if (!imageProcessor.isSupportedFormat(imageContent)) {
-            throw new UnknownImageFormatException(id);
+            throw new UnsupportedImageFormatException("");
         }
         TemplateEntity template = (TemplateEntity) imagePlant.getMasterTemplate();
         Version version = new Version(template, null);
@@ -88,11 +87,11 @@ public class ImageFactoryService {
     }
     
     private void checkForDuplicateVersion(ImagePlantRoot imagePlant, Version version) {
-        if (imageAccess.isDuplicateVersion(
-                imagePlant.getId(), new ImageVersion(
-                        version.getTemplate().getName(), version.getOriginalImage().getId()))) {
-            throw new DuplicateImageVersionException(
-                    version.getTemplate().getName(), version.getOriginalImage().getId());
+        ImageVersion imageVersion = new ImageVersion(
+                version.getTemplate().getName(), version.getOriginalImage().getId());
+        if (imageAccess.isDuplicateVersion(imagePlant.getId(), imageVersion)) {
+            String message = "Version " + imageVersion.getTemplateName() + " already exist.";
+            throw new DuplicateImageVersionException(imageVersion, message);
         }
     }
     

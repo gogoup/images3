@@ -20,6 +20,7 @@ import com.images3.core.infrastructure.spi.ImagePlantAccess;
 import com.images3.exceptions.AmazonS3BucketAccessFailedException;
 import com.images3.exceptions.DuplicateImagePlantNameException;
 import com.images3.exceptions.IllegalImagePlantNameLengthException;
+import com.images3.exceptions.UnachievableTemplateException;
 import com.images3.exceptions.UnremovableTemplateException;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
@@ -103,9 +104,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
         if (getObjectSegment().getName().equals(name)) {
             return;
         }
-        if (imagePlantAccess.isDuplicatedImagePlantName(name)) {
-            throw new DuplicateImagePlantNameException(name);
-        }
+        checkForDuplicateName(name);
         getObjectSegment().setName(name);
         markAsDirty();
     }
@@ -117,8 +116,17 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
         int length = name.trim().length();
         if (length < IMAGEPLANT_NAME_MIN_LENGTH
                 || length > IMAGEPLANT_NAME_MAX_LENGTH) {
+            String message = "Use " + IMAGEPLANT_NAME_MIN_LENGTH 
+                    + " to " + IMAGEPLANT_NAME_MAX_LENGTH + " characters";
             throw new IllegalImagePlantNameLengthException(
-                    name, IMAGEPLANT_NAME_MIN_LENGTH, IMAGEPLANT_NAME_MAX_LENGTH);
+                    name, IMAGEPLANT_NAME_MIN_LENGTH, IMAGEPLANT_NAME_MAX_LENGTH, message);
+        }
+    }
+    
+    private void checkForDuplicateName(String name) {
+        if (imagePlantAccess.isDuplicatedImagePlantName(name)) {
+            String message = "This ImagePlant name " + name + " has been taken.";
+            throw new DuplicateImagePlantNameException(name, message);
         }
     }
 
@@ -141,8 +149,8 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     
     private void checkForAmazonS3BucketAccessibility(AmazonS3Bucket amazonS3Bucket) {
         if (!imageRepository.validateBucket(amazonS3Bucket)) {
-            throw new AmazonS3BucketAccessFailedException(
-                    amazonS3Bucket, "Provided key and secret is invalid for accessing the giving bucket.");
+            String message = "Failed to access bucket with the combination of api key and secret.";
+            throw new AmazonS3BucketAccessFailedException(amazonS3Bucket, message);
         }
     }
 
@@ -172,15 +180,17 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     @Override
     public void updateTemplate(Template template) {
         checkForInvalidTemplate(template);
-        checkForArchivedMasterTemplate(template);
         TemplateEntity entity = (TemplateEntity) template;
+        checkForArchivedMasterTemplate(entity);
         dirtyTemplates.put(entity.getName(), entity);
     }
     
-    private void checkForArchivedMasterTemplate(Template template) {
+    private void checkForArchivedMasterTemplate(TemplateEntity template) {
         if (template.getName().equalsIgnoreCase(getObjectSegment().getMasterTemplateName())
                 && template.isArchived()) {
-            throw new UnsupportedOperationException("Archive master template is not allowed!");
+            throw new UnachievableTemplateException(
+                    template.getObjectSegment().getId(), 
+                    "Archive master template is not allowed!");
         }
     }
 
@@ -194,7 +204,8 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     
     private void checkForUnremoveTemplate(TemplateEntity template) {
         if (!template.isRemovable()) {
-            throw new UnremovableTemplateException(template.getObjectSegment().getId());
+            String message = "Template " + template.getName() + " cannot be removed.";
+            throw new UnremovableTemplateException(template.getObjectSegment().getId(), message);
         }
     }
     
