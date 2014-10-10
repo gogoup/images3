@@ -99,7 +99,8 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
                     imageContent);
         } catch (AmazonS3Exception e) {
             if (e.getStatusCode() == 404) {
-                throw new NoSuchEntityFoundException("ImageContent", generateS3ObjectKey(id));
+                throw new NoSuchEntityFoundException(
+                        "ImageContent", generateS3ObjectKey(id), "No such image content found.");
             }
             throw new RuntimeException(e);
         }

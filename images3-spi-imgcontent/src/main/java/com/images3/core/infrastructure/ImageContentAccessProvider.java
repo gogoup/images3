@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import com.images3.core.infrastructure.spi.ImageContentAccess;
 
+
 public class ImageContentAccessProvider {
     
     private Properties config;
