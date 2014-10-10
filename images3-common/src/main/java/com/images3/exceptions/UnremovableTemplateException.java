@@ -11,8 +11,8 @@ public class UnremovableTemplateException extends RuntimeException {
     
     private TemplateIdentity id;
     
-    public UnremovableTemplateException(TemplateIdentity id) {
-        super("");
+    public UnremovableTemplateException(TemplateIdentity id, String message) {
+        super(message);
         this.id = id;
     }
 

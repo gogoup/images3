@@ -11,8 +11,9 @@ public class IllegalTemplateNameLengthException extends RuntimeException {
     private int maxLength;
     private String name;
     
-    public IllegalTemplateNameLengthException(String name, int minLength, int maxLength) {
-        super("Length of " + name + " need to be greater than "+ minLength + " and less than " + maxLength);
+    public IllegalTemplateNameLengthException(String name, int minLength,
+            int maxLength, String message) {
+        super(message);
         this.name = name;
         this.minLength = minLength;
         this.maxLength = maxLength;

@@ -2,7 +2,7 @@ package com.images3.exceptions;
 
 import com.images3.common.TemplateIdentity;
 
-public class UnarchivedTemplateException extends RuntimeException {
+public class UnachievableTemplateException extends RuntimeException {
 
     /**
      * 
@@ -11,8 +11,8 @@ public class UnarchivedTemplateException extends RuntimeException {
     
     private TemplateIdentity id;
     
-    public UnarchivedTemplateException(TemplateIdentity id) {
-        super("");
+    public UnachievableTemplateException(TemplateIdentity id, String message) {
+        super(message);
         this.id = id;
     }
 

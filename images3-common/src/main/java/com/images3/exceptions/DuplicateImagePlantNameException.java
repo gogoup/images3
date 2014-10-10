@@ -9,8 +9,8 @@ public class DuplicateImagePlantNameException extends RuntimeException {
 
     private String name;
     
-    public DuplicateImagePlantNameException(String name) {
-        super(name);
+    public DuplicateImagePlantNameException(String name, String message) {
+        super(message);
         this.name = name;
     }
 
