@@ -81,10 +81,14 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
         ImageOS objectSegment = imageAccess.selectImageById(new ImageIdentity(imagePlant.getId(), id));
         Image entity = imageFactory.reconstituteImage(
                 imagePlant, objectSegment, null, this, templateRepository, null);
-        if (null == entity) {
-            throw new NoSuchEntityFoundException("Image", id);
-        }
+        checkForNullImage(entity, id);
         return entity;
+    }
+    
+    private void checkForNullImage(Image image, String id) {
+        if (null == image) {
+            throw new NoSuchEntityFoundException("Image", id, "No such Image found.");
+        }
     }
     
     public boolean hasVersioningImage(ImagePlantRoot imagePlant, Version version) {
@@ -99,9 +103,7 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
         ImageOS objectSegment = imageAccess.selectImageByVersion(imagePlant.getId(), ver);
         Image entity = imageFactory.reconstituteImage(
                 imagePlant, objectSegment, null, this, templateRepository, version);
-        if (null == entity) {
-            throw new NoSuchEntityFoundException("Image", version.toString());
-        }
+        checkForNullImage(entity, version.toString());
         return entity;
     }
     

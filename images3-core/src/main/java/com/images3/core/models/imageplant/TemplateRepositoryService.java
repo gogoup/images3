@@ -52,7 +52,7 @@ public class TemplateRepositoryService extends AutoPaginatedResultDelegate<List<
         TemplateEntity entity = templateFactory.reconstituteTemplate(
                 imagePlant, objectSegment);
         if (null == entity) {
-            throw new NoSuchEntityFoundException("Template", name);
+            throw new NoSuchEntityFoundException("Template", name, "No such Template found.");
         }
         return entity;
     }

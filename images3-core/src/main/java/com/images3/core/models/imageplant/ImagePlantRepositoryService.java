@@ -88,7 +88,7 @@ public class ImagePlantRepositoryService extends AutoPaginatedResultDelegate<Lis
         ImagePlant entity = imagePlantFactory.reconstituteImagePlant(
                 objectSegment, imageRepository, templateRepository);
         if (null == entity) {
-            throw new NoSuchEntityFoundException("ImagePlant", id);
+            throw new NoSuchEntityFoundException("ImagePlant", id, "No such ImagePlant found.");
         }
         return entity;
     }
