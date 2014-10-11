@@ -18,4 +18,9 @@ public class Version {
         return originalImage;
     }
     
+    public boolean isMaster() {
+        return (template.getName().equalsIgnoreCase(Template.MASTER_TEMPLATE_NAME) 
+                && null == originalImage);
+    }
+    
 }

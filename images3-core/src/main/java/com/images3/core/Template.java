@@ -4,6 +4,8 @@ import com.images3.common.ResizingConfig;
 
 public interface Template {
     
+    public final static String MASTER_TEMPLATE_NAME = "Master";
+    
     public ImagePlant getImagePlant();
     
     public String getName();

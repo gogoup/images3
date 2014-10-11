@@ -38,8 +38,6 @@ public interface ImageS3 {
     
     public void deleteImage(ImageIdentity id);
     
-    public void deleteImageAndVersions(ImageIdentity id);
-    
     public ImageResponse getImage(ImageIdentity id);
     
     public ImageResponse getImage(ImageIdentity id, String templateName);

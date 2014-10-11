@@ -47,8 +47,6 @@ public interface ImagePlant {
     
     public void removeImage(Image image);
     
-    public void removeImageAndVerions(Image image);
-    
     public Image fetchImageById(String id);
     
     public boolean hasVersiongImage(Version version);
