@@ -125,7 +125,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     
     private void checkForDuplicateName(String name) {
         if (imagePlantAccess.isDuplicatedImagePlantName(name)) {
-            String message = "This ImagePlant name " + name + " has been taken.";
+            String message = "Name \'" + name + "\' has been taken.";
             throw new DuplicateImagePlantNameException(name, message);
         }
     }
