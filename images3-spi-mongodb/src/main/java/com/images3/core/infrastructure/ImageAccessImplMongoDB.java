@@ -29,7 +29,7 @@ public class ImageAccessImplMongoDB extends MongoDBAccess<ImageOS> implements Im
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", imagePlantId)
                                     .append("version.templateName", version.getTemplateName())
-                                    .append("version.originalImageId", version.getOriginalImageId());
+                                    .append("version.originalImageId", version.getOriginalImageId());  
         DBCursor cursor = coll.find(criteria);
         return cursor.hasNext();
     }

@@ -42,6 +42,7 @@ public class MongoDBObjectMapper {
     public BasicDBObject mapToBasicDBObject(ImagePlantOS source) {
         return new BasicDBObject()
             .append("id", source.getId())
+            .append("nameKey", source.getName().toLowerCase())
             .append("name", source.getName())
             .append("creationTime", source.getCreationTime().getTime())
             .append("bucket", mapToBasicDBObject(source.getAmazonS3Bucket()))
@@ -76,6 +77,7 @@ public class MongoDBObjectMapper {
     public BasicDBObject mapToBasicDBObject(TemplateOS source) {
         return new BasicDBObject()
             .append("imagePlantId", source.getId().getImagePlantId())
+            .append("nameKey", source.getId().getTemplateName().toLowerCase())
             .append("name", source.getId().getTemplateName())
             .append("isArchived", source.isArchived())
             .append("isRemovable", source.isRemovable())
