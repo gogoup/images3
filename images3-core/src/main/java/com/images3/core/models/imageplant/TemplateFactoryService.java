@@ -96,7 +96,7 @@ public class TemplateFactoryService {
                     name, TEMPLATE_NAME_MIN_LENGTH, TEMPLATE_NAME_MAX_LENGTH, message);
         }
         if (!TEMPLATE_NAME_PATTERN.matcher(name).matches()) {
-            String message = "Template name may only contain numbers (0-9), "
+            String message = "May only contain numbers (0-9), "
                     + "letters (a-z), dash (-) and underscore (_).";
             throw new IllegalTemplateNameException(
                     name, "^[a-zA-Z0-9]+[a-zA-Z0-9_-]+[a-zA-Z0-9]$", message);
@@ -105,7 +105,7 @@ public class TemplateFactoryService {
     
     private void checkForDuplicateTemplateName(String imagePlantId, String name) {
         if (templateAccess.isDuplicatedTemplateName(imagePlantId, name)) {
-            String message = "This Template name, " + name + " has been taken.";
+            String message = "Name \'" + name + "\' has been taken.";
             throw new DuplicateTemplateNameException(name, message);
         }
     }

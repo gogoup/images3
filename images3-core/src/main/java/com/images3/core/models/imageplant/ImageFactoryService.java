@@ -79,10 +79,10 @@ public class ImageFactoryService {
     
     private void checkForMasterVersionGeneration(Version version) {
         if (version.getTemplate().getName().equalsIgnoreCase(TemplateEntity.MASTER_TEMPLATE_NAME)) {
-            throw new UnsupportedOperationException(
-                    "Generate a " + TemplateEntity.MASTER_TEMPLATE_NAME 
-                            + " version of image from another image {"
-                            + version.getOriginalImage().getId() + "} is not supported");
+            ImageVersion imageVersion = new ImageVersion(
+                    version.getTemplate().getName(), version.getOriginalImage().getId());
+            String message = "Image version \'" + TemplateEntity.MASTER_TEMPLATE_NAME + "\' already generated.";
+            throw new DuplicateImageVersionException(imageVersion, message);
         }
     }
     
@@ -90,7 +90,7 @@ public class ImageFactoryService {
         ImageVersion imageVersion = new ImageVersion(
                 version.getTemplate().getName(), version.getOriginalImage().getId());
         if (imageAccess.isDuplicateVersion(imagePlant.getId(), imageVersion)) {
-            String message = "Version " + imageVersion.getTemplateName() + " already exist.";
+            String message = "Image version \'" + imageVersion.getTemplateName() + "\' already generated.";
             throw new DuplicateImageVersionException(imageVersion, message);
         }
     }
