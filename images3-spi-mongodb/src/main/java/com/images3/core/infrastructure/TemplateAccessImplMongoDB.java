@@ -26,7 +26,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", imagePlantId)
-                                    .append("name", name);
+                                    .append("nameKey", name.toLowerCase());
         DBCursor cursor = coll.find(criteria);
         return cursor.hasNext();
     }
@@ -40,7 +40,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", template.getId().getImagePlantId())
-                                    .append("name", template.getId().getTemplateName());
+                                    .append("nameKey", template.getId().getTemplateName().toLowerCase());
         WriteResult result = coll.update(criteria, getObjectMapper().mapToBasicDBObject(template));
         checkForAffectedDocuments(result, 1);
     }
@@ -49,7 +49,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", template.getId().getImagePlantId())
-                                    .append("name", template.getId().getTemplateName());
+                                    .append("nameKey", template.getId().getTemplateName().toLowerCase());
         WriteResult result = coll.remove(criteria);
         checkForAffectedDocuments(result, 1);
     }
@@ -65,7 +65,7 @@ public class TemplateAccessImplMongoDB extends MongoDBAccess<TemplateOS> impleme
         DBCollection coll = getDatabase().getCollection("Template");
         BasicDBObject criteria = new BasicDBObject()
                                     .append("imagePlantId", id.getImagePlantId())
-                                    .append("name", id.getTemplateName());
+                                    .append("nameKey", id.getTemplateName().toLowerCase());
         DBCursor cursor = coll.find(criteria);
         if (!cursor.hasNext()) {
             return null;

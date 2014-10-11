@@ -117,14 +117,14 @@ public class MongoDBAccessProvider {
     private void initImagePlant(DB db) {
         DBCollection coll = db.getCollection("ImagePlant");
         coll.createIndex(new BasicDBObject("id", "hashed"));
-        coll.createIndex(new BasicDBObject("name", 1), new BasicDBObject("unique", true));
+        coll.createIndex(new BasicDBObject("nameKey", 1), new BasicDBObject("unique", true));
         coll.createIndex(new BasicDBObject("creationTime", 1));
     }
     
     private void initTemplate(DB db) {
         DBCollection coll = db.getCollection("Template");
         coll.createIndex(
-                new BasicDBObject().append("imagePlantId", 1).append("name", 1), 
+                new BasicDBObject().append("imagePlantId", 1).append("nameKey", 1), 
                 new BasicDBObject("unique", true));
         coll.createIndex(
                 new BasicDBObject().append("imagePlantId", 1).append("isArchived", 1));

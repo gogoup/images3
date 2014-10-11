@@ -23,7 +23,7 @@ public class ImagePlantAccessImplMongoDB extends MongoDBAccess<ImagePlantOS> imp
 
     public boolean isDuplicatedImagePlantName(String name) {
         DBCollection coll = getDatabase().getCollection("ImagePlant");
-        BasicDBObject criteria = new BasicDBObject().append("name", name);
+        BasicDBObject criteria = new BasicDBObject().append("nameKey", name.toLowerCase());
         DBCursor cursor = coll.find(criteria);
         return cursor.hasNext();
     }
