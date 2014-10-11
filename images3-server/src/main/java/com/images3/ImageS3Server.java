@@ -168,14 +168,6 @@ public class ImageS3Server implements ImageS3 {
     }
 
     @Override
-    public void deleteImageAndVersions(ImageIdentity id) {
-        ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImagePlantId());
-        Image image = imagePlant.fetchImageById(id.getImageId());
-        imagePlant.removeImageAndVerions(image);
-        imagePlantRepository.storeImagePlant(imagePlant);
-    }
-
-    @Override
     public ImageResponse getImage(ImageIdentity id) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(id.getImagePlantId());
         Image image = imagePlant.fetchImageById(id.getImageId());

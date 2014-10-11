@@ -7,9 +7,6 @@ import com.images3.core.Template;
 import com.images3.core.infrastructure.TemplateOS;
 
 public class TemplateEntity extends DirtyMark implements Template {
-
-
-    public final static String MASTER_TEMPLATE_NAME = "Master";
     
     private ImagePlantRoot imagePlant;
     private TemplateOS objectSegment;

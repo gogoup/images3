@@ -14,6 +14,7 @@ import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageProcessor;
 import com.images3.exceptions.DuplicateImageVersionException;
+import com.images3.exceptions.IllegalImageVersioningException;
 import com.images3.exceptions.UnsupportedImageFormatException;
 
 public class ImageFactoryService {
@@ -48,9 +49,10 @@ public class ImageFactoryService {
     
     public ImageEntity generateImage(ImagePlantRoot imagePlant, Version version, 
             ImageRepositoryService imageRepository, TemplateRepositoryService templateRepository) {
-        checkForOriginalImage(version);
+        checkForNullOriginalImage(version);
+        checkForNonMasterOriginalImage(version);
         checkForArchivedTemplate(version.getTemplate());
-        checkForMasterVersionGeneration(version);
+        checkForMasterVersion(version);
         checkForDuplicateVersion(imagePlant, version);
         ImageEntity originalImage = (ImageEntity) version.getOriginalImage();
         File resizedContent = imageProcessor.resizeImage(
@@ -71,14 +73,23 @@ public class ImageFactoryService {
         }
     }
     
-    private void checkForOriginalImage(Version version) {
+    private void checkForNullOriginalImage(Version version) {
         if (null == version.getOriginalImage()) {
             throw new NullPointerException("Original image.");
         }
     }
     
-    private void checkForMasterVersionGeneration(Version version) {
-        if (version.getTemplate().getName().equalsIgnoreCase(TemplateEntity.MASTER_TEMPLATE_NAME)) {
+    private void checkForNonMasterOriginalImage(Version version) {
+        if (!version.getOriginalImage().getVersion().isMaster()) {
+            ImageVersion imageVersion = new ImageVersion(
+                    version.getTemplate().getName(), version.getOriginalImage().getId());
+            String message = "Only master image can be used to generate other versions";
+            throw new IllegalImageVersioningException(imageVersion, message);
+        }
+    }
+    
+    private void checkForMasterVersion(Version version) {
+        if (version.getTemplate().getName().equalsIgnoreCase(Template.MASTER_TEMPLATE_NAME)) {
             ImageVersion imageVersion = new ImageVersion(
                     version.getTemplate().getName(), version.getOriginalImage().getId());
             String message = "Image version \'" + TemplateEntity.MASTER_TEMPLATE_NAME + "\' already generated.";

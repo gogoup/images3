@@ -291,13 +291,15 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     @Override
     public void removeImage(Image image) {
         ImageEntity entity = (ImageEntity) image;
-        entity.markAsVoid();
-        dirtyImages.put(entity.getId(), entity);
+        if (entity.getVersion().isMaster()) {
+            removeMasterImage(entity);
+        } else {
+            entity.markAsVoid();
+            dirtyImages.put(entity.getId(), entity);
+        }
     }
 
-    @Override
-    public void removeImageAndVerions(Image image) {
-        ImageEntity entity = (ImageEntity) image;
+    public void removeMasterImage(ImageEntity image) {
         PaginatedResult<List<Image>> result = fetchVersioningImages(image);
         Object pageCursor = result.getNextPageCursor();
         while (null != pageCursor) {
@@ -308,7 +310,7 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
             }
             pageCursor = result.getNextPageCursor(); //next page.
         }
-        dirtyImages.put(entity.getId(), entity);
+        dirtyImages.put(image.getId(), image);
     }
 
     @Override
