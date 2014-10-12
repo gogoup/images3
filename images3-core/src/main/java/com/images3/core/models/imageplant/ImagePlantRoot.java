@@ -294,22 +294,26 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
         if (entity.getVersion().isMaster()) {
             removeMasterImage(entity);
         } else {
-            entity.markAsVoid();
-            dirtyImages.put(entity.getId(), entity);
+            removeImage(entity);
         }
     }
 
     public void removeMasterImage(ImageEntity image) {
         PaginatedResult<List<Image>> result = fetchVersioningImages(image);
-        Object pageCursor = result.getNextPageCursor();
+        Object pageCursor = result.getFirstPageCursor();
         while (null != pageCursor) {
             List<Image> images = result.getResult(pageCursor);
             for (Image img: images) {
-                ImageEntity imgEntity = (ImageEntity) img;
-                dirtyImages.put(imgEntity.getId(), imgEntity);
+                ImageEntity deletingEntity = (ImageEntity) img;
+                removeImage(deletingEntity);
             }
             pageCursor = result.getNextPageCursor(); //next page.
         }
+        removeImage(image);
+    }
+    
+    private void removeImage(ImageEntity image) {
+        image.markAsVoid();
         dirtyImages.put(image.getId(), image);
     }
 
