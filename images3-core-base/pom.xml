@@ -13,4 +13,6 @@
            <version>0.1.0-SNAPSHOT</version>
        </dependency>
    </dependencies>
+  
+  <description>Infrastructure layer of core module.</description>
 </project>
