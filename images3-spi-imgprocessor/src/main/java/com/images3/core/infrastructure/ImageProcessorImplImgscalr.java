@@ -47,7 +47,15 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
     private final String tempDir;
     
     public ImageProcessorImplImgscalr(String tempDir) {
+        checkForDirExistence(tempDir);
         this.tempDir = tempDir;
+    }
+    
+    private void checkForDirExistence(String path) {
+        File folder = new File(path);
+        if (!folder.exists() || folder.isDirectory()) {
+            throw new IllegalArgumentException("Directory doesn't exists " + path);
+        }
     }
 
     @Override

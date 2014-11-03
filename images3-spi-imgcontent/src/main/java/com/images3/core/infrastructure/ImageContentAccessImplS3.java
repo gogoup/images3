@@ -40,8 +40,16 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     private AmazonS3ClientPool clients;
     
     public ImageContentAccessImplS3(String imageContentDownloadDir, AmazonS3ClientPool clients) {
+        checkForDirExistence(imageContentDownloadDir);
         this.imageContentDownloadDir = imageContentDownloadDir;
         this.clients = clients;
+    }
+    
+    private void checkForDirExistence(String path) {
+        File folder = new File(path);
+        if (!folder.exists() || folder.isDirectory()) {
+            throw new IllegalArgumentException("Directory doesn't exists " + path);
+        }
     }
 
     @Override
