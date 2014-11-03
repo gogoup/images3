@@ -39,6 +39,7 @@ public class TemplateFactoryService {
     private static final Pattern TEMPLATE_NAME_PATTERN = Pattern.compile("^[a-zA-Z0-9]+[a-zA-Z0-9_-]+[a-zA-Z0-9]$");
     private static final int RESIZING_DIMENSION_PERCENT_MIN = 1;
     private static final int RESIZING_DIMENSION_PERCENT_MAX = 100;
+    private static final int RESIZING_DIMENSION_PIXEL_MIN = 0;
     
     private TemplateAccess templateAccess;
     
@@ -48,7 +49,12 @@ public class TemplateFactoryService {
     
     public TemplateEntity generateMasterTemplate(ImagePlantRoot imagePlant, 
             ResizingConfig resizingConfig) {
-        checkForPercentResizing(resizingConfig);
+        if (resizingConfig.getUnit() == ResizingUnit.PERCENT) {
+            checkForPercentResizing(resizingConfig);
+        } else {
+            checkForPixelResizing(resizingConfig);
+        }
+        
         TemplateEntity entity = generateTemplate(
                 imagePlant, 
                 TemplateEntity.MASTER_TEMPLATE_NAME,
@@ -76,25 +82,42 @@ public class TemplateFactoryService {
     private void checkForPercentResizing(ResizingConfig resizingConfig) {
         int width = resizingConfig.getWidth();
         int height = resizingConfig.getHeight();
-        if (resizingConfig.getUnit() == ResizingUnit.PERCENT) {
-            if (width < RESIZING_DIMENSION_PERCENT_MIN 
-                    || width > RESIZING_DIMENSION_PERCENT_MAX) {
-                String message = "Set width between " + RESIZING_DIMENSION_PERCENT_MIN
-                        + " and " + RESIZING_DIMENSION_PERCENT_MAX + " percent.";
-                throw new IllegalResizingDimensionsException(
-                        RESIZING_DIMENSION_PERCENT_MIN, 
-                        RESIZING_DIMENSION_PERCENT_MAX, 
-                        resizingConfig.getUnit(), message);
-            }
-            if (height < RESIZING_DIMENSION_PERCENT_MIN 
-                    || height > RESIZING_DIMENSION_PERCENT_MAX) {
-                String message = "Set height between " + RESIZING_DIMENSION_PERCENT_MIN
-                        + " and " + RESIZING_DIMENSION_PERCENT_MAX + " percent.";
-                throw new IllegalResizingDimensionsException(
-                        RESIZING_DIMENSION_PERCENT_MIN, 
-                        RESIZING_DIMENSION_PERCENT_MAX, 
-                        resizingConfig.getUnit(), message);
-            }
+        if (width < RESIZING_DIMENSION_PERCENT_MIN 
+                || width > RESIZING_DIMENSION_PERCENT_MAX) {
+            String message = "Set width between " + RESIZING_DIMENSION_PERCENT_MIN
+                    + " and " + RESIZING_DIMENSION_PERCENT_MAX + " percent.";
+            throw new IllegalResizingDimensionsException(
+                    RESIZING_DIMENSION_PERCENT_MIN, 
+                    RESIZING_DIMENSION_PERCENT_MAX, 
+                    resizingConfig.getUnit(), message);
+        }
+        if (height < RESIZING_DIMENSION_PERCENT_MIN 
+                || height > RESIZING_DIMENSION_PERCENT_MAX) {
+            String message = "Set height between " + RESIZING_DIMENSION_PERCENT_MIN
+                    + " and " + RESIZING_DIMENSION_PERCENT_MAX + " percent.";
+            throw new IllegalResizingDimensionsException(
+                    RESIZING_DIMENSION_PERCENT_MIN, 
+                    RESIZING_DIMENSION_PERCENT_MAX, 
+                    resizingConfig.getUnit(), message);
+        }
+    }
+    
+    private void checkForPixelResizing(ResizingConfig resizingConfig) {
+        int width = resizingConfig.getWidth();
+        int height = resizingConfig.getHeight();
+        if (width <= RESIZING_DIMENSION_PIXEL_MIN) {
+            String message = "Set width larger than " + RESIZING_DIMENSION_PIXEL_MIN + " pixels.";
+            throw new IllegalResizingDimensionsException(
+                    RESIZING_DIMENSION_PERCENT_MIN, 
+                    RESIZING_DIMENSION_PERCENT_MAX, 
+                    resizingConfig.getUnit(), message);
+        }
+        if (height <= RESIZING_DIMENSION_PIXEL_MIN) {
+            String message = "Set height larger than " + RESIZING_DIMENSION_PIXEL_MIN + " pixels.";
+            throw new IllegalResizingDimensionsException(
+                    RESIZING_DIMENSION_PERCENT_MIN, 
+                    RESIZING_DIMENSION_PERCENT_MAX, 
+                    resizingConfig.getUnit(), message);
         }
     }
     
