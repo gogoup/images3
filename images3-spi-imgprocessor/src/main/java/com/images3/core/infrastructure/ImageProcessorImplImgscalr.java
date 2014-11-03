@@ -42,7 +42,6 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
     
     private static final byte[] JPG_MAGIC_NUMBER = new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0};
     private static final byte[] PNG_MAGIC_NUMBER = new byte[]{(byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47};
-    private static final byte[] GIF_MAGIC_NUMBER = new byte[]{(byte) 0x47, (byte) 0x49, (byte) 0x46, (byte) 0x38};
     private static final byte[] BMP_MAGIC_NUMBER = new byte[]{(byte) 0x42, (byte) 0x4D};
     
     private final String tempDir;
@@ -163,9 +162,6 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
             if (isPNG(magicBytes)) {
                 return ImageFormat.PNG;
             }
-            if (isGIF(magicBytes)) {
-                return ImageFormat.GIF;
-            }
             if (isBMP(magicBytes)) {
                 return ImageFormat.BMP;
             }
@@ -197,14 +193,6 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
                             && content[1] == PNG_MAGIC_NUMBER[1]
                             && content[2] == PNG_MAGIC_NUMBER[2]
                             && content[3] == PNG_MAGIC_NUMBER[3]);
-    }
-    
-    private static boolean isGIF(byte[] content) {
-            if(content.length < 4) return false;
-            return (content[0] == GIF_MAGIC_NUMBER[0]
-                            && content[1] == GIF_MAGIC_NUMBER[1]
-                            && content[2] == GIF_MAGIC_NUMBER[2]
-                            && content[3] == GIF_MAGIC_NUMBER[3]);
     }
     
     private static boolean isBMP(byte[] content) {
