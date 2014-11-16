@@ -20,7 +20,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.Iterator;
 import java.util.UUID;
@@ -40,10 +39,6 @@ import com.images3.core.infrastructure.spi.ImageProcessor;
 
 public class ImageProcessorImplImgscalr implements ImageProcessor {
     
-    private static final byte[] JPG_MAGIC_NUMBER = new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF, (byte) 0xE0};
-    private static final byte[] PNG_MAGIC_NUMBER = new byte[]{(byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47};
-    private static final byte[] BMP_MAGIC_NUMBER = new byte[]{(byte) 0x42, (byte) 0x4D};
-    
     private final String tempDir;
     
     public ImageProcessorImplImgscalr(String tempDir) {
@@ -53,7 +48,8 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
     
     private void checkForDirExistence(String path) {
         File folder = new File(path);
-        if (!folder.exists() || folder.isDirectory()) {
+        if (!folder.exists() 
+                || !folder.isDirectory()) {
             throw new IllegalArgumentException("Directory doesn't exists " + path);
         }
     }
@@ -125,10 +121,12 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
     
     private ResizingConfig getResizingConfig(ImageMetadata metadata, ResizingConfig resizingConfig) {
         if (resizingConfig.getUnit() == ResizingUnit.PERCENT) {
+            float width = (float) metadata.getDimension().getWidth() * ((float) resizingConfig.getWidth() / 100.0f);
+            float height = (float) metadata.getDimension().getHeight() * ((float) resizingConfig.getHeight() / 100.0f);
             return new ResizingConfig(
                     ResizingUnit.PIXEL, 
-                    metadata.getDimension().getWidth() * (resizingConfig.getWidth() / 100), 
-                    metadata.getDimension().getHeight() * (resizingConfig.getHeight() / 100),
+                    (int) width, 
+                    (int) height,
                     resizingConfig.isKeepProportions());
         }
         return resizingConfig;
@@ -159,19 +157,22 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
     }
     
     public ImageFormat getImageFormat(File imageFile) {
-        InputStream imageInputStream = null;
+        ImageInputStream imageInputStream = null;
+        ImageFormat format = null;
         try {
-            imageInputStream = Files.newInputStream(imageFile.toPath());
-            byte[] magicBytes = new byte[4];
-            imageInputStream.read(magicBytes);
-            if (isJPEG(magicBytes)) {
-                return ImageFormat.JPEG;
-            }
-            if (isPNG(magicBytes)) {
-                return ImageFormat.PNG;
-            }
-            if (isBMP(magicBytes)) {
-                return ImageFormat.BMP;
+            imageInputStream = ImageIO.createImageInputStream(imageFile);
+            Iterator<ImageReader> iter = ImageIO.getImageReaders(imageInputStream);
+            if (iter.hasNext()) {
+                ImageReader reader = iter.next();
+                if (reader.getFormatName().equalsIgnoreCase("JPEG")) {
+                    format = ImageFormat.JPEG;
+                }
+                else if (reader.getFormatName().equalsIgnoreCase("png")) {
+                    format = ImageFormat.PNG;
+                }
+                else if (reader.getFormatName().equalsIgnoreCase("bmp")) {
+                    format = ImageFormat.BMP;
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -184,29 +185,7 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
                 }
             }
         }
-        return null;
+        return format;
     }
     
-    private static boolean isJPEG(byte[] content) {
-        if(content.length < 4) return false;
-        return (content[0] == JPG_MAGIC_NUMBER[0]
-                        && content[1] == JPG_MAGIC_NUMBER[1]
-                        && content[2] == JPG_MAGIC_NUMBER[2]
-                        && content[3] == JPG_MAGIC_NUMBER[3]);
-    }
-
-    private static boolean isPNG(byte[] content) {
-            if(content.length < 4) return false;
-            return (content[0] == PNG_MAGIC_NUMBER[0]
-                            && content[1] == PNG_MAGIC_NUMBER[1]
-                            && content[2] == PNG_MAGIC_NUMBER[2]
-                            && content[3] == PNG_MAGIC_NUMBER[3]);
-    }
-    
-    private static boolean isBMP(byte[] content) {
-            if(content.length < 2) return false;
-            return (content[0] == BMP_MAGIC_NUMBER[0]
-                            && content[1] == BMP_MAGIC_NUMBER[1]);
-    }
-
 }
