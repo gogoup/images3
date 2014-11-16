@@ -24,7 +24,7 @@ public interface ImageContentAccess {
     
     public boolean testBucketAccessibility(AmazonS3Bucket bucket);
 
-    public void insertImageContent(ImageIdentity id, AmazonS3Bucket bucket, File content);
+    public File insertImageContent(ImageIdentity id, AmazonS3Bucket bucket, File content);
     
     public void deleteImageContent(ImageIdentity id, AmazonS3Bucket bucket);
     
