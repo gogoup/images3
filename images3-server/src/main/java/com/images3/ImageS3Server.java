@@ -240,12 +240,11 @@ public class ImageS3Server implements ImageS3 {
 
     private Image getGurenteedVersioningImage(ImagePlant imagePlant, Version version) {
         Image image = null;
-        if (imagePlant.hasVersiongImage(version)) {
-            image = imagePlant.fetchImageByVersion(version);
-        } else {
+        if (!imagePlant.hasImageVersion(version)) {
             image = imagePlant.createImage(version);
             imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         }
+        image = imagePlant.fetchImageByVersion(version);
         return image;
     }
 

@@ -61,7 +61,7 @@ public class TemplatePaginatedResultDelegate extends AutoPaginatedResultDelegate
                 && !"getAllTemplates".equals(tag)) {
             throw new UnsupportedOperationException(tag);
         }
-        PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[1];
+        PaginatedResult<?> osResult = (PaginatedResult<?>) arguments[0];
         return osResult.isGetAllResultsSupported();
     }
 

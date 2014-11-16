@@ -3,19 +3,19 @@
   <parent>
     <groupId>com.images3</groupId>
     <artifactId>images3-parent</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1-SNAPSHOT</version>
   </parent>
   <artifactId>images3-server</artifactId>
   <dependencies>
   	<dependency>
   		<groupId>com.images3</groupId>
   		<artifactId>images3-core</artifactId>
-  		<version>0.1.0</version>
+  		<version>0.1.1-SNAPSHOT</version>
   	</dependency>
   	<dependency>
   		<groupId>com.images3</groupId>
   		<artifactId>images3</artifactId>
-  		<version>0.1.0</version>
+  		<version>0.1.1-SNAPSHOT</version>
   	</dependency>
   </dependencies>
 </project>
