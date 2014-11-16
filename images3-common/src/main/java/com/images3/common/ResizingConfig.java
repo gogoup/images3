@@ -46,5 +46,10 @@ public class ResizingConfig {
         return isKeepProportions;
     }
 
-   
+    @Override
+    public String toString() {
+        return "ResizingConfig [unit=" + unit + ", width=" + width
+                + ", height=" + height + ", isKeepProportions="
+                + isKeepProportions + "]";
+    }
 }
