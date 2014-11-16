@@ -67,7 +67,11 @@ public class TemplateFactoryService {
     public TemplateEntity generateTemplate(ImagePlantRoot imagePlant, String name, 
             ResizingConfig resizingConfig) {
         validateTempalteName(name);
-        checkForPercentResizing(resizingConfig);
+        if (resizingConfig.getUnit() == ResizingUnit.PERCENT) {
+            checkForPercentResizing(resizingConfig);
+        } else {
+            checkForPixelResizing(resizingConfig);
+        }
         checkForDuplicateTemplateName(imagePlant.getId(), name);
         TemplateOS objectSegment = new TemplateOS(
                 new TemplateIdentity(imagePlant.getId(), name), 

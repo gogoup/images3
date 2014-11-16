@@ -29,7 +29,7 @@ import com.images3.core.infrastructure.ImagePlantOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageProcessor;
 import com.images3.exceptions.DuplicateImageVersionException;
-import com.images3.exceptions.IllegalImageVersioningException;
+import com.images3.exceptions.IllegalImageVersionException;
 import com.images3.exceptions.UnsupportedImageFormatException;
 
 public class ImageFactoryService {
@@ -99,7 +99,7 @@ public class ImageFactoryService {
             ImageVersion imageVersion = new ImageVersion(
                     version.getTemplate().getName(), version.getOriginalImage().getId());
             String message = "Only master image can be used to generate other versions";
-            throw new IllegalImageVersioningException(imageVersion, message);
+            throw new IllegalImageVersionException(imageVersion, message);
         }
     }
     
