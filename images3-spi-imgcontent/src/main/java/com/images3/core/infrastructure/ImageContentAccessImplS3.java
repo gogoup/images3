@@ -47,7 +47,8 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     
     private void checkForDirExistence(String path) {
         File folder = new File(path);
-        if (!folder.exists() || folder.isDirectory()) {
+        if (!folder.exists() 
+                || !folder.isDirectory()) {
             throw new IllegalArgumentException("Directory doesn't exists " + path);
         }
     }
@@ -64,7 +65,7 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     }
 
     @Override
-    public void insertImageContent(ImageIdentity id, AmazonS3Bucket bucket,
+    public File insertImageContent(ImageIdentity id, AmazonS3Bucket bucket,
             File content) {
         File imageFile = new File(generateFilePath(id));
         content.renameTo(imageFile);
@@ -74,6 +75,7 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
                         bucket.getName(), 
                         generateS3ObjectKey(id), 
                         imageFile));
+        return imageFile;
     }
 
     @Override
@@ -115,6 +117,9 @@ public class ImageContentAccessImplS3 implements ImageContentAccess {
     @Override
     public File selectImageContent(ImageIdentity id, AmazonS3Bucket bucket) {
         File imageContent = new File(generateFilePath(id));
+        if (imageContent.exists()) {
+            return imageContent;
+        }
         AmazonS3 client = clients.getClient(bucket);
         try {
             client.getObject(
