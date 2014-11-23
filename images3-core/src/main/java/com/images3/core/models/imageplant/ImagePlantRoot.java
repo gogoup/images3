@@ -278,8 +278,8 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     }
 
     @Override
-    public boolean hasVersiongImage(Version version) {
-        return imageRepository.hasVersioningImage(this, version);
+    public boolean hasImageVersion(Version version) {
+        return imageRepository.hasImageVersion(this, version);
     }
 
     @Override

@@ -64,7 +64,7 @@ public interface ImagePlant {
     
     public Image fetchImageById(String id);
     
-    public boolean hasVersiongImage(Version version);
+    public boolean hasImageVersion(Version version);
     
     public Image fetchImageByVersion(Version version);
     

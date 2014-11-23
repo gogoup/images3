@@ -28,6 +28,13 @@ public class IllegalResizingDimensionsException extends RuntimeException {
     private int maximum;
     private ResizingUnit unit;
     
+    public IllegalResizingDimensionsException(int minimum,
+            ResizingUnit unit, String msg) {
+        
+        //'-1' means no limitation on the value.
+        this(minimum, -1, unit, msg);
+    }
+    
     public IllegalResizingDimensionsException(int minimum, int maximum,
             ResizingUnit unit, String msg) {
         super(msg);

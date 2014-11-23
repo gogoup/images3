@@ -29,6 +29,7 @@ import com.images3.core.infrastructure.ImageOS;
 import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageContentAccess;
 import com.images3.core.infrastructure.spi.ImageMetricsService;
+import com.images3.exceptions.IllegalImageVersionException;
 import com.images3.exceptions.NoSuchEntityFoundException;
 
 import org.gogoup.dddutils.pagination.AutoPaginatedResultDelegate;
@@ -61,9 +62,10 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
         checkIfVoid(image);
         ImagePlantRoot imagePlant = (ImagePlantRoot) image.getImagePlant();
         ImageOS objectSegment = image.getObjectSegment();
+        File content = image.getContent();
         if (image.isNew()) {
             imageAccess.insertImage(objectSegment); //insert image
-            imageContentAccess.insertImageContent(
+            content = imageContentAccess.insertImageContent(
                     objectSegment.getId(), 
                     imagePlant.getObjectSegment().getAmazonS3Bucket(), 
                     image.getContent()); //insert content
@@ -71,7 +73,7 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
         }
         image.cleanMarks();
         return imageFactory.reconstituteImage(
-                imagePlant, objectSegment, image.getContent(), this, templateRepository, image.getVersion());
+                imagePlant, objectSegment, content, this, templateRepository, image.getVersion());
     }
    
     
@@ -106,15 +108,35 @@ public class ImageRepositoryService extends AutoPaginatedResultDelegate<List<Ima
         }
     }
     
-    public boolean hasVersioningImage(ImagePlantRoot imagePlant, Version version) {
+    public boolean hasImageVersion(ImagePlantRoot imagePlant, Version version) {
+        Image image = version.getOriginalImage();
+        Template template = version.getTemplate();
+        checkForNonMasterImage(image);
+        if (template.getName().equalsIgnoreCase(Template.MASTER_TEMPLATE_NAME)) {
+            return true;
+        }
         ImageVersion ver = new ImageVersion(
-                version.getTemplate().getName(), version.getOriginalImage().getId());
+                template.getName(), image.getId());
         return imageAccess.isDuplicateVersion(imagePlant.getId(), ver);
     }
     
+    private void checkForNonMasterImage(Image image) {
+        if (!image.getVersion().isMaster()) {
+            ImageVersion imageVersion = new ImageVersion(
+                    image.getVersion().getTemplate().getName(), image.getId());
+            String message = "Master version image only.";
+            throw new IllegalImageVersionException(imageVersion, message);
+        }
+    }
+    
     public Image findImageByVersion(ImagePlantRoot imagePlant, Version version) {
-        ImageVersion ver = new ImageVersion(
-                version.getTemplate().getName(), version.getOriginalImage().getId());
+        Image image = version.getOriginalImage();
+        Template template = version.getTemplate();
+        if (image.getVersion().isMaster()
+                && template.getName().equalsIgnoreCase(Template.MASTER_TEMPLATE_NAME)) {
+            return image;
+        }
+        ImageVersion ver = new ImageVersion(template.getName(), image.getId());
         ImageOS objectSegment = imageAccess.selectImageByVersion(imagePlant.getId(), ver);
         Image entity = imageFactory.reconstituteImage(
                 imagePlant, objectSegment, null, this, templateRepository, version);

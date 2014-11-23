@@ -17,7 +17,7 @@ package com.images3.exceptions;
 
 import com.images3.common.ImageVersion;
 
-public class IllegalImageVersioningException extends RuntimeException {
+public class IllegalImageVersionException extends RuntimeException {
     
     /**
      * 
@@ -26,7 +26,7 @@ public class IllegalImageVersioningException extends RuntimeException {
 
     private ImageVersion version;
     
-    public IllegalImageVersioningException(ImageVersion version, String message) {
+    public IllegalImageVersionException(ImageVersion version, String message) {
         super(message);
         this.version = version;
     }
