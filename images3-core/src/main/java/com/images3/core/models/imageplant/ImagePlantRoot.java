@@ -24,6 +24,7 @@ import java.util.Map;
 
 import com.images3.common.AmazonS3Bucket;
 import com.images3.common.DirtyMark;
+import com.images3.common.MaximumImageSize;
 import com.images3.common.ResizingConfig;
 import com.images3.core.Image;
 import com.images3.core.ImagePlant;
@@ -167,6 +168,21 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
             String message = "Failed to access bucket with the combination of api key and secret.";
             throw new AmazonS3BucketAccessFailedException(amazonS3Bucket, message);
         }
+    }
+
+    @Override
+    public void updateMaximumImageSize(int bytes) {
+        objectSegment.setMaximumImageSize(bytes);
+    }
+
+    @Override
+    public int getMaximumImageSize() {
+        return objectSegment.getMaximumImageSize();
+    }
+
+    @Override
+    public boolean isUnlimitImageSize() {
+        return (objectSegment.getMaximumImageSize() == MaximumImageSize.UNLIMITED);
     }
 
     @Override

@@ -27,16 +27,18 @@ public class ImagePlantOS {
     private AmazonS3Bucket amazonS3Bucket;
     private String masterTemplateName;
     private long numberOfTemplates;
+    private int maximumImageSize; //in bytes.
     
     public ImagePlantOS(String id, String name, Date creationTime,
             AmazonS3Bucket amazonS3Bucket, String masterTemplateName,
-            long numberOfTemplates) {
+            long numberOfTemplates, int maximumImageSize) {
         this.id = id;
         this.name = name;
         this.creationTime = creationTime;
         this.amazonS3Bucket = amazonS3Bucket;
         this.masterTemplateName = masterTemplateName;
         setNumberOfTemplates(numberOfTemplates);
+        setMaximumImageSize(maximumImageSize);
     }
     
     public String getName() {
@@ -68,64 +70,23 @@ public class ImagePlantOS {
     public void setNumberOfTemplates(long numberOfTemplates) {
         this.numberOfTemplates = numberOfTemplates;
     }
-
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((amazonS3Bucket == null) ? 0 : amazonS3Bucket.hashCode());
-        result = prime * result
-                + ((creationTime == null) ? 0 : creationTime.hashCode());
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime
-                * result
-                + ((masterTemplateName == null) ? 0 : masterTemplateName
-                        .hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result
-                + (int) (numberOfTemplates ^ (numberOfTemplates >>> 32));
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ImagePlantOS other = (ImagePlantOS) obj;
-        if (amazonS3Bucket == null) {
-            if (other.amazonS3Bucket != null)
-                return false;
-        } else if (!amazonS3Bucket.equals(other.amazonS3Bucket))
-            return false;
-        if (creationTime == null) {
-            if (other.creationTime != null)
-                return false;
-        } else if (!creationTime.equals(other.creationTime))
-            return false;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        if (masterTemplateName == null) {
-            if (other.masterTemplateName != null)
-                return false;
-        } else if (!masterTemplateName.equals(other.masterTemplateName))
-            return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (numberOfTemplates != other.numberOfTemplates)
-            return false;
-        return true;
-    }
     
+    public int getMaximumImageSize() {
+        return maximumImageSize;
+    }
+
+    public void setMaximumImageSize(int maximumImageSize) {
+        this.maximumImageSize = maximumImageSize;
+    }
+
+    @Override
+    public String toString() {
+        return "ImagePlantOS [id=" + id + ", name=" + name + ", creationTime="
+                + creationTime + ", amazonS3Bucket=" + amazonS3Bucket
+                + ", masterTemplateName=" + masterTemplateName
+                + ", numberOfTemplates=" + numberOfTemplates
+                + ", maximumImageSize=" + maximumImageSize + "]";
+    }
+
     
 }

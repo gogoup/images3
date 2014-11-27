@@ -26,6 +26,7 @@ import com.images3.common.ImageIdentity;
 import com.images3.common.ImageMetadata;
 import com.images3.common.ImageMetricsType;
 import com.images3.common.ImageVersion;
+import com.images3.common.MaximumImageSize;
 import com.images3.common.ResizingConfig;
 import com.images3.common.ResizingUnit;
 import com.images3.common.TemplateIdentity;
@@ -62,17 +63,23 @@ public class MongoDBObjectMapper {
             .append("creationTime", source.getCreationTime().getTime())
             .append("bucket", mapToBasicDBObject(source.getAmazonS3Bucket()))
             .append("masterTemplateName", source.getMasterTemplateName())
-            .append("numberOfTemplates", source.getNumberOfTemplates());
+            .append("numberOfTemplates", source.getNumberOfTemplates())
+            .append("maximumImageSize", source.getMaximumImageSize());
     }
     
     public ImagePlantOS mapToImagePlantOS(BasicDBObject source) {
+        int maximumImageSize = MaximumImageSize.UNLIMITED;
+        if (source.containsValue("maximumImageSize")) {
+            maximumImageSize = source.getInt("maximumImageSize");
+        }
         return new ImagePlantOS(
                 source.getString("id"),
                 source.getString("name"),
                 new Date(source.getLong("creationTime")),
                 mapToAmazonS3Bucket((BasicDBObject) source.get("bucket")),
                 source.getString("masterTemplateName"),
-                source.getLong("numberOfTemplates"));
+                source.getLong("numberOfTemplates"),
+                maximumImageSize);
     }
     
     public BasicDBObject mapToBasicDBObject(AmazonS3Bucket source) {

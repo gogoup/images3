@@ -33,7 +33,8 @@ public class AppObjectMapper {
                 source.getCreationTime(),
                 mapToResponse(source.getMasterTemplate()),
                 source.countTemplates(),
-                source.generateImageReporter().calculate(ImageMetricsType.COUNTS_INBOUND));
+                source.generateImageReporter().calculate(ImageMetricsType.COUNTS_INBOUND),
+                source.getMaximumImageSize());
     }
     
     public TemplateResponse mapToResponse(Template source) {

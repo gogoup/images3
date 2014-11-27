@@ -30,6 +30,7 @@ import com.images3.core.infrastructure.spi.ImageAccess;
 import com.images3.core.infrastructure.spi.ImageProcessor;
 import com.images3.exceptions.DuplicateImageVersionException;
 import com.images3.exceptions.IllegalImageVersionException;
+import com.images3.exceptions.OverMaximumlmageSizeException;
 import com.images3.exceptions.UnsupportedImageFormatException;
 
 public class ImageFactoryService {
@@ -44,9 +45,9 @@ public class ImageFactoryService {
 
     public ImageEntity generateImage(ImagePlantRoot imagePlant, File imageContent, 
             ImageRepositoryService imageRepository, TemplateRepositoryService templateRepository) {
-        if (!imageProcessor.isSupportedFormat(imageContent)) {
-            throw new UnsupportedImageFormatException("");
-        }
+        checkForImageSize(imagePlant, imageContent);
+        checkForUnsupportedFormat(imageContent);
+        
         TemplateEntity template = (TemplateEntity) imagePlant.getMasterTemplate();
         Version version = new Version(template, null);
         ImageMetadata metadata = imageProcessor.readImageMetadata(imageContent);
@@ -62,6 +63,20 @@ public class ImageFactoryService {
                 templateRepository);
     }
     
+    private void checkForImageSize(ImagePlantRoot imagePlant, File imageContent) {
+        if (!imagePlant.isUnlimitImageSize()
+                && imageContent.length() > imagePlant.getMaximumImageSize()) {
+            throw new OverMaximumlmageSizeException(
+                    imagePlant.getMaximumImageSize(), (int) imageContent.length(), "The uploaded image is too big");
+        }
+    }
+    
+    private void checkForUnsupportedFormat(File imageContent) {
+        if (!imageProcessor.isSupportedFormat(imageContent)) {
+            throw new UnsupportedImageFormatException("");
+        }
+    }
+    
     public ImageEntity generateImage(ImagePlantRoot imagePlant, Version version, 
             ImageRepositoryService imageRepository, TemplateRepositoryService templateRepository) {
         checkForNullOriginalImage(version);
@@ -69,6 +84,7 @@ public class ImageFactoryService {
         checkForArchivedTemplate(version.getTemplate());
         checkForMasterVersion(version);
         checkForDuplicateVersion(imagePlant, version);
+        
         ImageEntity originalImage = (ImageEntity) version.getOriginalImage();
         File resizedContent = imageProcessor.resizeImage(
                 originalImage.getObjectSegment().getMetadata(), 

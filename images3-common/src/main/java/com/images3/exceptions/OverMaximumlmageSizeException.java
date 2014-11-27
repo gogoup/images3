@@ -13,39 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.images3;
+package com.images3.exceptions;
 
-import com.images3.common.AmazonS3Bucket;
+public class OverMaximumlmageSizeException extends RuntimeException {
 
-public class ImagePlantUpdateRequest {
-
-    private String id;
-    private String name;
-    private AmazonS3Bucket bucket;
-    private int maximumImageSize;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 761892710857913781L;
     
-    public ImagePlantUpdateRequest(String id, String name, AmazonS3Bucket bucket,
-            int maximumImageSize) {
-        this.id = id;
-        this.name = name;
-        this.bucket = bucket;
+    private int maximumImageSize;
+    private int imageSize;
+
+    public OverMaximumlmageSizeException(int maximumImageSize, int imageSize, String message) {
+        super(message);
         this.maximumImageSize = maximumImageSize;
+        this.imageSize = imageSize;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public AmazonS3Bucket getBucket() {
-        return bucket;
+    public static long getSerialversionuid() {
+        return serialVersionUID;
     }
 
     public int getMaximumImageSize() {
         return maximumImageSize;
     }
 
+    public int getImageSize() {
+        return imageSize;
+    }
+    
 }

@@ -69,7 +69,7 @@ public class ImageS3Server implements ImageS3 {
     @Override
     public ImagePlantResponse addImagePlant(ImagePlantAddRequest request) {
         ImagePlant imagePlant = imagePlantFactory.generateImagePlant(
-                request.getName(), request.getBucket(), request.getResizingConfig());
+                request.getName(), request.getBucket(), request.getResizingConfig(), request.getMaximumImageSize());
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(imagePlant);
     }
@@ -79,6 +79,7 @@ public class ImageS3Server implements ImageS3 {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(request.getId());
         imagePlant.updateName(request.getName());
         imagePlant.setAmazonS3Bucket(request.getBucket());
+        imagePlant.updateMaximumImageSize(request.getMaximumImageSize());
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(imagePlant);
     }

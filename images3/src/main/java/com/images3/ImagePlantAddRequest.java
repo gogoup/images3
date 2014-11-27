@@ -16,19 +16,26 @@
 package com.images3;
 
 import com.images3.common.AmazonS3Bucket;
+import com.images3.common.MaximumImageSize;
 import com.images3.common.ResizingConfig;
 
 public class ImagePlantAddRequest {
 
     private String name;
     private AmazonS3Bucket bucket;
-    private ResizingConfig resizingConfig; 
+    private ResizingConfig resizingConfig;
+    private int maximumImageSize;
 
     public ImagePlantAddRequest(String name, AmazonS3Bucket bucket,
             ResizingConfig resizingConfig) {
+        this(name, bucket, resizingConfig, MaximumImageSize.UNLIMITED);
+    }
+    public ImagePlantAddRequest(String name, AmazonS3Bucket bucket,
+            ResizingConfig resizingConfig, int maximumImageSize) {
         this.name = name;
         this.bucket = bucket;
         this.resizingConfig = resizingConfig;
+        this.maximumImageSize = maximumImageSize;
     }
 
     public String getName() {
@@ -41,6 +48,10 @@ public class ImagePlantAddRequest {
 
     public ResizingConfig getResizingConfig() {
         return resizingConfig;
+    }
+
+    public int getMaximumImageSize() {
+        return maximumImageSize;
     }
 
 }
