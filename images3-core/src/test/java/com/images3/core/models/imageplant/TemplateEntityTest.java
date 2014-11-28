@@ -27,7 +27,7 @@ import org.mockito.Mockito;
 import com.images3.common.ResizingConfig;
 import com.images3.common.ResizingUnit;
 import com.images3.common.TemplateIdentity;
-import com.images3.core.infrastructure.TemplateOS;
+import com.images3.data.TemplateOS;
 import com.images3.core.models.imageplant.ImagePlantRoot;
 import com.images3.core.models.imageplant.TemplateEntity;
 

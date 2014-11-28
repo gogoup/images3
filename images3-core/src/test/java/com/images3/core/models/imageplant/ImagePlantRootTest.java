@@ -40,10 +40,10 @@ import com.images3.common.TemplateIdentity;
 import com.images3.core.Image;
 import com.images3.core.Template;
 import com.images3.core.Version;
-import com.images3.core.infrastructure.ImageOS;
-import com.images3.core.infrastructure.ImagePlantOS;
-import com.images3.core.infrastructure.TemplateOS;
-import com.images3.core.infrastructure.spi.ImagePlantAccess;
+import com.images3.data.ImageOS;
+import com.images3.data.ImagePlantOS;
+import com.images3.data.TemplateOS;
+import com.images3.data.spi.ImagePlantAccess;
 import com.images3.exceptions.DuplicateImagePlantNameException;
 import com.images3.exceptions.UnremovableTemplateException;
 

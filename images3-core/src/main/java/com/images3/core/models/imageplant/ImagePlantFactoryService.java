@@ -22,8 +22,8 @@ import com.images3.common.MaximumImageSize;
 import com.images3.common.ResizingConfig;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantFactory;
-import com.images3.core.infrastructure.ImagePlantOS;
-import com.images3.core.infrastructure.spi.ImagePlantAccess;
+import com.images3.data.ImagePlantOS;
+import com.images3.data.spi.ImagePlantAccess;
 
 public class ImagePlantFactoryService implements ImagePlantFactory {
     

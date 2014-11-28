@@ -19,8 +19,8 @@ import java.util.List;
 
 import com.images3.common.TemplateIdentity;
 import com.images3.core.Template;
-import com.images3.core.infrastructure.TemplateOS;
-import com.images3.core.infrastructure.spi.TemplateAccess;
+import com.images3.data.TemplateOS;
+import com.images3.data.spi.TemplateAccess;
 import com.images3.exceptions.NoSuchEntityFoundException;
 
 import org.gogoup.dddutils.pagination.AutoPaginatedResultDelegate;

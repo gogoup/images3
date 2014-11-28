@@ -31,8 +31,8 @@ import com.images3.core.ImagePlant;
 import com.images3.core.ImageReporter;
 import com.images3.core.Template;
 import com.images3.core.Version;
-import com.images3.core.infrastructure.ImagePlantOS;
-import com.images3.core.infrastructure.spi.ImagePlantAccess;
+import com.images3.data.ImagePlantOS;
+import com.images3.data.spi.ImagePlantAccess;
 import com.images3.exceptions.AmazonS3BucketAccessFailedException;
 import com.images3.exceptions.DuplicateImagePlantNameException;
 import com.images3.exceptions.IllegalImagePlantNameLengthException;
@@ -56,8 +56,6 @@ public class ImagePlantRoot extends DirtyMark implements ImagePlant {
     private Map<String, ImageEntity> dirtyImages;
     private Template masterTemplate;
     private ImageReporterFactoryService imageReporterFactory;
-    
-    public ImagePlantRoot() {}
     
     public ImagePlantRoot(ImagePlantOS objectSegment, ImagePlantAccess imagePlantAccess, 
             ImageFactoryService imageFactory, ImageRepositoryService imageRepository,

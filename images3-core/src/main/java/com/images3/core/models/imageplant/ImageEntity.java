@@ -24,7 +24,7 @@ import com.images3.core.Image;
 import com.images3.core.ImagePlant;
 import com.images3.core.Template;
 import com.images3.core.Version;
-import com.images3.core.infrastructure.ImageOS;
+import com.images3.data.ImageOS;
 
 public class ImageEntity extends DirtyMark implements Image {
     

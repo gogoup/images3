@@ -16,6 +16,7 @@
 package com.images3;
 
 import com.images3.common.AmazonS3Bucket;
+import com.images3.common.MaximumImageSize;
 
 public class ImagePlantUpdateRequest {
 
@@ -24,6 +25,10 @@ public class ImagePlantUpdateRequest {
     private AmazonS3Bucket bucket;
     private int maximumImageSize;
     
+    public ImagePlantUpdateRequest(String id, String name, AmazonS3Bucket bucket) {
+        this(id, name, bucket, MaximumImageSize.UNLIMITED);
+    }
+            
     public ImagePlantUpdateRequest(String id, String name, AmazonS3Bucket bucket,
             int maximumImageSize) {
         this.id = id;

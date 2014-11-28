@@ -18,6 +18,7 @@ package com.images3;
 import com.images3.common.ImageIdentity;
 import com.images3.common.ImageMetricsType;
 import com.images3.common.ImageVersion;
+import com.images3.common.SecuredAmazonS3Bucket;
 import com.images3.common.TemplateIdentity;
 import com.images3.core.Image;
 import com.images3.core.ImagePlant;
@@ -29,7 +30,7 @@ public class AppObjectMapper {
         return new ImagePlantResponse(
                 source.getId(), 
                 source.getName(), 
-                source.getAmazonS3Bucket(), 
+                new SecuredAmazonS3Bucket(source.getAmazonS3Bucket()), 
                 source.getCreationTime(),
                 mapToResponse(source.getMasterTemplate()),
                 source.countTemplates(),
