@@ -15,6 +15,13 @@
  *******************************************************************************/
 package com.images3.data.impl;
 
+import com.images3.common.*;
+import com.images3.data.spi.ImageProcessor;
+import org.imgscalr.Scalr;
+
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -22,20 +29,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
-
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-
-import org.imgscalr.Scalr;
-
-import com.images3.common.ImageDimension;
-import com.images3.common.ImageFormat;
-import com.images3.common.ImageMetadata;
-import com.images3.common.ResizingConfig;
-import com.images3.common.ResizingUnit;
-import com.images3.data.spi.ImageProcessor;
 
 public class ImageProcessorImplImgscalr implements ImageProcessor {
     
@@ -101,24 +96,60 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
     }
 
     public File resizeImage(ImageMetadata metadata, File imageFile, ResizingConfig resizingConfig) {
-        File resizedImageFile = null;
         try {
-            BufferedImage originalImage = ImageIO.read(
-                    new BufferedInputStream(Files.newInputStream(imageFile.toPath())));
-            resizingConfig = getResizingConfig(metadata, resizingConfig);
-            BufferedImage resizedImage = resizeImage(originalImage, resizingConfig);
+            ImageFormat format = getImageFormat(imageFile);
             String fileName = UUID.randomUUID().toString();
-            resizedImageFile = prepareImageFile(tempDir + File.separator + fileName);
-            ImageIO.write(
-                    resizedImage,
-                    getImageFormat(imageFile).toString(), 
-                    new BufferedOutputStream(Files.newOutputStream(resizedImageFile.toPath())));
+            File resizedImageFile = prepareImageFile(tempDir + File.separator + fileName);
+            if (format == ImageFormat.GIF) {
+                resizeGifImage(metadata, imageFile, resizedImageFile, resizingConfig);
+            } else {
+                resizeNonGifImage(metadata, imageFile, resizedImageFile, resizingConfig);
+            }
+            return resizedImageFile;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return resizedImageFile;
     }
-    
+
+    private void resizeGifImage(ImageMetadata metadata, File imageFile,
+                                File resizedImageFile, ResizingConfig resizingConfig) throws IOException {
+        GifFrameReader reader = new GifFrameReader(imageFile);
+        List<ImageFrame> frames = reader.read();
+        reader.close();
+        BufferedImage[] resizedImages = new BufferedImage[frames.size()];
+        for( int i = 0; i < frames.size(); i++ ){
+            //code to resize the image
+            BufferedImage image = Scalr.resize(
+                    frames.get(i).getImage(), Scalr.Method.SPEED, Scalr.Mode.AUTOMATIC, 200, 50);
+            resizedImages[i] = image;
+        }
+        GifFrameWriter writer =
+                new GifFrameWriter(
+                        resizedImageFile,
+                        frames.get(0).getImage().getType(),
+                        frames.get(0).getDelay() * 10,
+                        false,
+                        frames.get(0).getDisposal());
+        writer.writeToSequence(resizedImages[0]);
+        for ( int i = 1; i < resizedImages.length; i++ ) {
+            BufferedImage nextImage = resizedImages[i];
+            writer.writeToSequence(nextImage);
+        }
+        writer.close();
+    }
+
+    private void resizeNonGifImage(ImageMetadata metadata, File imageFile,
+                                   File resizedImageFile, ResizingConfig resizingConfig) throws IOException {
+        BufferedImage originalImage = ImageIO.read(
+                new BufferedInputStream(Files.newInputStream(imageFile.toPath())));
+        resizingConfig = getResizingConfig(metadata, resizingConfig);
+        BufferedImage resizedImage = resizeImage(originalImage, resizingConfig);
+        ImageIO.write(
+                resizedImage,
+                getImageFormat(imageFile).toString(),
+                new BufferedOutputStream(Files.newOutputStream(resizedImageFile.toPath())));
+    }
+
     private ResizingConfig getResizingConfig(ImageMetadata metadata, ResizingConfig resizingConfig) {
         if (resizingConfig.getUnit() == ResizingUnit.PERCENT) {
             float width = (float) metadata.getDimension().getWidth() * ((float) resizingConfig.getWidth() / 100.0f);
@@ -166,12 +197,12 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
                 ImageReader reader = iter.next();
                 if (reader.getFormatName().equalsIgnoreCase("JPEG")) {
                     format = ImageFormat.JPEG;
-                }
-                else if (reader.getFormatName().equalsIgnoreCase("png")) {
+                } else if (reader.getFormatName().equalsIgnoreCase("png")) {
                     format = ImageFormat.PNG;
-                }
-                else if (reader.getFormatName().equalsIgnoreCase("bmp")) {
+                } else if (reader.getFormatName().equalsIgnoreCase("bmp")) {
                     format = ImageFormat.BMP;
+                } else if (reader.getFormatName().equalsIgnoreCase("gif")) {
+                    format = ImageFormat.GIF;
                 }
             }
         } catch (IOException e) {
