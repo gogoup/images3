@@ -23,4 +23,7 @@ public interface ImagePlantFactory {
     public ImagePlant generateImagePlant(String name, 
             AmazonS3Bucket amazonS3Bucket, ResizingConfig resizingConfig);
     
+    public ImagePlant generateImagePlant(String name, 
+            AmazonS3Bucket amazonS3Bucket, ResizingConfig resizingConfig, int maximumImageSize);
+    
 }

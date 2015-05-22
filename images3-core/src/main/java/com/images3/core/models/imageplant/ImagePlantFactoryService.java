@@ -18,11 +18,12 @@ package com.images3.core.models.imageplant;
 import java.util.Date;
 
 import com.images3.common.AmazonS3Bucket;
+import com.images3.common.MaximumImageSize;
 import com.images3.common.ResizingConfig;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantFactory;
-import com.images3.core.infrastructure.ImagePlantOS;
-import com.images3.core.infrastructure.spi.ImagePlantAccess;
+import com.images3.data.ImagePlantOS;
+import com.images3.data.spi.ImagePlantAccess;
 
 public class ImagePlantFactoryService implements ImagePlantFactory {
     
@@ -48,14 +49,20 @@ public class ImagePlantFactoryService implements ImagePlantFactory {
     }
 
     @Override
-    public ImagePlant generateImagePlant(String name, 
+    public ImagePlant generateImagePlant(String name,
             AmazonS3Bucket amazonS3Bucket, ResizingConfig resizingConfig) {
+        return generateImagePlant(name, amazonS3Bucket, resizingConfig, MaximumImageSize.UNLIMITED);
+    }
+
+    @Override
+    public ImagePlant generateImagePlant(String name, 
+            AmazonS3Bucket amazonS3Bucket, ResizingConfig resizingConfig, int maximumImageSize) {
         String id = imagePlantAccess.genertateImagePlantId();
         Date creationTime = new Date(System.currentTimeMillis());
         long numberOfTemplates = 0;
         ImagePlantOS objectSegment =
                 new ImagePlantOS(id, "", creationTime, null,
-                        TemplateEntity.MASTER_TEMPLATE_NAME, numberOfTemplates);
+                        TemplateEntity.MASTER_TEMPLATE_NAME, numberOfTemplates, maximumImageSize);
         ImagePlantRoot root = reconstituteImagePlant(objectSegment, imageRepository, templateRepository);
         root.markAsNew();
         root.updateName(name);

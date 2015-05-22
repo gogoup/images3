@@ -18,7 +18,7 @@ package com.images3.core.models.imageplant;
 import com.images3.core.ImagePlant;
 import com.images3.core.ImageReporter;
 import com.images3.core.Template;
-import com.images3.core.infrastructure.spi.ImageMetricsService;
+import com.images3.data.spi.ImageMetricsService;
 
 public class ImageReporterFactoryService {
     

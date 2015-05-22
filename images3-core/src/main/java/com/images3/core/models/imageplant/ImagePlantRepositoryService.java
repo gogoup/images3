@@ -20,8 +20,8 @@ import java.util.List;
 
 import com.images3.core.ImagePlant;
 import com.images3.core.ImagePlantRepository;
-import com.images3.core.infrastructure.ImagePlantOS;
-import com.images3.core.infrastructure.spi.ImagePlantAccess;
+import com.images3.data.ImagePlantOS;
+import com.images3.data.spi.ImagePlantAccess;
 import com.images3.exceptions.NoSuchEntityFoundException;
 
 import org.gogoup.dddutils.pagination.AutoPaginatedResultDelegate;

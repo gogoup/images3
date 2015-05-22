@@ -38,6 +38,12 @@ public interface ImagePlant {
     
     public void setAmazonS3Bucket(AmazonS3Bucket amazonS3Bucket);
     
+    public void updateMaximumImageSize(int bytes);
+    
+    public int getMaximumImageSize();
+    
+    public boolean isUnlimitImageSize();
+    
     public Template getMasterTemplate();
     
     public Template createTemplate(String name, ResizingConfig resizingConfig);
