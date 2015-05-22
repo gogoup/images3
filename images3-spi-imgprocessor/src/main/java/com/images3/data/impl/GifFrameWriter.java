@@ -71,8 +71,8 @@ public class GifFrameWriter {
 
         IIOMetadataNode child = new IIOMetadataNode("ApplicationExtension");
 
-        child.setAttribute("applicationID", "IMAGES3 ");
-        child.setAttribute("authenticationCode", "1.0");
+        child.setAttribute("applicationID", "NETSCAPE");
+        child.setAttribute("authenticationCode", "2.0");
 
         int loop = loopContinuously ? 0 : 1;
 

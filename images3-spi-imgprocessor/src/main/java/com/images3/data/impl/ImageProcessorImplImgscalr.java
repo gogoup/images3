@@ -100,6 +100,7 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
             ImageFormat format = getImageFormat(imageFile);
             String fileName = UUID.randomUUID().toString();
             File resizedImageFile = prepareImageFile(tempDir + File.separator + fileName);
+            resizingConfig = getResizingConfig(metadata, resizingConfig);
             if (format == ImageFormat.GIF) {
                 resizeGifImage(metadata, imageFile, resizedImageFile, resizingConfig);
             } else {
@@ -118,9 +119,7 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
         reader.close();
         BufferedImage[] resizedImages = new BufferedImage[frames.size()];
         for( int i = 0; i < frames.size(); i++ ){
-            //code to resize the image
-            BufferedImage image = Scalr.resize(
-                    frames.get(i).getImage(), Scalr.Method.SPEED, Scalr.Mode.AUTOMATIC, 200, 50);
+            BufferedImage image = resizeImage(frames.get(i).getImage(), resizingConfig);
             resizedImages[i] = image;
         }
         GifFrameWriter writer =
@@ -128,7 +127,7 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
                         resizedImageFile,
                         frames.get(0).getImage().getType(),
                         frames.get(0).getDelay() * 10,
-                        false,
+                        true,
                         frames.get(0).getDisposal());
         writer.writeToSequence(resizedImages[0]);
         for ( int i = 1; i < resizedImages.length; i++ ) {
@@ -142,7 +141,6 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
                                    File resizedImageFile, ResizingConfig resizingConfig) throws IOException {
         BufferedImage originalImage = ImageIO.read(
                 new BufferedInputStream(Files.newInputStream(imageFile.toPath())));
-        resizingConfig = getResizingConfig(metadata, resizingConfig);
         BufferedImage resizedImage = resizeImage(originalImage, resizingConfig);
         ImageIO.write(
                 resizedImage,
@@ -168,11 +166,11 @@ public class ImageProcessorImplImgscalr implements ImageProcessor {
         if (resizingConfig.isKeepProportions()) {
             resizedImage = Scalr.resize(
                     originalImage, Scalr.Method.SPEED, Scalr.Mode.AUTOMATIC, 
-                    resizingConfig.getWidth(), resizingConfig.getHeight(), Scalr.OP_ANTIALIAS);
+                    resizingConfig.getWidth(), resizingConfig.getHeight());
         } else {
             resizedImage = Scalr.resize(
                     originalImage, Scalr.Method.SPEED, Scalr.Mode.FIT_EXACT, 
-                    resizingConfig.getWidth(), resizingConfig.getHeight(), Scalr.OP_ANTIALIAS);
+                    resizingConfig.getWidth(), resizingConfig.getHeight());
         }
         return resizedImage;
     }
