@@ -25,10 +25,10 @@ import com.images3.common.ImageVersion;
 import com.images3.core.Image;
 import com.images3.core.Template;
 import com.images3.core.Version;
-import com.images3.core.infrastructure.ImageOS;
-import com.images3.core.infrastructure.spi.ImageAccess;
-import com.images3.core.infrastructure.spi.ImageContentAccess;
-import com.images3.core.infrastructure.spi.ImageMetricsService;
+import com.images3.data.ImageOS;
+import com.images3.data.spi.ImageAccess;
+import com.images3.data.spi.ImageContentAccess;
+import com.images3.data.spi.ImageMetricsService;
 import com.images3.exceptions.IllegalImageVersionException;
 import com.images3.exceptions.NoSuchEntityFoundException;
 

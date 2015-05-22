@@ -32,8 +32,8 @@ import com.images3.core.ImagePlant;
 import com.images3.core.ImageReport;
 import com.images3.core.ImageReporter;
 import com.images3.core.Template;
-import com.images3.core.infrastructure.ImageMetricsOS;
-import com.images3.core.infrastructure.spi.ImageMetricsService;
+import com.images3.data.ImageMetricsOS;
+import com.images3.data.spi.ImageMetricsService;
 
 public class ImageReporterService implements ImageReporter {
     

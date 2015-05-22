@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.gogoup.dddutils.pagination.PaginatedResult;
 
+import com.images3.common.AmazonS3Bucket;
 import com.images3.common.ImageIdentity;
 import com.images3.common.TemplateIdentity;
 import com.images3.core.Image;
@@ -30,12 +31,6 @@ import com.images3.core.ImageReport;
 import com.images3.core.ImageReporter;
 import com.images3.core.Template;
 import com.images3.core.Version;
-import com.images3.core.infrastructure.spi.ImageAccess;
-import com.images3.core.infrastructure.spi.ImageContentAccess;
-import com.images3.core.infrastructure.spi.ImageMetricsService;
-import com.images3.core.infrastructure.spi.ImagePlantAccess;
-import com.images3.core.infrastructure.spi.ImageProcessor;
-import com.images3.core.infrastructure.spi.TemplateAccess;
 import com.images3.core.models.imageplant.ImageFactoryService;
 import com.images3.core.models.imageplant.ImagePlantFactoryService;
 import com.images3.core.models.imageplant.ImagePlantRepositoryService;
@@ -43,6 +38,12 @@ import com.images3.core.models.imageplant.ImageReporterFactoryService;
 import com.images3.core.models.imageplant.ImageRepositoryService;
 import com.images3.core.models.imageplant.TemplateFactoryService;
 import com.images3.core.models.imageplant.TemplateRepositoryService;
+import com.images3.data.spi.ImageAccess;
+import com.images3.data.spi.ImageContentAccess;
+import com.images3.data.spi.ImageMetricsService;
+import com.images3.data.spi.ImagePlantAccess;
+import com.images3.data.spi.ImageProcessor;
+import com.images3.data.spi.TemplateAccess;
 
 public class ImageS3Server implements ImageS3 {
     
@@ -69,7 +70,7 @@ public class ImageS3Server implements ImageS3 {
     @Override
     public ImagePlantResponse addImagePlant(ImagePlantAddRequest request) {
         ImagePlant imagePlant = imagePlantFactory.generateImagePlant(
-                request.getName(), request.getBucket(), request.getResizingConfig());
+                request.getName(), request.getBucket(), request.getResizingConfig(), request.getMaximumImageSize());
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(imagePlant);
     }
@@ -78,9 +79,20 @@ public class ImageS3Server implements ImageS3 {
     public ImagePlantResponse updateImagePlant(ImagePlantUpdateRequest request) {
         ImagePlant imagePlant = imagePlantRepository.findImagePlantById(request.getId());
         imagePlant.updateName(request.getName());
-        imagePlant.setAmazonS3Bucket(request.getBucket());
+        AmazonS3Bucket bucket = mergeAmazonS3Buckets(imagePlant.getAmazonS3Bucket(), request.getBucket());
+        imagePlant.setAmazonS3Bucket(bucket);
+        imagePlant.updateMaximumImageSize(request.getMaximumImageSize());
         imagePlant = imagePlantRepository.storeImagePlant(imagePlant);
         return objectMapper.mapToResponse(imagePlant);
+    }
+    
+    private AmazonS3Bucket mergeAmazonS3Buckets(AmazonS3Bucket oriBucket, AmazonS3Bucket newBucket) {
+        String secretKey = oriBucket.getSecretKey();
+        if (null != newBucket.getSecretKey() 
+                && newBucket.getSecretKey().trim().length() > 0) {
+            secretKey = newBucket.getSecretKey();
+        }
+        return new AmazonS3Bucket(newBucket.getAccessKey(), secretKey, newBucket.getName());
     }
 
     @Override

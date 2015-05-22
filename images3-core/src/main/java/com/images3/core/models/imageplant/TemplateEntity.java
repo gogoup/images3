@@ -19,7 +19,7 @@ import com.images3.common.DirtyMark;
 import com.images3.common.ResizingConfig;
 import com.images3.core.ImagePlant;
 import com.images3.core.Template;
-import com.images3.core.infrastructure.TemplateOS;
+import com.images3.data.TemplateOS;
 
 public class TemplateEntity extends DirtyMark implements Template {
     
